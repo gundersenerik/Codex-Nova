@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Grid Layout</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        body {
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+        }
+        
+        /* Visualize grid structure */
+        .form-grid {
+            border: 3px solid green !important;
+            background: rgba(0, 255, 0, 0.05) !important;
+            position: relative;
+        }
+        
+        /* Show grid lines */
+        .form-grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 33.33%;
+            width: 1px;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            pointer-events: none;
+        }
+        
+        .form-grid::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 66.66%;
+            width: 1px;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            pointer-events: none;
+        }
+        
+        .form-group {
+            border: 2px dashed blue !important;
+            background: rgba(0, 0, 255, 0.05) !important;
+            position: relative;
+            overflow: visible !important;
+        }
+        
+        .form-select {
+            border: 3px solid red !important;
+            background: rgba(255, 0, 0, 0.05) !important;
+        }
+        
+        /* Add labels to show dimensions */
+        .form-group::after {
+            content: attr(data-width);
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 10px;
+            background: yellow;
+            padding: 2px 5px;
+            z-index: 1000;
+        }
+        
+        /* Test with explicit grid template */
+        .test-grid-1 {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        
+        .test-grid-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+        
+        .test-grid-3 {
+            grid-template-columns: 50% 50% !important;
+        }
+        
+        /* Show click area */
+        .click-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 0, 0.3);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .form-select:hover + .click-indicator {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>Debug Grid Layout - Click Areas</h1>
+        <p>Hover over selects to see yellow highlight showing actual clickable area</p>
+        
+        <h2>Current Grid (auto-fit)</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Left Column</label>
+                <select class="form-input form-select">
+                    <option>Test Left</option>
+                </select>
+                <div class="click-indicator"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Right Column</label>
+                <select class="form-input form-select">
+                    <option>Test Right</option>
+                </select>
+                <div class="click-indicator"></div>
+            </div>
+        </div>
+        
+        <h2>Test 1: Using 1fr 1fr</h2>
+        <div class="form-grid test-grid-1">
+            <div class="form-group">
+                <label class="form-label">Left Column</label>
+                <select class="form-input form-select">
+                    <option>Test Left</option>
+                </select>
+                <div class="click-indicator"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Right Column</label>
+                <select class="form-input form-select">
+                    <option>Test Right</option>
+                </select>
+                <div class="click-indicator"></div>
+            </div>
+        </div>
+        
+        <h2>Test 2: Using minmax(0, 1fr)</h2>
+        <div class="form-grid test-grid-2">
+            <div class="form-group">
+                <label class="form-label">Left Column</label>
+                <select class="form-input form-select">
+                    <option>Test Left</option>
+                </select>
+                <div class="click-indicator"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Right Column</label>
+                <select class="form-input form-select">
+                    <option>Test Right</option>
+                </select>
+                <div class="click-indicator"></div>
+            </div>
+        </div>
+        
+        <h2>Diagnostics</h2>
+        <div id="diagnostics"></div>
+    </div>
+    
+    <script>
+    function runDiagnostics() {
+        const grids = document.querySelectorAll('.form-grid');
+        const diagnostics = document.getElementById('diagnostics');
+        let output = '<pre>';
+        
+        grids.forEach((grid, gridIndex) => {
+            output += `\nGrid ${gridIndex + 1}:\n`;
+            const gridRect = grid.getBoundingClientRect();
+            const gridStyle = window.getComputedStyle(grid);
+            
+            output += `  Grid width: ${gridRect.width.toFixed(1)}px\n`;
+            output += `  Grid columns: ${gridStyle.gridTemplateColumns}\n`;
+            
+            const formGroups = grid.querySelectorAll('.form-group');
+            formGroups.forEach((group, groupIndex) => {
+                const groupRect = group.getBoundingClientRect();
+                const select = group.querySelector('select');
+                const selectRect = select.getBoundingClientRect();
+                
+                // Add width as data attribute for CSS display
+                group.setAttribute('data-width', `${groupRect.width.toFixed(0)}px`);
+                
+                output += `  Column ${groupIndex + 1}:\n`;
+                output += `    Form-group width: ${groupRect.width.toFixed(1)}px\n`;
+                output += `    Select width: ${selectRect.width.toFixed(1)}px\n`;
+                output += `    Width difference: ${(groupRect.width - selectRect.width).toFixed(1)}px\n`;
+                
+                // Check if select fills the form-group
+                if (selectRect.width < groupRect.width - 5) {
+                    output += `    ⚠️ Select not filling container!\n`;
+                }
+                
+                // Add click test
+                select.addEventListener('click', (e) => {
+                    const x = e.offsetX;
+                    const width = e.target.offsetWidth;
+                    const percentage = (x / width * 100).toFixed(1);
+                    console.log(`Click at ${x}px (${percentage}% of width)`);
+                });
+            });
+        });
+        
+        output += '\n\nClick on selects to see click position in console.';
+        output += '</pre>';
+        diagnostics.innerHTML = output;
+    }
+    
+    window.addEventListener('load', () => {
+        runDiagnostics();
+        
+        // Add mousemove tracking
+        document.querySelectorAll('.form-select').forEach(select => {
+            select.addEventListener('mousemove', (e) => {
+                const rect = e.target.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const cursor = window.getComputedStyle(e.target).cursor;
+                if (cursor !== 'pointer') {
+                    console.warn(`Non-pointer cursor at x=${x.toFixed(0)} on ${e.target.parentElement.querySelector('label').textContent}`);
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

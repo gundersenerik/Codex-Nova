@@ -1,0 +1,80 @@
+brand_code,brand_name,country,product_name,product_type,Rate Plan Week,Rate Plan Month,Rate Plan Quarter,Rate Plan 6 months,Rate Plan Year,Rate Plan Year/month,Rate plan 6-month/month,Rate plan quarter/month,Rate Plan Day,Rate Plan In-app 3 mån,Rate Plan in-app 6 mån,Rate Plan Pub 1500,Rate Plan Pub 2000,Rate Plan B2B Year,Rate Plan Övriga Sverige Månad,Rate Plan Övriga Sverige Kvartal,Rate Plan Övriga Sverige Halvår,Rate Plan Övriga Sverige År,Rate Plan Sthlm Månad,Rate Plan Sthlm Kvartal,Rate Plan Sthlm Halvår,Rate Plan Sthlm År,Rate Plan Företag År
+AP,Aftenposten,NO,Aftenposten A-magasinet,print,107,499,1497,2994,5988,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AP,Aftenposten,NO,Aftenposten Duo,digital,67,299,897,1794,3588,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AP,Aftenposten,NO,Aftenposten Full Tilgang,digital,87,379,1137,2274,4548,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AP,Aftenposten,NO,Aftenposten Helg,print,123,569,1707,3414,6300,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AP,Aftenposten,NO,Aftenposten Solo,digital,N/A,249,747,1494,2988,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AP,Aftenposten,NO,Aftenposten Uke,print,165,769,2307,4614,9228,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Basis,digital,54,229,687,1374,2748,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Familie,digital,N/A,349,1047,2094,4188,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Full tilgang,digital,87,379,1137,2274,4548,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Full tilgang Helg,print,N/A,568,1674,3348,6696,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Full tilgang Komplett,print,N/A,758,2274,4548,9096,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Helg,print,113,489,1467,2934,5868,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Komplett,print,N/A,689,2067,4134,8268,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT mandag til fredag,print,N/A,689,2067,4134,8268,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+BT,Bergens Tidende,NO,BT Premium,digital,66,299,897,1794,3588,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+E24,E24,NO,E24 Basis,digital,N/A,199,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+E24,E24,NO,E24 Full tilgang,digital,N/A,379,N/A,N/A,4548,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+E24,E24,NO,E24 og Dine penger+,digital,N/A,269,N/A,N/A,2628,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+E24,E24,NO,E24 Pro,digital,N/A,249,N/A,N/A,1999,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+E24,E24,NO,E24 sanntidskurser,digital,N/A,0,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+E24,E24,NO,E24 uten deling,digital,N/A,198,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OM,Omni,SE,Omni annonsfritt,digital,N/A,29,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OM,Omni,SE,Omni Bundle,digital,N/A,249,N/A,N/A,N/A,199/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OMB,Omni,SE,Omni Bundle Bas,digital,N/A,199,N/A,N/A,N/A,159/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OME,Omni,SE,Omni Ekonomi,digital,N/A,189,N/A,N/A,N/A,159/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OMEB,Omni,SE,Omni Ekonomi Bas,digital,N/A,179,N/A,N/A,N/A,149/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OMMER,Omni,SE,Omni Mer,digital,N/A,139,N/A,N/A,1188,99/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OMMERB,Omni,SE,Omni Mer Bas,digital,29,119,N/A,N/A,948,79/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+OMSP,Omni,SE,Omni Superpaketet,digital,N/A,299,N/A,N/A,N/A,269/mån,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+R24,Randaberg24,NO,Randaberg24,digital,N/A,99,N/A,N/A,1188,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Basis,digital,54,229,687,1374,2748,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Familie,digital,N/A,349,1047,2094,4188,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Full tilgang,digital,N/A,379,1137,2274,4548,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Full tillgang Helg,print,N/A,568,1704,3408,6588,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Full tillgang Komplett,print,N/A,734,2202,4404,8448,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Helg,print,115,499,1497,2994,5760,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Komplett,print,N/A,655,1995,3990,7620,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet mandag til fredag,print,N/A,665,1995,3990,7620,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SA,Stavanger Aftenblad,NO,Aftenbladet Premium,digital,66,299,897,1794,3588,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG eavis,digital,59,179,499,949,1788,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG Weekend hele helgen,print,N/A,349,1047,2094,4188,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG Weekend fredag-lørdag,print,N/A,329,949,1849,3599,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG Weekend lørdag-søndag,print,N/A,299,897,1794,3588,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ Basis,digital,59,99,225,499,999,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+,digital,39,99,225,349,799,N/A,N/A,N/A,N/A,N/A,N/A,1875,2500,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ og Dine penger+,digital,59,N/A,119,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ Sport,digital,59,N/A,149,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ Total,digital,N/A,N/A,179,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ Full tilgang,digital,N/A,N/A,379,2094,4188,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ Flex,digital,N/A,N/A,299,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG+ og PodMe,digital,59,119,N/A,649,1199,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,MinMote strikk,digital,39,,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,VG eAvis med VG+,digital,N/A,209,N/A,N/A,2199,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VG,VG,NO,Dine penger+,digital,39,89,N/A,N/A,1059,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AB,Aftonbladet,SE,Aftonbladet e-tidning,digital,N/A,149,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AB,Aftonbladet,SE,Aftonbladet Plus,digital,N/A,149,N/A,N/A,1195,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AB,Aftonbladet,SE,Aftonbladet Plus & Podme,digital,N/A,179,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AB,Aftonbladet,SE,Aftonbladet Superpaketet,digital,N/A,299,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+AB,Aftonbladet,SE,Plus & SvenskHockey.tv,digital,N/A,199,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD digital premium,digital,N/A,349,1047,2094,4188,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,4188,4188,4188,4188,4188,4188,4188,4188,4188,4188
+SVD,Svenska Dagbladet,SE,SvD digital standard,digital,N/A,229,687,1374,2748,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD Superpaketet - tillägg alla dagar,digital,N/A,69,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD Superpaketet - tillägg helg,digital,N/A,69,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD Superpaketet - tillägg digital premium,digital,N/A,89,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD Vinklubb,digital,N/A,39,N/A,N/A,399,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD Superpaketet,digital,N/A,299,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD digital premium SP,digital,N/A,379,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD taltidning,digital,N/A,N/A,N/A,N/A,2304,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD taltidning - tillägg,digital,N/A,N/A,N/A,N/A,480,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD digital standard & Podme,digital,57,249,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD komplett alla dagar,print,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,799,2397,N/A,9588,799,2397,4794,9588,10788
+SVD,Svenska Dagbladet,SE,SvD komplett helg,print,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,519,1557,3114,5628,7188
+SVD,Svenska Dagbladet,SE,Svenska Dagbladet söndag,print,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,149,447,894,1788,N/A,N/A,N/A,N/A,1788
+SVD,Svenska Dagbladet,SE,SvD komplett vardag,print,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,499,1497,2994,5988,7188
+SVD,Svenska Dagbladet,SE,SvD komplett sexdagars,print,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,699,2097,4194,8388,N/A,N/A,N/A,N/A,N/A
+SVD,Svenska Dagbladet,SE,SvD komplett tredagars,print,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,519,1557,3114,6228,N/A
+PM,Podme NO,NO,Podme NO,digital,N/A,79,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+VK,VektKlubb,NO,Vektklubb,digital,N/A,N/A,N/A,N/A,N/A,149,199,249,N/A,749,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A
+W,Wellobe,SE,Wellobe,digital,N/A,N/A,N/A,N/A,N/A,199,229,279,N/A,N/A,1470,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A

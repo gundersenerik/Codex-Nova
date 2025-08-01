@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Debug Test</title>
+</head>
+<body>
+    <h1>Database Debug Test</h1>
+    <div id="output"></div>
+    
+    <script src="js/lib/sql-wasm.js"></script>
+    <script src="js/sql-database.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+        
+        async function testDatabase() {
+            try {
+                log('🔄 Starting database test...');
+                
+                // Initialize SQL.js
+                await initializeSQLJS();
+                log('✅ SQL.js initialized');
+                
+                // Load schema
+                await loadDatabaseSchema();
+                log('✅ Database schema loaded');
+                
+                // Test brand count
+                const brands = db.exec("SELECT COUNT(*) as count FROM brands");
+                const brandCount = brands[0]?.values[0]?.[0] || 0;
+                log(`📊 Brands loaded: ${brandCount}`);
+                
+                // Test product count
+                const products = db.exec("SELECT COUNT(*) as count FROM products");
+                const productCount = products[0]?.values[0]?.[0] || 0;
+                log(`📊 Products loaded: ${productCount}`);
+                
+                // Test rate plan count
+                const ratePlans = db.exec("SELECT COUNT(*) as count FROM rate_plans");
+                const ratePlanCount = ratePlans[0]?.values[0]?.[0] || 0;
+                log(`📊 Rate plans loaded: ${ratePlanCount}`);
+                
+                // Test sample data
+                const sampleBrands = db.exec("SELECT brand_code, brand_name FROM brands LIMIT 5");
+                log(`📊 Sample brands: ${JSON.stringify(sampleBrands[0]?.values || [])}`);
+                
+                if (brandCount === 18 && productCount === 79 && ratePlanCount === 260) {
+                    log('🎉 SUCCESS: All real data loaded correctly!');
+                } else {
+                    log('⚠️ WARNING: Data counts don\'t match expected values (18 brands, 79 products, 260 rate plans)');
+                }
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                log(`Stack: ${error.stack}`);
+            }
+        }
+        
+        testDatabase();
+    </script>
+</body>
+</html>

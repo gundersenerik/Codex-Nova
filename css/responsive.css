@@ -1,0 +1,292 @@
+/* ============================================================================
+   RESPONSIVE STYLES - Mobile and Tablet Optimizations
+   ============================================================================ */
+
+/* ============================================================================
+   TABLET STYLES (768px - 1024px)
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+    .content {
+        padding: var(--space-xl);
+    }
+    
+    .header {
+        padding: 0 var(--space-xl);
+    }
+    
+    .card {
+        padding: var(--space-lg);
+    }
+}
+
+/* ============================================================================
+   MOBILE STYLES (max-width: 768px)
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    /* Layout adjustments */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 200;
+        transform: translateX(-100%);
+        transition: transform var(--transition-base);
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: var(--shadow-2xl);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    /* Show mobile menu toggle */
+    .mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Header adjustments */
+    .header {
+        padding: 0 var(--space-lg);
+        height: 56px;
+    }
+    
+    .header-title {
+        font-size: 1.25rem;
+    }
+    
+    .header-actions {
+        gap: var(--space-sm);
+    }
+    
+    .icon-button {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    /* Content adjustments */
+    .content {
+        padding: var(--space-lg);
+    }
+    
+    .card {
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-md);
+    }
+    
+    .card-title {
+        font-size: 1.125rem;
+    }
+    
+    /* Placeholder adjustments */
+    .placeholder {
+        padding: var(--space-xl);
+    }
+    
+    .placeholder-icon {
+        font-size: 3rem;
+    }
+    
+    .placeholder h2 {
+        font-size: 1.25rem;
+    }
+    
+    /* Auth modal adjustments */
+    .auth-modal {
+        width: 95%;
+        max-width: none;
+        padding: var(--space-xl);
+    }
+    
+    .auth-modal h2 {
+        font-size: 1.25rem;
+        margin-bottom: var(--space-lg);
+    }
+    
+    /* User dropdown adjustments */
+    .user-dropdown {
+        right: -10px;
+        min-width: 180px;
+    }
+    
+    /* Search input adjustments */
+    .search-input {
+        font-size: 1rem; /* Prevent zoom on iOS */
+    }
+    
+    /* Form input adjustments */
+    .form-input {
+        font-size: 1rem; /* Prevent zoom on iOS */
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
+/* ============================================================================
+   SMALL MOBILE STYLES (max-width: 480px)
+   ============================================================================ */
+
+@media (max-width: 480px) {
+    /* Further reduce spacing */
+    .content {
+        padding: var(--space-md);
+    }
+    
+    .header {
+        padding: 0 var(--space-md);
+    }
+    
+    .card {
+        padding: var(--space-md);
+    }
+    
+    /* Stack header actions vertically if needed */
+    .header-actions {
+        gap: var(--space-xs);
+    }
+    
+    .icon-button {
+        width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+    }
+    
+    /* Auth buttons stack */
+    #authButtons {
+        flex-direction: column;
+        gap: var(--space-xs) !important;
+    }
+    
+    .auth-button {
+        padding: var(--space-xs) var(--space-md);
+        font-size: 0.875rem;
+    }
+    
+    /* Sidebar adjustments */
+    .sidebar {
+        width: min(var(--sidebar-width), 85vw);
+    }
+    
+    /* Reduce placeholder size */
+    .placeholder {
+        padding: var(--space-lg);
+    }
+    
+    .placeholder-icon {
+        font-size: 2.5rem;
+    }
+    
+    .placeholder h2 {
+        font-size: 1.125rem;
+    }
+    
+    /* Mobile menu toggle positioning */
+    .mobile-menu-toggle {
+        bottom: var(--space-md);
+        right: var(--space-md);
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+}
+
+/* ============================================================================
+   LANDSCAPE PHONE ADJUSTMENTS
+   ============================================================================ */
+
+@media (max-height: 600px) and (orientation: landscape) {
+    .header {
+        height: 48px;
+    }
+    
+    .header-title {
+        font-size: 1.125rem;
+    }
+    
+    .content {
+        padding: var(--space-md);
+    }
+    
+    .placeholder {
+        padding: var(--space-md);
+    }
+    
+    .placeholder-icon {
+        font-size: 2rem;
+        margin-bottom: var(--space-sm);
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================================================ */
+
+/* Improve touch targets on mobile */
+@media (max-width: 768px) {
+    .nav-item,
+    .sub-nav-item {
+        min-height: 44px; /* iOS recommended touch target */
+        padding: var(--space-md);
+    }
+    
+    .nav-item-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 1.125rem;
+    }
+}
+
+/* ============================================================================
+   HIGH DPI / RETINA DISPLAY OPTIMIZATIONS
+   ============================================================================ */
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Ensure crisp borders and shadows on high DPI displays */
+    .card,
+    .sidebar,
+    .auth-modal {
+        border-width: 0.5px;
+    }
+}
+
+/* ============================================================================
+   REDUCED MOTION PREFERENCES
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    body::before {
+        animation: none;
+    }
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT (for future implementation)
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+    /* This will be implemented when dark mode is added */
+    /* Currently maintaining light theme for consistency */
+}

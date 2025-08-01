@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naming Standards Hub - Frontend Edition</title>
+    
+    <!-- SQL.js Library for SQLite in Browser -->
+    <script src="js/lib/sql-wasm.js"></script>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">NS</div>
+                    <span>Standards</span>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-container">
+                <div class="search-box">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search... (⌘K)">
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Platforms</div>
+                    
+                    <button class="nav-item active" data-tab="promocodes">
+                        <span class="nav-item-icon">🎟️</span>
+                        <span>Promocodes</span>
+                    </button>
+
+                    <button class="nav-item" data-tab="utm" data-expandable="true">
+                        <span class="nav-item-icon">🔗</span>
+                        <span>UTM Standards</span>
+                        <span class="nav-item-badge">4</span>
+                    </button>
+                    
+                    <div class="sub-nav" id="utm-subnav">
+                        <button class="sub-nav-item active" data-subtab="utm-purchase">Purchase Links</button>
+                        <button class="sub-nav-item" data-subtab="utm-landing">Landing Page Links</button>
+                        <button class="sub-nav-item" data-subtab="utm-email">Email Links</button>
+                        <button class="sub-nav-item" data-subtab="utm-campaign">Campaign Links</button>
+                    </div>
+
+                    <button class="nav-item" data-tab="braze" data-expandable="true">
+                        <span class="nav-item-icon">📱</span>
+                        <span>Braze</span>
+                        <span class="nav-item-badge">3</span>
+                    </button>
+                    
+                    <div class="sub-nav" id="braze-subnav">
+                        <button class="sub-nav-item active" data-subtab="braze-campaigns">Campaigns</button>
+                        <button class="sub-nav-item" data-subtab="braze-segments">Segments</button>
+                        <button class="sub-nav-item" data-subtab="braze-canvases">Canvases</button>
+                    </div>
+
+                    <button class="nav-item" data-tab="vev">
+                        <span class="nav-item-icon">📊</span>
+                        <span>VEV</span>
+                    </button>
+
+                    <button class="nav-item" data-tab="sales-poster">
+                        <span class="nav-item-icon">🏷️</span>
+                        <span>Sales Poster</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Tools</div>
+                    
+                    <button class="nav-item" data-tab="reverse-lookup">
+                        <span class="nav-item-icon">🔍</span>
+                        <span>Reverse Lookup</span>
+                    </button>
+
+                    <button class="nav-item" data-tab="history">
+                        <span class="nav-item-icon">📜</span>
+                        <span>History</span>
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 class="header-title" id="headerTitle">Naming Standards Hub</h1>
+                <div class="header-actions">
+                    <!-- Auth buttons (shown when not logged in) -->
+                    <div id="authButtons" style="display: none; gap: var(--space-sm);">
+                        <button class="auth-button secondary" onclick="showDemoLogin()">Try Demo</button>
+                        <button class="auth-button" onclick="showAuthModal('login')">Login</button>
+                    </div>
+                    
+                    <!-- User menu (shown when logged in) -->
+                    <div id="userMenu" class="user-menu" style="display: none;">
+                        <div class="user-avatar" onclick="toggleUserDropdown()" id="userAvatar">U</div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-dropdown-item" id="userEmail">user@example.com</div>
+                            <div class="user-dropdown-item" onclick="logout()">🚪 Sign Out</div>
+                        </div>
+                    </div>
+                    
+                    <button class="icon-button" title="Command Palette (⌘K)">⌘</button>
+                    <button class="icon-button" title="Help">?</button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <div class="content-inner">
+                    <!-- Promocodes Tab -->
+                    <div class="tab-content active" id="promocodes">
+                        <!-- Brand Selection Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Select Brand</h2>
+                                <div style="color: var(--gray-600); font-size: 0.875rem;">
+                                    Database-driven • Norwegian & Swedish brands
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: var(--space-lg); align-items: end;">
+                                <div style="flex: 1;">
+                                    <label class="form-label" for="brand-select">
+                                        Brand <span style="color: var(--danger);">*</span>
+                                    </label>
+                                    <select id="brand-select" class="form-input form-select">
+                                        <option value="">Select a brand</option>
+                                        <!-- Options populated dynamically from database -->
+                                    </select>
+                                </div>
+                                
+                                <div style="color: var(--gray-500); font-size: 0.75rem; line-height: 1.4;">
+                                    <div>✅ All brands use unified logic</div>
+                                    <div>✅ Products loaded from database</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Configuration Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Configure Promocode</h2>
+                            </div>
+                            
+                            <div id="dynamic-form-container">
+                                <div class="placeholder">
+                                    <div class="placeholder-icon">🎟️</div>
+                                    <h3>Ready to Generate</h3>
+                                    <p>Select a brand above to start configuring your promocode</p>
+                                    <p style="font-size: 0.75rem; color: var(--gray-400); margin-top: var(--space-sm);">
+                                        All brands use the same Norwegian-style logic with database-driven data
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Card -->
+                        <div class="card" id="result-container" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title" style="font-size: 1rem;">Generated Promocode</h3>
+                                <button id="copy-promocode-btn" class="auth-button secondary" style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">
+                                    Copy
+                                </button>
+                            </div>
+                            
+                            <div style="background: var(--gray-50); border-radius: 8px; padding: var(--space-lg); border: 2px dashed var(--gray-300);">
+                                <label class="form-label" style="margin-bottom: var(--space-sm);">Your Promocode:</label>
+                                <div style="background: var(--white); border: 1px solid var(--gray-200); border-radius: 6px; padding: var(--space-md); font-family: var(--font-mono); font-size: 1.125rem; font-weight: 600; color: var(--gray-900);">
+                                    <pre id="generated-code" style="margin: 0; white-space: pre-wrap;"></pre>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: var(--space-lg); font-size: 0.875rem; color: var(--gray-600); display: flex; flex-direction: column; gap: var(--space-xs);">
+                                <div><strong>Format:</strong> BRAND-PRODUCT-OFFER-LIFECYCLE-RENEWAL</div>
+                                <div><strong>Logic:</strong> Unified Norwegian-style generation for all brands</div>
+                            </div>
+                        </div>
+
+                        <!-- Code Reverser Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Promocode Reverser</h2>
+                            </div>
+                            
+                            <p style="color: var(--gray-600); margin-bottom: var(--space-lg);">
+                                Reverse engineer an existing promocode to understand its structure.
+                            </p>
+                            
+                            <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-lg);">
+                                <div style="flex: 1;">
+                                    <label class="form-label" for="reverse-code-input">
+                                        Promocode to Reverse
+                                    </label>
+                                    <input type="text" id="reverse-code-input" placeholder="e.g., AB-PLUS-3M199-HB-M249" 
+                                           class="form-input" style="width: 100%; font-family: var(--font-mono);">
+                                </div>
+                                
+                                <div style="display: flex; align-items: end;">
+                                    <button id="reverse-btn" class="auth-button secondary">
+                                        Reverse
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="reverse-result" style="display: none;">
+                                <div style="background: var(--gray-50); border-radius: 8px; padding: var(--space-lg);">
+                                    <h3 style="font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-sm);">Reverse Analysis:</h3>
+                                    <div id="reverse-output" style="font-size: 0.875rem; color: var(--gray-700); display: flex; flex-direction: column; gap: var(--space-xs);"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Help Card -->
+                        <div class="card" style="background: var(--primary-bg); border: 1px solid rgba(91, 76, 253, 0.2);">
+                            <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-lg);">
+                                <div style="font-size: 1.5rem;">📚</div>
+                                <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--primary-dark); margin: 0;">How It Works</h2>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); font-size: 0.875rem;">
+                                <div>
+                                    <h3 style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--primary-dark); display: flex; align-items: center; gap: var(--space-xs);">
+                                        <span>🔄</span> Unified Logic
+                                    </h3>
+                                    <div style="color: var(--gray-700); display: flex; flex-direction: column; gap: var(--space-xs);">
+                                        <div>• All brands use the same Norwegian-style pattern</div>
+                                        <div>• Swedish brands adapted to Norwegian logic</div>
+                                        <div>• Database-driven product and pricing data</div>
+                                        <div>• No more hardcoded configurations</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h3 style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--primary-dark); display: flex; align-items: center; gap: var(--space-xs);">
+                                        <span>🏗️</span> Code Structure
+                                    </h3>
+                                    <div style="color: var(--gray-700); display: flex; flex-direction: column; gap: var(--space-xs);">
+                                        <div>• <code style="background: var(--white); padding: 2px 4px; border-radius: 3px;">BRAND</code>: Brand code (AB, SvD, AP, VG, etc.)</div>
+                                        <div>• <code style="background: var(--white); padding: 2px 4px; border-radius: 3px;">PRODUCT</code>: Product identifier</div>
+                                        <div>• <code style="background: var(--white); padding: 2px 4px; border-radius: 3px;">OFFER</code>: Duration, period, price, discounts</div>
+                                        <div>• <code style="background: var(--white); padding: 2px 4px; border-radius: 3px;">LIFECYCLE</code>: HB/WB/CMP + U30 flag</div>
+                                        <div>• <code style="background: var(--white); padding: 2px 4px; border-radius: 3px;">RENEWAL</code>: Rate plan for renewal</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--white); border-radius: 8px; border: 1px solid rgba(91, 76, 253, 0.1);">
+                                <p style="font-size: 0.875rem; color: var(--gray-800); margin: 0;">
+                                    <strong>Example:</strong> <code style="font-family: var(--font-mono); background: var(--gray-100); padding: 2px 6px; border-radius: 4px;">AB-PLUS-3M199-HBU30-M249</code><br>
+                                    <span style="font-size: 0.75rem; color: var(--gray-600); margin-top: var(--space-xs); display: block;">
+                                        Aftonbladet Plus, 3 months at 199kr, Holdback Under-30, renews to Monthly 249kr
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- JavaScript for reverse functionality -->
+                        <script>
+                        // Setup reverse functionality when page loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Reverse button click handler
+                            const reverseBtn = document.getElementById('reverse-btn');
+                            const reverseInput = document.getElementById('reverse-code-input');
+                            const reverseResultDiv = document.getElementById('reverse-result');
+                            const reverseOutput = document.getElementById('reverse-output');
+                            
+                            if (reverseBtn && reverseInput) {
+                                reverseBtn.addEventListener('click', function() {
+                                    const code = reverseInput.value.trim();
+                                    if (!code) {
+                                        if (window.showNotification) {
+                                            window.showNotification('Please enter a promocode to reverse', 'error');
+                                        }
+                                        return;
+                                    }
+                                    
+                                    // Use the promocode reverse function
+                                    if (window.promocode && window.promocode.reversePromocode) {
+                                        const result = window.promocode.reversePromocode(code);
+                                        
+                                        if (result.error) {
+                                            if (window.showNotification) {
+                                                window.showNotification(result.error, 'error');
+                                            }
+                                            reverseResultDiv.style.display = 'none';
+                                        } else {
+                                            // Display results
+                                            let outputHtml = '';
+                                            Object.entries(result).forEach(([key, value]) => {
+                                                outputHtml += `<div><strong>${key}:</strong> ${value}</div>`;
+                                            });
+                                            
+                                            reverseOutput.innerHTML = outputHtml;
+                                            reverseResultDiv.style.display = 'block';
+                                        }
+                                    } else {
+                                        console.error('Promocode reverse function not available');
+                                    }
+                                });
+                                
+                                // Enter key support
+                                reverseInput.addEventListener('keypress', function(e) {
+                                    if (e.key === 'Enter') {
+                                        reverseBtn.click();
+                                    }
+                                });
+                            }
+                        });
+                        </script>
+                    </div>
+
+                    <!-- Braze Campaigns Tab -->
+                    <div class="tab-content" id="braze-campaigns">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">📧</div>
+                            <h2>Braze Campaigns</h2>
+                            <p>Configure naming standards for Braze campaigns</p>
+                        </div>
+                    </div>
+
+                    <!-- Braze Segments Tab -->
+                    <div class="tab-content" id="braze-segments">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">👥</div>
+                            <h2>Braze Segments</h2>
+                            <p>Configure naming standards for Braze segments</p>
+                        </div>
+                    </div>
+
+                    <!-- Braze Canvases Tab -->
+                    <div class="tab-content" id="braze-canvases">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">🎨</div>
+                            <h2>Braze Canvases</h2>
+                            <p>Configure naming standards for Braze canvases</p>
+                        </div>
+                    </div>
+
+                    <!-- UTM Purchase Links Tab -->
+                    <div class="tab-content" id="utm-purchase">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">🛒</div>
+                            <h2>Purchase Links</h2>
+                            <p>Generate UTM-tracked purchase links with promocodes</p>
+                        </div>
+                    </div>
+
+                    <!-- UTM Landing Page Links Tab -->
+                    <div class="tab-content" id="utm-landing">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">🏠</div>
+                            <h2>Landing Page Links</h2>
+                            <p>Generate UTM-tracked landing page links</p>
+                        </div>
+                    </div>
+
+                    <!-- UTM Email Links Tab -->
+                    <div class="tab-content" id="utm-email">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">📧</div>
+                            <h2>Email Links</h2>
+                            <p>Generate UTM-tracked email campaign links</p>
+                        </div>
+                    </div>
+
+                    <!-- UTM Campaign Links Tab -->
+                    <div class="tab-content" id="utm-campaign">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">🎯</div>
+                            <h2>Campaign Links</h2>
+                            <p>Generate UTM-tracked general campaign links</p>
+                        </div>
+                    </div>
+
+                    <!-- VEV Tab -->
+                    <div class="tab-content" id="vev">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <h2>VEV Naming Standard</h2>
+                            <p>Configure naming standards for VEV</p>
+                        </div>
+                    </div>
+
+                    <!-- Sales Poster Tab -->
+                    <div class="tab-content" id="sales-poster">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">🏷️</div>
+                            <h2>Sales Poster Service</h2>
+                            <p>Configure naming standards for Sales Poster Service</p>
+                        </div>
+                    </div>
+
+                    <!-- Reverse Lookup Tab -->
+                    <div class="tab-content" id="reverse-lookup">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Reverse Lookup</h2>
+                            </div>
+                            <p style="color: var(--gray-600); margin-bottom: var(--space-lg);">
+                                Paste any code or name to decode its components and understand its structure.
+                            </p>
+                            <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-xl);">
+                                <input 
+                                    type="text" 
+                                    id="lookupInput"
+                                    placeholder="Enter code (e.g., BRZ_CMP_2025_BF_SE)" 
+                                    style="flex: 1; padding: var(--space-md); border: 2px solid var(--gray-200); border-radius: 8px; font-family: var(--font-mono); font-size: 0.875rem;"
+                                >
+                                <button 
+                                    id="lookupButton"
+                                    style="padding: var(--space-md) var(--space-xl); background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;"
+                                >
+                                    Decode
+                                </button>
+                            </div>
+                            <div id="lookupResult"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div class="tab-content" id="history">
+                        <div class="placeholder">
+                            <div class="placeholder-icon">📜</div>
+                            <h2>Generation History</h2>
+                            <p>Your recently generated naming standards will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Demo User Banner -->
+    <div class="demo-user-banner" id="demoUserBanner" style="display: none;">
+        🎯 You're using the demo account. <button onclick="showAuthModal('signup')" style="background: none; border: none; color: inherit; text-decoration: underline; cursor: pointer; font-weight: 600;">Create your account</button> to save your work.
+    </div>
+
+    <!-- Frontend Edition Banner -->
+    <div id="frontendEditionBanner" style="display: block; background: linear-gradient(135deg, #00c896, #00a085); color: white; padding: 8px 24px; text-align: center; font-size: 0.875rem; font-weight: 500;">
+        🚀 FRONTEND EDITION: Powered by SQLite in your browser. All data stored locally.
+    </div>
+
+    <!-- Auth Modal Overlay -->
+    <div class="auth-modal-overlay" id="authModalOverlay" onclick="hideAuthModal()"></div>
+    
+    <!-- Login Modal -->
+    <div class="auth-modal" id="loginModal">
+        <h2>Welcome Back</h2>
+        <form class="auth-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-input" required placeholder="your@email.com" value="demo@namingstandards.app">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="form-input" required placeholder="••••••••" value="demo123">
+            </div>
+            <div id="loginError" class="error-message" style="display: none;"></div>
+            <button type="submit" class="auth-button">
+                <span id="loginButtonText">Sign In</span>
+                <div class="loading-spinner" id="loginSpinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></div>
+            </button>
+        </form>
+        <div class="auth-switch">
+            Don't have an account? <button onclick="showAuthModal('signup')">Sign up</button>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="auth-modal" id="signupModal">
+        <h2>Create Account</h2>
+        <form class="auth-form" onsubmit="handleSignup(event)">
+            <div class="form-group">
+                <label class="form-label" for="signupEmail">Email</label>
+                <input type="email" id="signupEmail" class="form-input" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" class="form-input" required placeholder="••••••••" minlength="6">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="signupPasswordConfirm">Confirm Password</label>
+                <input type="password" id="signupPasswordConfirm" class="form-input" required placeholder="••••••••" minlength="6">
+            </div>
+            <div id="signupError" class="error-message" style="display: none;"></div>
+            <button type="submit" class="auth-button">
+                <span id="signupButtonText">Create Account</span>
+                <div class="loading-spinner" id="signupSpinner" style="display: none; width: 16px; height: 16px; border-width: 2px;"></div>
+            </button>
+        </form>
+        <div class="auth-switch">
+            Already have an account? <button onclick="showAuthModal('login')">Sign in</button>
+        </div>
+    </div>
+
+    <!-- Command Palette Overlay -->
+    <div class="command-palette-overlay" id="commandPaletteOverlay"></div>
+    
+    <!-- Command Palette -->
+    <div class="command-palette" id="commandPalette">
+        <!-- Command palette content will go here -->
+    </div>
+
+    <!-- JavaScript Files - Frontend-Only Version -->
+    <!-- Load in correct dependency order -->
+    <script src="js/config.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/sql-database.js"></script>
+    <script src="js/database-initializer.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/csv-importer.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/promocode.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
