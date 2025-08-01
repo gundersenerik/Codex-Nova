@@ -1,3 +1,4 @@
 {
-    "claudeCodeChat.permissions.yoloMode": true
+    "claudeCodeChat.permissions.yoloMode": true,
+    "github-enterprise.uri": "https://schibsted.ghe.com"
 }
