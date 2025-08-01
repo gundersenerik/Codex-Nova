@@ -378,6 +378,7 @@
     gap: var(--space-xs);
     width: 100%;
     position: relative;
+    z-index: 1; /* Ensure form groups don't overlap */
 }
 
 .form-label {
@@ -396,13 +397,20 @@
     width: 100%;
     display: block;
     box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+    pointer-events: auto !important;
 }
 
-/* Ensure all select elements are properly styled */
+/* Ensure all select elements are properly styled and fully clickable */
 select.form-input {
     cursor: pointer !important;
     width: 100% !important;
     display: block !important;
+    position: relative !important;
+    z-index: 1 !important;
+    pointer-events: auto !important;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .form-input:hover {
@@ -438,7 +446,7 @@ select.form-input {
     }
 }
 
-/* Enhanced select styling */
+/* Enhanced select styling - fully clickable */
 .form-select {
     appearance: none;
     -webkit-appearance: none;
@@ -447,11 +455,17 @@ select.form-input {
     background-repeat: no-repeat;
     background-position: right var(--space-md) center;
     background-size: 12px;
-    padding-right: calc(var(--space-md) * 3);
+    padding-right: calc(var(--space-md) * 3) !important;
+    padding-left: var(--space-md) !important;
     cursor: pointer !important;
     width: 100% !important;
     display: block !important;
     box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 1 !important;
+    pointer-events: auto !important;
+    min-height: 44px; /* Ensure good touch target */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .form-select:hover {
@@ -692,4 +706,46 @@ select.form-input {
     cursor: pointer;
     z-index: 100;
     font-size: 1.5rem;
+}
+
+/* ============================================================================
+   FORM FIELD CLICKABILITY FIXES
+   ============================================================================ */
+
+/* Ensure all interactive form elements are fully clickable */
+.form-input,
+.form-select,
+select.form-input,
+select.form-select {
+    position: relative !important;
+    z-index: 1 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Remove any overlapping pseudo-elements that might block clicks */
+.form-group::before,
+.form-group::after,
+.form-input::before,
+.form-input::after,
+.form-select::before,
+.form-select::after {
+    pointer-events: none !important;
+}
+
+/* Ensure parent containers don't interfere with form field clicks */
+.form-grid,
+.form-grid-3,
+.card {
+    position: relative;
+    z-index: 0;
+}
+
+/* Fix for iOS/Safari select elements */
+@supports (-webkit-touch-callout: none) {
+    select.form-input,
+    select.form-select {
+        -webkit-appearance: none;
+        background-position: right 12px center !important;
+    }
 }

@@ -134,6 +134,17 @@
     .form-input {
         font-size: 1rem; /* Prevent zoom on iOS */
         padding: var(--space-sm) var(--space-md);
+        min-height: 44px; /* iOS recommended touch target */
+    }
+    
+    /* Ensure select elements are fully clickable on mobile */
+    select.form-input,
+    .form-select {
+        min-height: 44px;
+        -webkit-appearance: none;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
 }
 
