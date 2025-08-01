@@ -336,7 +336,7 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     ensureSelectStyling();
 }
 
-// Ensure all select elements have proper form-select class
+// Ensure all select elements have proper form-select class and autocomplete off
 function ensureSelectStyling() {
     // Find all select elements with form-input class
     const selects = document.querySelectorAll('select.form-input');
@@ -344,6 +344,8 @@ function ensureSelectStyling() {
         if (!select.classList.contains('form-select')) {
             select.classList.add('form-select');
         }
+        // Also ensure autocomplete is off
+        select.setAttribute('autocomplete', 'off');
     });
 }
 
@@ -363,7 +365,7 @@ function createFormField(field) {
     let inputHtml = '';
     
     if (field.type === 'select') {
-        inputHtml = `<select id="${field.id}" name="${field.id}" class="form-input form-select" ${field.required ? 'required' : ''}>`;
+        inputHtml = `<select id="${field.id}" name="${field.id}" class="form-input form-select" autocomplete="off" ${field.required ? 'required' : ''}>`;
         
         Object.entries(field.options).forEach(([value, text]) => {
             inputHtml += `<option value="${value}">${text}</option>`;
@@ -374,7 +376,7 @@ function createFormField(field) {
     } else if (field.type === 'checkbox') {
         inputHtml = `
             <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                <input type="checkbox" id="${field.id}" name="${field.id}" style="width: 16px; height: 16px; accent-color: var(--primary); border-radius: 4px;">
+                <input type="checkbox" id="${field.id}" name="${field.id}" autocomplete="off" style="width: 16px; height: 16px; accent-color: var(--primary); border-radius: 4px;">
                 <label for="${field.id}" class="form-label" style="margin: 0;">${field.label}</label>
             </div>
         `;
@@ -387,7 +389,7 @@ function createFormField(field) {
         if (field.maxLength) attributes.push(`maxlength="${field.maxLength}"`);
         if (field.required) attributes.push('required');
         
-        inputHtml = `<input type="${field.type}" id="${field.id}" name="${field.id}" class="form-input" ${attributes.join(' ')}>`;
+        inputHtml = `<input type="${field.type}" id="${field.id}" name="${field.id}" class="form-input" autocomplete="off" ${attributes.join(' ')}>`;
     }
     
     if (field.type !== 'checkbox') {

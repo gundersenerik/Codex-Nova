@@ -35,7 +35,7 @@
                         <circle cx="11" cy="11" r="8"/>
                         <path d="m21 21-4.35-4.35"/>
                     </svg>
-                    <input type="text" class="search-input" placeholder="Search... (⌘K)">
+                    <input type="text" class="search-input" placeholder="Search... (⌘K)" autocomplete="off">
                 </div>
             </div>
 
@@ -146,7 +146,7 @@
                                     <label class="form-label" for="brand-select">
                                         Brand <span style="color: var(--danger);">*</span>
                                     </label>
-                                    <select id="brand-select" class="form-input form-select">
+                                    <select id="brand-select" class="form-input form-select" autocomplete="off">
                                         <option value="">Select a brand</option>
                                         <!-- Options populated dynamically from database -->
                                     </select>
@@ -215,7 +215,7 @@
                                         Promocode to Reverse
                                     </label>
                                     <input type="text" id="reverse-code-input" placeholder="e.g., AB-PLUS-3M199-HB-M249" 
-                                           class="form-input" style="width: 100%; font-family: var(--font-mono);">
+                                           class="form-input" style="width: 100%; font-family: var(--font-mono);" autocomplete="off">
                                 </div>
                                 
                                 <div style="display: flex; align-items: end;">
@@ -428,6 +428,7 @@
                                     id="lookupInput"
                                     placeholder="Enter code (e.g., BRZ_CMP_2025_BF_SE)" 
                                     style="flex: 1; padding: var(--space-md); border: 2px solid var(--gray-200); border-radius: 8px; font-family: var(--font-mono); font-size: 0.875rem;"
+                                    autocomplete="off"
                                 >
                                 <button 
                                     id="lookupButton"
@@ -477,14 +478,14 @@
     <!-- Login Modal -->
     <div class="auth-modal" id="loginModal">
         <h2>Welcome Back</h2>
-        <form class="auth-form" onsubmit="handleLogin(event)">
+        <form class="auth-form" onsubmit="handleLogin(event)" autocomplete="off">
             <div class="form-group">
                 <label class="form-label" for="loginEmail">Email</label>
-                <input type="email" id="loginEmail" class="form-input" required placeholder="your@email.com" value="demo@namingstandards.app">
+                <input type="email" id="loginEmail" class="form-input" required placeholder="your@email.com" value="demo@namingstandards.app" autocomplete="off">
             </div>
             <div class="form-group">
                 <label class="form-label" for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" class="form-input" required placeholder="••••••••" value="demo123">
+                <input type="password" id="loginPassword" class="form-input" required placeholder="••••••••" value="demo123" autocomplete="new-password">
             </div>
             <div id="loginError" class="error-message" style="display: none;"></div>
             <button type="submit" class="auth-button">
@@ -500,18 +501,18 @@
     <!-- Signup Modal -->
     <div class="auth-modal" id="signupModal">
         <h2>Create Account</h2>
-        <form class="auth-form" onsubmit="handleSignup(event)">
+        <form class="auth-form" onsubmit="handleSignup(event)" autocomplete="off">
             <div class="form-group">
                 <label class="form-label" for="signupEmail">Email</label>
-                <input type="email" id="signupEmail" class="form-input" required placeholder="your@email.com">
+                <input type="email" id="signupEmail" class="form-input" required placeholder="your@email.com" autocomplete="off">
             </div>
             <div class="form-group">
                 <label class="form-label" for="signupPassword">Password</label>
-                <input type="password" id="signupPassword" class="form-input" required placeholder="••••••••" minlength="6">
+                <input type="password" id="signupPassword" class="form-input" required placeholder="••••••••" minlength="6" autocomplete="new-password">
             </div>
             <div class="form-group">
                 <label class="form-label" for="signupPasswordConfirm">Confirm Password</label>
-                <input type="password" id="signupPasswordConfirm" class="form-input" required placeholder="••••••••" minlength="6">
+                <input type="password" id="signupPasswordConfirm" class="form-input" required placeholder="••••••••" minlength="6" autocomplete="new-password">
             </div>
             <div id="signupError" class="error-message" style="display: none;"></div>
             <button type="submit" class="auth-button">
