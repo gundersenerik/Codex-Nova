@@ -1,6 +1,6 @@
 # Naming Standards Hub - Frontend Edition
 
-A **frontend-only** version of the Naming Standards Hub that runs entirely in the browser using SQLite (via SQL.js) for data storage. Perfect for static hosting and offline usage.
+A **frontend-only** version of the Naming Standards Hub that runs entirely in the browser using SQLite (via SQL.js) for data storage. Perfect for static hosting and offline usage. Future versions may include a backend
 
 ## 🚀 **Quick Start**
 
