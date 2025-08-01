@@ -17,7 +17,7 @@ async function initializeSQLJS() {
         
         // Initialize SQL.js with WASM file location
         SQL = await window.initSqlJs({
-            locateFile: file => `js/lib/${file}`
+            locateFile: file => `/js/lib/${file}`
         });
         
         // Create new in-memory database
