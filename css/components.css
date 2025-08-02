@@ -724,50 +724,192 @@ select.form-input {
 }
 
 /* ============================================================================
-   FORM FIELD CLICKABILITY FIXES
+   CLEAN FORM SYSTEM - PROMOCODE GENERATOR
    ============================================================================ */
 
-/* Ensure all interactive form elements are fully clickable */
-.form-input,
-.form-select,
-select.form-input,
-select.form-select {
-    position: relative !important;
-    z-index: 1 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
+/* Form container */
+.promocode-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
 }
 
-/* Remove any overlapping pseudo-elements that might block clicks */
-.form-group::before,
-.form-group::after,
-.form-input::before,
-.form-input::after,
-.form-select::before,
-.form-select::after {
-    pointer-events: none !important;
+/* Form rows with responsive grid */
+.form-row {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: 1fr; /* Mobile first */
 }
 
-/* Ensure parent containers don't interfere with form field clicks */
-.form-grid,
-.form-grid-3,
-.card {
+/* Field wrapper - the main container for each field */
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
     position: relative;
-    z-index: 0;
 }
 
-/* Fix grid cell overflow and ensure proper containment */
-.form-grid > .form-group,
-.form-grid-3 > .form-group {
-    contain: layout style;
-    overflow: visible; /* Allow dropdowns to overflow but contain layout */
+/* Field size classes */
+.field-small { grid-column: span 1; }
+.field-medium { grid-column: span 2; }
+.field-large { grid-column: span 3; }
+
+/* Field label - always clickable */
+.field-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    cursor: pointer;
+    user-select: none;
+    display: block;
 }
 
-/* Fix for iOS/Safari select elements */
-@supports (-webkit-touch-callout: none) {
-    select.form-input,
-    select.form-select {
-        -webkit-appearance: none;
-        background-position: right 12px center !important;
+.field-label:hover {
+    color: var(--gray-900);
+}
+
+.field-label .required {
+    color: var(--danger);
+}
+
+/* Field input - base styles */
+.field-input {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background-color: var(--white);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.field-input:hover {
+    border-color: var(--gray-300);
+    background-color: var(--gray-50);
+}
+
+.field-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(91, 76, 253, 0.1);
+    background-color: var(--white);
+    cursor: text;
+}
+
+/* Select specific styles */
+.field-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-md) center;
+    background-size: 12px;
+    padding-right: calc(var(--space-md) * 3);
+}
+
+/* Checkbox styles */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+}
+
+.checkbox-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.checkbox-label:hover .checkbox-text {
+    color: var(--gray-900);
+}
+
+/* Form actions row */
+.form-actions {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Generate button */
+.generate-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.generate-btn:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.generate-btn .btn-icon {
+    font-size: 1.25rem;
+}
+
+/* Responsive grid layouts */
+@media (min-width: 768px) {
+    .form-row[data-row="1"] {
+        grid-template-columns: 1fr 1fr;
     }
+    
+    .form-row[data-row="2"],
+    .form-row[data-row="3"] {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .form-row[data-row="4"] {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+@media (min-width: 1024px) {
+    .form-row[data-row="2"],
+    .form-row[data-row="3"] {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1400px) {
+    .form-row[data-row="2"],
+    .form-row[data-row="3"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .form-row[data-row="4"] {
+        grid-template-columns: 2fr 1fr 1fr;
+    }
+}
+
+/* Field wrapper hover effect for better clickability feedback */
+.field-wrapper:hover .field-input:not(:focus) {
+    border-color: var(--gray-300);
+    background-color: var(--gray-50);
 }

@@ -139,7 +139,7 @@ function reversePromocode(code) {
 // FORM GENERATION AND MANAGEMENT
 // ============================================================================
 
-// Create the unified Norwegian-style form fields
+// Create the unified Norwegian-style form fields with size hints for layout
 function createNorwegianStyleFields() {
     return [
         {
@@ -147,14 +147,18 @@ function createNorwegianStyleFields() {
             label: 'Product',
             type: 'select',
             options: { '': 'Select a product' },
-            required: true
+            required: true,
+            size: 'medium',
+            row: 1
         },
         {
             id: 'renewalRatePlan',
             label: 'Renewal Rate Plan', 
             type: 'select',
             options: { '': 'Select a rate plan' },
-            required: true
+            required: true,
+            size: 'medium',
+            row: 1
         },
         {
             id: 'lifecycle',
@@ -166,7 +170,9 @@ function createNorwegianStyleFields() {
                 'WB': 'Winback', 
                 'CMP': 'Campaign' 
             },
-            required: false
+            required: false,
+            size: 'small',
+            row: 2
         },
         {
             id: 'offerDuration',
@@ -175,7 +181,9 @@ function createNorwegianStyleFields() {
             placeholder: 'e.g., 3',
             min: 1,
             max: 24,
-            required: false
+            required: false,
+            size: 'small',
+            row: 2
         },
         {
             id: 'offerPeriod',
@@ -189,7 +197,9 @@ function createNorwegianStyleFields() {
                 'h': 'Halvår', 
                 'y': 'År' 
             },
-            required: false
+            required: false,
+            size: 'small',
+            row: 2
         },
         {
             id: 'discountType',
@@ -200,7 +210,9 @@ function createNorwegianStyleFields() {
                 'kr': 'Kronor (kr)', 
                 'pros': 'Percent (%)' 
             },
-            required: false
+            required: false,
+            size: 'small',
+            row: 3
         },
         {
             id: 'offerPrice',
@@ -210,7 +222,9 @@ function createNorwegianStyleFields() {
             min: 1,
             max: 9999,
             required: false,
-            showWhen: { field: 'discountType', value: 'kr' }
+            showWhen: { field: 'discountType', value: 'kr' },
+            size: 'small',
+            row: 3
         },
         {
             id: 'discountValue',
@@ -220,7 +234,9 @@ function createNorwegianStyleFields() {
             min: 1,
             max: 100,
             required: false,
-            showWhen: { field: 'discountType', value: 'pros' }
+            showWhen: { field: 'discountType', value: 'pros' },
+            size: 'small',
+            row: 3
         },
         {
             id: 'customOfferText',
@@ -228,18 +244,22 @@ function createNorwegianStyleFields() {
             type: 'text',
             placeholder: 'e.g., 3FOR1, SUMMER24',
             maxLength: 8,
-            required: false
+            required: false,
+            size: 'medium',
+            row: 4
         },
         {
             id: 'isUnder30',
             label: 'Under 30',
             type: 'checkbox',
-            required: false
+            required: false,
+            size: 'small',
+            row: 4
         }
     ];
 }
 
-// Render form fields dynamically
+// NEW CLEAN FORM RENDERING SYSTEM
 function renderFormFields(fields, containerSelector = '#dynamic-form-container') {
     const container = document.querySelector(containerSelector);
     if (!container) {
@@ -249,161 +269,117 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     
     container.innerHTML = '';
     
-    // Create form grid container
-    const formGrid = document.createElement('div');
-    formGrid.className = 'form-grid';
+    // Create main form element
+    const form = document.createElement('form');
+    form.className = 'promocode-form';
+    form.setAttribute('novalidate', 'true'); // We handle validation ourselves
     
-    // Group fields for better layout
-    const mainFields = [];
-    const priceFields = [];
-    const conditionalFields = [];
-    const checkboxFields = [];
-    
+    // Group fields by row
+    const fieldsByRow = {};
     fields.forEach(field => {
-        if (field.type === 'checkbox') {
-            checkboxFields.push(field);
-        } else if (field.showWhen) {
-            conditionalFields.push(field);
-        } else if (['discountType', 'offerPrice', 'discountValue'].includes(field.id)) {
-            priceFields.push(field);
-        } else {
-            mainFields.push(field);
-        }
+        const row = field.row || 1;
+        if (!fieldsByRow[row]) fieldsByRow[row] = [];
+        fieldsByRow[row].push(field);
     });
     
-    // Add main fields to grid (2 columns)
-    mainFields.forEach(field => {
-        const fieldElement = createFormField(field);
-        formGrid.appendChild(fieldElement);
+    // Create rows
+    Object.keys(fieldsByRow).sort().forEach(rowNum => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'form-row';
+        rowDiv.dataset.row = rowNum;
+        
+        fieldsByRow[rowNum].forEach(field => {
+            const fieldWrapper = createCleanFormField(field);
+            rowDiv.appendChild(fieldWrapper);
+        });
+        
+        form.appendChild(rowDiv);
     });
-    
-    container.appendChild(formGrid);
-    
-    // Add price fields in a 3-column grid
-    if (priceFields.length > 0) {
-        const priceGrid = document.createElement('div');
-        priceGrid.className = 'form-grid-3';
-        priceGrid.style.marginBottom = 'var(--space-xl)';
-        
-        priceFields.forEach(field => {
-            const fieldElement = createFormField(field);
-            priceGrid.appendChild(fieldElement);
-        });
-        
-        // Add conditional fields to the same grid
-        conditionalFields.forEach(field => {
-            const fieldElement = createFormField(field);
-            priceGrid.appendChild(fieldElement);
-        });
-        
-        container.appendChild(priceGrid);
-    }
-    
-    // Add checkbox fields in a separate row
-    if (checkboxFields.length > 0) {
-        const checkboxContainer = document.createElement('div');
-        checkboxContainer.style.display = 'flex';
-        checkboxContainer.style.gap = 'var(--space-xl)';
-        checkboxContainer.style.marginBottom = 'var(--space-lg)';
-        
-        checkboxFields.forEach(field => {
-            const fieldElement = createFormField(field);
-            fieldElement.style.marginBottom = '0';
-            checkboxContainer.appendChild(fieldElement);
-        });
-        
-        container.appendChild(checkboxContainer);
-    }
     
     // Add generate button
-    const generateSection = document.createElement('div');
-    generateSection.style.marginTop = 'var(--space-xl)';
-    generateSection.style.paddingTop = 'var(--space-lg)';
-    generateSection.style.borderTop = '1px solid var(--gray-200)';
-    generateSection.innerHTML = `
-        <button id="generate-promocode-btn" class="auth-button" style="width: 100%; justify-content: center; font-size: 1rem; padding: var(--space-md) var(--space-xl); font-weight: 600;">
-            <span style="margin-right: var(--space-sm);">🚀</span>
-            Generate Promocode
+    const buttonRow = document.createElement('div');
+    buttonRow.className = 'form-row form-actions';
+    buttonRow.innerHTML = `
+        <button type="button" id="generate-promocode-btn" class="generate-btn">
+            <span class="btn-icon">🚀</span>
+            <span class="btn-text">Generate Promocode</span>
         </button>
     `;
     
-    container.appendChild(generateSection);
+    form.appendChild(buttonRow);
+    container.appendChild(form);
     
-    // Add event listeners
+    // Setup event listeners
     setupFormEventListeners();
     
-    // Ensure all selects have proper styling
-    ensureSelectStyling();
+    // Initialize conditional field visibility
+    handleDiscountTypeChange();
 }
 
-// Ensure all select elements have proper form-select class and autocomplete off
-function ensureSelectStyling() {
-    // Find all select elements with form-input class
-    const selects = document.querySelectorAll('select.form-input');
-    selects.forEach(select => {
-        if (!select.classList.contains('form-select')) {
-            select.classList.add('form-select');
-        }
-        // Also ensure autocomplete is off
-        select.setAttribute('autocomplete', 'off');
-    });
-}
+// Clean event listener setup - no longer needed for styling
 
-// Create individual form field element
-function createFormField(field) {
-    const fieldDiv = document.createElement('div');
-    fieldDiv.className = 'form-group';
-    fieldDiv.id = `${field.id}-container`;
-    fieldDiv.style.marginBottom = '0'; // Remove margin since grid handles spacing
+// Create clean form field with proper clickability
+function createCleanFormField(field) {
+    const wrapper = document.createElement('div');
+    wrapper.className = `field-wrapper field-${field.size || 'medium'}`;
+    wrapper.dataset.fieldId = field.id;
     
     // Handle conditional visibility
     if (field.showWhen) {
-        fieldDiv.style.display = 'none';
-        fieldDiv.dataset.showWhen = JSON.stringify(field.showWhen);
+        wrapper.style.display = 'none';
+        wrapper.dataset.showWhen = JSON.stringify(field.showWhen);
     }
     
-    let inputHtml = '';
-    
-    if (field.type === 'select') {
-        inputHtml = `<select id="${field.id}" name="${field.id}" class="form-input form-select" autocomplete="off" ${field.required ? 'required' : ''}>`;
-        
-        Object.entries(field.options).forEach(([value, text]) => {
-            inputHtml += `<option value="${value}">${text}</option>`;
-        });
-        
-        inputHtml += '</select>';
-        
-    } else if (field.type === 'checkbox') {
-        inputHtml = `
-            <div style="display: flex; align-items: center; gap: var(--space-sm);">
-                <input type="checkbox" id="${field.id}" name="${field.id}" autocomplete="off" style="width: 16px; height: 16px; accent-color: var(--primary); border-radius: 4px;">
-                <label for="${field.id}" class="form-label" style="margin: 0;">${field.label}</label>
-            </div>
-        `;
-        
-    } else {
-        const attributes = [];
-        if (field.placeholder) attributes.push(`placeholder="${field.placeholder}"`);
-        if (field.min !== undefined) attributes.push(`min="${field.min}"`);
-        if (field.max !== undefined) attributes.push(`max="${field.max}"`);
-        if (field.maxLength) attributes.push(`maxlength="${field.maxLength}"`);
-        if (field.required) attributes.push('required');
-        
-        inputHtml = `<input type="${field.type}" id="${field.id}" name="${field.id}" class="form-input" autocomplete="off" ${attributes.join(' ')}>`;
-    }
-    
-    if (field.type !== 'checkbox') {
-        fieldDiv.innerHTML = `
-            <label for="${field.id}" class="form-label">
-                ${field.label} ${field.required ? '<span style="color: var(--danger);">*</span>' : ''}
+    if (field.type === 'checkbox') {
+        // Checkbox with clickable label
+        wrapper.innerHTML = `
+            <label class="checkbox-label">
+                <input type="checkbox" 
+                       id="${field.id}" 
+                       name="${field.id}"
+                       class="checkbox-input">
+                <span class="checkbox-text">${field.label}</span>
             </label>
-            ${inputHtml}
         `;
     } else {
-        fieldDiv.innerHTML = inputHtml;
+        // Create label
+        const label = document.createElement('label');
+        label.className = 'field-label';
+        label.setAttribute('for', field.id);
+        label.innerHTML = field.label + (field.required ? ' <span class="required">*</span>' : '');
+        
+        // Create input/select
+        let input;
+        if (field.type === 'select') {
+            input = document.createElement('select');
+            input.className = 'field-input field-select';
+            
+            Object.entries(field.options).forEach(([value, text]) => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+                input.appendChild(option);
+            });
+        } else {
+            input = document.createElement('input');
+            input.className = 'field-input';
+            input.type = field.type;
+            
+            if (field.placeholder) input.placeholder = field.placeholder;
+            if (field.min !== undefined) input.min = field.min;
+            if (field.max !== undefined) input.max = field.max;
+            if (field.maxLength) input.maxLength = field.maxLength;
+        }
+        
+        input.id = field.id;
+        input.name = field.id;
+        if (field.required) input.required = true;
+        
+        wrapper.appendChild(label);
+        wrapper.appendChild(input);
     }
     
-    return fieldDiv;
+    return wrapper;
 }
 
 // Setup form event listeners
@@ -481,10 +457,6 @@ async function handleBrandChange() {
         }
         
         renderFormFields(fields);
-        
-        // Ensure all selects have proper styling after form render
-        setTimeout(() => ensureSelectStyling(), 100);
-        
         hideLoading();
         
     } catch (error) {
@@ -504,10 +476,6 @@ async function handleProductChange() {
     const selectedProductKey = productSelect.value;
     if (!selectedProductKey) {
         ratePlanSelect.innerHTML = '<option value="">Select a rate plan</option>';
-        // Ensure the select maintains proper styling
-        if (!ratePlanSelect.classList.contains('form-select')) {
-            ratePlanSelect.classList.add('form-select');
-        }
         return;
     }
     
@@ -559,15 +527,7 @@ async function handleProductChange() {
             ratePlanSelect.appendChild(option);
         });
         
-        // Ensure the select maintains proper styling after dynamic update
-        if (!ratePlanSelect.classList.contains('form-select')) {
-            ratePlanSelect.classList.add('form-select');
-        }
-        
         console.log('Rate plan select updated, HTML:', ratePlanSelect.innerHTML);
-        
-        // Ensure all selects maintain proper styling
-        ensureSelectStyling();
         
     } catch (error) {
         console.error('Error handling product change:', error);
@@ -873,21 +833,4 @@ window.promocode = {
 
 console.log('Promocode logic loaded successfully');
 
-// Ensure selects are properly styled on page load and after dynamic updates
-document.addEventListener('DOMContentLoaded', () => {
-    // Add a slight delay to ensure all elements are rendered
-    setTimeout(() => ensureSelectStyling(), 500);
-});
-
-// Also ensure styling after any dynamic content changes
-const observer = new MutationObserver(() => {
-    ensureSelectStyling();
-});
-
-// Observe changes to the form container
-document.addEventListener('DOMContentLoaded', () => {
-    const formContainer = document.querySelector('#dynamic-form-container');
-    if (formContainer) {
-        observer.observe(formContainer, { childList: true, subtree: true });
-    }
-});
+// Form is now self-contained and doesn't need external styling fixes
