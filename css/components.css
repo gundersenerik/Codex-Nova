@@ -747,6 +747,7 @@ select.form-input {
     flex-direction: column;
     gap: var(--space-xs);
     position: relative;
+    z-index: 0; /* Base z-index for wrapper */
 }
 
 /* Field size classes */
@@ -784,6 +785,9 @@ select.form-input {
     cursor: pointer;
     box-sizing: border-box; /* CRITICAL: Prevents overflow with padding */
     display: block; /* Ensure block display */
+    position: relative; /* CRITICAL: Establish stacking context */
+    z-index: 1; /* CRITICAL: Ensure field is above other elements */
+    pointer-events: auto !important; /* CRITICAL: Force clickability */
 }
 
 .field-input:hover {
@@ -808,6 +812,9 @@ select.form-input {
     background-size: 12px;
     padding-right: calc(var(--space-md) * 3);
     box-sizing: border-box; /* CRITICAL: Prevents overflow with padding */
+    position: relative; /* CRITICAL: Establish stacking context */
+    z-index: 1; /* CRITICAL: Ensure field is above other elements */
+    pointer-events: auto !important; /* CRITICAL: Force clickability */
 }
 
 /* Checkbox styles */
@@ -825,6 +832,9 @@ select.form-input {
     cursor: pointer;
     accent-color: var(--primary);
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    pointer-events: auto !important;
 }
 
 .checkbox-text {
