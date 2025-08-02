@@ -75,3 +75,22 @@
 ::1 - - [02/Aug/2025 21:43:04] "GET /js/lib/sql-wasm.wasm HTTP/1.1" 304 -
 ::1 - - [02/Aug/2025 21:43:04] code 404, message File not found
 ::1 - - [02/Aug/2025 21:43:04] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 21:51:36] "GET / HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/lib/sql-wasm.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/config.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /css/responsive.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /css/main.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/sql-database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/mock-data.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/database-initializer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/data-manager.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/csv-importer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/auth.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/promocode.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/navigation.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/main.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] "GET /js/lib/sql-wasm.wasm HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 21:51:36] code 404, message File not found
+::1 - - [02/Aug/2025 21:51:36] "GET /favicon.ico HTTP/1.1" 404 -

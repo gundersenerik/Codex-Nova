@@ -472,6 +472,16 @@
         🚀 FRONTEND EDITION: Powered by SQLite in your browser. All data stored locally.
     </div>
 
+    <!-- Debug Button (TEMPORARY - Remove after fixing clickability) -->
+    <button onclick="window.formDebug && window.formDebug.init()" 
+            style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; 
+                   background: #ff4444; color: white; border: none; 
+                   padding: 10px 20px; border-radius: 8px; cursor: pointer;
+                   font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                   font-size: 14px;">
+        🔍 Debug Forms
+    </button>
+
     <!-- Auth Modal Overlay -->
     <div class="auth-modal-overlay" id="authModalOverlay" onclick="hideAuthModal()"></div>
     

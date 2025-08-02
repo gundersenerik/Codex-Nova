@@ -866,4 +866,233 @@ window.promocode = {
 
 console.log('Promocode logic loaded successfully');
 
-// Form is now self-contained and doesn't need external styling fixes
+// ============================================================================
+// DEBUGGING FUNCTIONS - TEMPORARY (Remove after fixing clickability issues)
+// ============================================================================
+
+// Debug form clicks
+function debugFormClicks() {
+    const form = document.querySelector('.promocode-form');
+    if (!form) {
+        console.warn('No form found with class .promocode-form');
+        return;
+    }
+    
+    // Log all clicks on form
+    form.addEventListener('click', (e) => {
+        console.log('=== CLICK DEBUG ===');
+        console.log('Clicked element:', e.target);
+        console.log('Tag:', e.target.tagName);
+        console.log('Class:', e.target.className);
+        console.log('ID:', e.target.id);
+        console.log('Computed styles:', {
+            pointerEvents: getComputedStyle(e.target).pointerEvents,
+            zIndex: getComputedStyle(e.target).zIndex,
+            position: getComputedStyle(e.target).position,
+            display: getComputedStyle(e.target).display,
+            width: getComputedStyle(e.target).width,
+            height: getComputedStyle(e.target).height,
+            cursor: getComputedStyle(e.target).cursor
+        });
+        console.log('Parent:', e.target.parentElement);
+        console.log('Event phase:', e.eventPhase === 1 ? 'CAPTURE' : 'BUBBLE');
+        console.log('=================');
+    }, true); // Use capture phase
+    
+    // Check each field
+    console.log('\n=== Field Boundaries ===');
+    document.querySelectorAll('.field-wrapper').forEach(wrapper => {
+        const input = wrapper.querySelector('input, select');
+        const label = wrapper.querySelector('label');
+        
+        console.log(`Field: ${wrapper.dataset.fieldId}`);
+        console.log('- Wrapper:', wrapper.getBoundingClientRect());
+        console.log('- Label:', label?.getBoundingClientRect());
+        console.log('- Input:', input?.getBoundingClientRect());
+        console.log('---');
+    });
+}
+
+// Check inherited styles
+function checkInheritedStyles() {
+    console.log('\n=== Checking Inherited Styles ===');
+    const selectors = ['.field-input', '.field-select', '.field-label', '.field-wrapper', '.checkbox-label'];
+    
+    selectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (!element) {
+            console.log(`No element found for ${selector}`);
+            return;
+        }
+        
+        const styles = getComputedStyle(element);
+        console.log(`\n${selector}:`);
+        
+        // Check problematic properties
+        const problematic = {
+            'pointer-events': styles.pointerEvents,
+            'user-select': styles.userSelect,
+            'z-index': styles.zIndex,
+            'position': styles.position,
+            'overflow': styles.overflow,
+            'opacity': styles.opacity,
+            'visibility': styles.visibility,
+            'display': styles.display,
+            'cursor': styles.cursor,
+            'width': styles.width,
+            'height': styles.height,
+            'box-sizing': styles.boxSizing
+        };
+        
+        Object.entries(problematic).forEach(([prop, value]) => {
+            const isProblematic = 
+                (prop === 'pointer-events' && value === 'none') ||
+                (prop === 'visibility' && value === 'hidden') ||
+                (prop === 'opacity' && value === '0') ||
+                (prop === 'display' && value === 'none');
+                
+            if (isProblematic) {
+                console.warn(`⚠️ ${prop}: ${value}`);
+            } else {
+                console.log(`✓ ${prop}: ${value}`);
+            }
+        });
+    });
+}
+
+// Check for global CSS interference
+function checkGlobalInterference() {
+    console.log('\n=== Checking Global CSS Interference ===');
+    const sheets = Array.from(document.styleSheets);
+    const problematicRules = [];
+    
+    sheets.forEach(sheet => {
+        try {
+            const rules = Array.from(sheet.cssRules || sheet.rules || []);
+            rules.forEach(rule => {
+                if (rule.selectorText && rule.style) {
+                    // Check for overly broad selectors
+                    const suspicious = rule.selectorText.includes('*') || 
+                        rule.selectorText === 'input' ||
+                        rule.selectorText === 'select' ||
+                        rule.selectorText === 'label' ||
+                        rule.selectorText.includes('form');
+                    
+                    if (suspicious) {
+                        // Check for problematic properties
+                        const hasProblematic = 
+                            rule.style.pointerEvents === 'none' ||
+                            rule.style.userSelect === 'none' ||
+                            rule.style.zIndex ||
+                            rule.style.position === 'absolute' ||
+                            rule.style.position === 'fixed';
+                            
+                        if (hasProblematic) {
+                            problematicRules.push({
+                                selector: rule.selectorText,
+                                styles: {
+                                    pointerEvents: rule.style.pointerEvents,
+                                    userSelect: rule.style.userSelect,
+                                    zIndex: rule.style.zIndex,
+                                    position: rule.style.position
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            console.log('Could not access stylesheet:', sheet.href || 'inline');
+        }
+    });
+    
+    if (problematicRules.length > 0) {
+        console.warn('Potentially problematic global rules found:');
+        problematicRules.forEach(rule => {
+            console.warn(rule);
+        });
+    } else {
+        console.log('✓ No problematic global rules found');
+    }
+}
+
+// Validate form structure
+function validateFormStructure() {
+    console.log('\n=== Validating Form Structure ===');
+    const issues = [];
+    
+    // Check labels
+    document.querySelectorAll('.field-label').forEach(label => {
+        const forAttr = label.getAttribute('for');
+        if (!forAttr) {
+            issues.push(`Label missing 'for' attribute: ${label.textContent}`);
+        } else {
+            const input = document.getElementById(forAttr);
+            if (!input) {
+                issues.push(`Label 'for' points to non-existent element: ${forAttr}`);
+            } else {
+                console.log(`✓ Label "${label.textContent}" correctly linked to #${forAttr}`);
+            }
+        }
+    });
+    
+    // Check inputs/selects
+    document.querySelectorAll('.field-input, .field-select').forEach(field => {
+        if (!field.id) {
+            issues.push(`Field missing 'id' attribute: ${field.name || 'unknown'}`);
+        }
+        if (!field.name) {
+            issues.push(`Field missing 'name' attribute: ${field.id || 'unknown'}`);
+        }
+        if (field.id && field.name) {
+            console.log(`✓ Field properly identified: #${field.id}`);
+        }
+    });
+    
+    // Check checkboxes
+    document.querySelectorAll('.checkbox-label').forEach(label => {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        if (!checkbox) {
+            issues.push('Checkbox label missing checkbox input');
+        } else {
+            console.log(`✓ Checkbox properly nested in label: #${checkbox.id || 'unnamed'}`);
+        }
+    });
+    
+    if (issues.length > 0) {
+        console.warn('Form structure issues found:');
+        issues.forEach(issue => console.warn('- ' + issue));
+    } else {
+        console.log('✓ Form structure is valid');
+    }
+}
+
+// Initialize all debugging
+function initFormDebugging() {
+    console.clear();
+    console.log('🔍 FORM DEBUGGING INITIALIZED');
+    console.log('================================\n');
+    
+    // Add visual debugging
+    document.body.classList.add('debug-forms');
+    console.log('✓ Visual debugging enabled (red=wrapper, blue=input, green=label)\n');
+    
+    // Run all checks
+    debugFormClicks();
+    checkInheritedStyles();
+    checkGlobalInterference();
+    validateFormStructure();
+    
+    console.log('\n🎯 Click any form element to see detailed debug info');
+    console.log('🔄 Run initFormDebugging() again to refresh checks');
+    console.log('❌ Run document.body.classList.remove("debug-forms") to disable visual debugging');
+}
+
+// Export debugging functions
+window.formDebug = {
+    init: initFormDebugging,
+    clicks: debugFormClicks,
+    styles: checkInheritedStyles,
+    global: checkGlobalInterference,
+    structure: validateFormStructure
+};

@@ -937,3 +937,58 @@ select.form-input {
     border-color: var(--gray-300);
     background-color: var(--gray-50);
 }
+
+/* ============================================================================
+   DEBUGGING STYLES - TEMPORARY (Remove after fixing clickability issues)
+   ============================================================================ */
+
+/* Visual debugging for form elements - activate with body.debug-forms */
+.debug-forms .field-wrapper { 
+    outline: 2px solid red !important; 
+    background: rgba(255, 0, 0, 0.1) !important;
+    position: relative !important;
+}
+
+.debug-forms .field-input, 
+.debug-forms .field-select { 
+    outline: 2px solid blue !important; 
+    background: rgba(0, 0, 255, 0.1) !important;
+}
+
+.debug-forms .field-label { 
+    outline: 2px solid green !important; 
+    background: rgba(0, 255, 0, 0.1) !important;
+}
+
+.debug-forms .checkbox-label {
+    outline: 2px solid orange !important;
+    background: rgba(255, 165, 0, 0.1) !important;
+}
+
+/* Show field IDs */
+.debug-forms .field-wrapper::after {
+    content: attr(data-field-id);
+    position: absolute;
+    top: -10px;
+    right: 0;
+    background: yellow;
+    color: black;
+    padding: 2px 4px;
+    font-size: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* Show z-index values */
+.debug-forms .field-wrapper::before {
+    content: "z:" attr(style);
+    position: absolute;
+    top: -10px;
+    left: 0;
+    background: pink;
+    color: black;
+    padding: 2px 4px;
+    font-size: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
