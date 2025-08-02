@@ -260,7 +260,7 @@ function createNorwegianStyleFields() {
     ];
 }
 
-// NEW CLEAN FORM RENDERING SYSTEM
+// Clean form rendering system
 function renderFormFields(fields, containerSelector = '#dynamic-form-container') {
     const container = document.querySelector(containerSelector);
     if (!container) {
@@ -283,31 +283,33 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
         fieldsByRow[row].push(field);
     });
     
-    // Create rows
+    // Create sections and rows
     Object.keys(fieldsByRow).sort().forEach(rowNum => {
         const rowDiv = document.createElement('div');
-        rowDiv.className = 'form-row';
-        rowDiv.dataset.row = rowNum;
+        const fieldsInRow = fieldsByRow[rowNum];
         
-        fieldsByRow[rowNum].forEach(field => {
-            const fieldWrapper = createCleanFormField(field);
-            rowDiv.appendChild(fieldWrapper);
+        // Determine grid columns based on number of visible fields
+        const visibleFields = fieldsInRow.filter(f => !f.showWhen || f.showWhen.type === 'brandCountry');
+        rowDiv.className = `form-row form-row-${visibleFields.length}`;
+        
+        fieldsInRow.forEach(field => {
+            const fieldElement = createSimpleFormField(field);
+            rowDiv.appendChild(fieldElement);
         });
         
         form.appendChild(rowDiv);
     });
     
     // Add generate button
-    const buttonRow = document.createElement('div');
-    buttonRow.className = 'form-row form-actions';
-    buttonRow.innerHTML = `
+    const buttonDiv = document.createElement('div');
+    buttonDiv.innerHTML = `
         <button type="button" id="generate-promocode-btn" class="generate-btn">
-            <span class="btn-icon">🚀</span>
-            <span class="btn-text">Generate Promocode</span>
+            <span>🚀</span>
+            <span>Generate Promocode</span>
         </button>
     `;
     
-    form.appendChild(buttonRow);
+    form.appendChild(buttonDiv);
     container.appendChild(form);
     
     // Setup event listeners
@@ -318,70 +320,73 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     handleBrandCountryVisibility();
 }
 
-// Clean event listener setup - no longer needed for styling
-
-// Create clean form field with proper clickability
-function createCleanFormField(field) {
-    const wrapper = document.createElement('div');
-    wrapper.className = `field-wrapper field-${field.size || 'medium'}`;
-    wrapper.dataset.fieldId = field.id;
+// Create simple form field with clean structure
+function createSimpleFormField(field) {
+    const group = document.createElement('div');
+    group.className = 'form-group';
     
     // Handle conditional visibility
     if (field.showWhen) {
-        wrapper.style.display = 'none';
-        wrapper.dataset.showWhen = JSON.stringify(field.showWhen);
+        group.style.display = 'none';
+        group.dataset.showWhen = JSON.stringify(field.showWhen);
     }
     
+    // Special handling for checkbox
     if (field.type === 'checkbox') {
-        // Checkbox with clickable label
-        wrapper.innerHTML = `
-            <label class="checkbox-label">
-                <input type="checkbox" 
-                       id="${field.id}" 
-                       name="${field.id}"
-                       class="checkbox-input">
-                <span class="checkbox-text">${field.label}</span>
-            </label>
-        `;
-    } else {
-        // Create label
+        group.className = 'checkbox-group';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = field.id;
+        checkbox.name = field.id;
+        checkbox.className = 'form-checkbox';
+        
         const label = document.createElement('label');
-        label.className = 'field-label';
         label.setAttribute('for', field.id);
-        label.innerHTML = field.label + (field.required ? ' <span class="required">*</span>' : '');
+        label.className = 'form-label';
+        label.textContent = field.label;
         
-        // Create input/select
-        let input;
-        if (field.type === 'select') {
-            input = document.createElement('select');
-            input.className = 'field-input field-select';
-            
-            Object.entries(field.options).forEach(([value, text]) => {
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = text;
-                input.appendChild(option);
-            });
-        } else {
-            input = document.createElement('input');
-            input.className = 'field-input';
-            input.type = field.type;
-            
-            if (field.placeholder) input.placeholder = field.placeholder;
-            if (field.min !== undefined) input.min = field.min;
-            if (field.max !== undefined) input.max = field.max;
-            if (field.maxLength) input.maxLength = field.maxLength;
-        }
-        
-        input.id = field.id;
-        input.name = field.id;
-        if (field.required) input.required = true;
-        
-        wrapper.appendChild(label);
-        wrapper.appendChild(input);
+        group.appendChild(checkbox);
+        group.appendChild(label);
+        return group;
     }
     
-    return wrapper;
+    // Regular fields (select, number, text)
+    const label = document.createElement('label');
+    label.setAttribute('for', field.id);
+    label.className = 'form-label';
+    label.innerHTML = field.label + (field.required ? ' <span class="required">*</span>' : '');
+    
+    let input;
+    if (field.type === 'select') {
+        input = document.createElement('select');
+        input.className = 'form-control form-select';
+        
+        Object.entries(field.options).forEach(([value, text]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            input.appendChild(option);
+        });
+    } else {
+        input = document.createElement('input');
+        input.type = field.type;
+        input.className = 'form-control';
+        
+        if (field.placeholder) input.placeholder = field.placeholder;
+        if (field.min !== undefined) input.min = field.min;
+        if (field.max !== undefined) input.max = field.max;
+        if (field.maxLength) input.maxLength = field.maxLength;
+    }
+    
+    input.id = field.id;
+    input.name = field.id;
+    if (field.required) input.required = true;
+    
+    group.appendChild(label);
+    group.appendChild(input);
+    
+    return group;
 }
 
 // Setup form event listeners
@@ -504,10 +509,6 @@ async function handleProductChange() {
         
         currentProductData = selectedProduct;
         
-        // ADD DEBUGGING HERE
-        console.log('Selected product:', selectedProduct);
-        console.log('Fetching rate plans for product ID:', selectedProduct.id);
-        
         // Fetch rate plans for this product
         const { data: ratePlans, error } = await window.database.fetchRatePlansForProduct(selectedProduct.id);
         
@@ -515,17 +516,8 @@ async function handleProductChange() {
             throw new Error(error);
         }
         
-        // MORE DEBUGGING
-        console.log('Rate plans received:', ratePlans);
-        console.log('Number of rate plans:', ratePlans ? ratePlans.length : 0);
-        if (ratePlans && ratePlans.length > 0) {
-            console.log('First rate plan:', ratePlans[0]);
-            console.log('Price type:', typeof ratePlans[0].price);
-        }
-        
         // Update rate plan select options
         const ratePlanOptions = window.database.transformRatePlansToOptions(ratePlans);
-        console.log('Transformed options:', ratePlanOptions);
         
         ratePlanSelect.innerHTML = '';
         Object.entries(ratePlanOptions).forEach(([value, text]) => {
@@ -534,8 +526,6 @@ async function handleProductChange() {
             option.textContent = text;
             ratePlanSelect.appendChild(option);
         });
-        
-        console.log('Rate plan select updated, HTML:', ratePlanSelect.innerHTML);
         
     } catch (error) {
         console.error('Error handling product change:', error);
@@ -865,279 +855,3 @@ window.promocode = {
 };
 
 console.log('Promocode logic loaded successfully');
-
-// ============================================================================
-// DEBUGGING FUNCTIONS - TEMPORARY (Remove after fixing clickability issues)
-// ============================================================================
-
-// Debug form clicks
-function debugFormClicks() {
-    const form = document.querySelector('.promocode-form');
-    if (!form) {
-        console.warn('No form found with class .promocode-form');
-        return;
-    }
-    
-    // Log all clicks on form
-    form.addEventListener('click', (e) => {
-        console.log('=== CLICK DEBUG ===');
-        console.log('Clicked element:', e.target);
-        console.log('Tag:', e.target.tagName);
-        console.log('Class:', e.target.className);
-        console.log('ID:', e.target.id);
-        console.log('Computed styles:', {
-            pointerEvents: getComputedStyle(e.target).pointerEvents,
-            zIndex: getComputedStyle(e.target).zIndex,
-            position: getComputedStyle(e.target).position,
-            display: getComputedStyle(e.target).display,
-            width: getComputedStyle(e.target).width,
-            height: getComputedStyle(e.target).height,
-            cursor: getComputedStyle(e.target).cursor
-        });
-        console.log('Parent:', e.target.parentElement);
-        console.log('Event phase:', e.eventPhase === 1 ? 'CAPTURE' : 'BUBBLE');
-        console.log('=================');
-    }, true); // Use capture phase
-    
-    // Check each field
-    console.log('\n=== Field Boundaries ===');
-    document.querySelectorAll('.field-wrapper').forEach(wrapper => {
-        const input = wrapper.querySelector('input, select');
-        const label = wrapper.querySelector('label');
-        
-        console.log(`Field: ${wrapper.dataset.fieldId}`);
-        console.log('- Wrapper:', wrapper.getBoundingClientRect());
-        console.log('- Label:', label?.getBoundingClientRect());
-        console.log('- Input:', input?.getBoundingClientRect());
-        console.log('---');
-    });
-}
-
-// Check inherited styles
-function checkInheritedStyles() {
-    console.log('\n=== Checking Inherited Styles ===');
-    const selectors = ['.field-input', '.field-select', '.field-label', '.field-wrapper', '.checkbox-label'];
-    
-    selectors.forEach(selector => {
-        const element = document.querySelector(selector);
-        if (!element) {
-            console.log(`No element found for ${selector}`);
-            return;
-        }
-        
-        const styles = getComputedStyle(element);
-        console.log(`\n${selector}:`);
-        
-        // Check problematic properties
-        const problematic = {
-            'pointer-events': styles.pointerEvents,
-            'user-select': styles.userSelect,
-            'z-index': styles.zIndex,
-            'position': styles.position,
-            'overflow': styles.overflow,
-            'opacity': styles.opacity,
-            'visibility': styles.visibility,
-            'display': styles.display,
-            'cursor': styles.cursor,
-            'width': styles.width,
-            'height': styles.height,
-            'box-sizing': styles.boxSizing
-        };
-        
-        Object.entries(problematic).forEach(([prop, value]) => {
-            const isProblematic = 
-                (prop === 'pointer-events' && value === 'none') ||
-                (prop === 'visibility' && value === 'hidden') ||
-                (prop === 'opacity' && value === '0') ||
-                (prop === 'display' && value === 'none');
-                
-            if (isProblematic) {
-                console.warn(`⚠️ ${prop}: ${value}`);
-            } else {
-                console.log(`✓ ${prop}: ${value}`);
-            }
-        });
-    });
-}
-
-// Check for global CSS interference
-function checkGlobalInterference() {
-    console.log('\n=== Checking Global CSS Interference ===');
-    const sheets = Array.from(document.styleSheets);
-    const problematicRules = [];
-    
-    sheets.forEach(sheet => {
-        try {
-            const rules = Array.from(sheet.cssRules || sheet.rules || []);
-            rules.forEach(rule => {
-                if (rule.selectorText && rule.style) {
-                    // Check for overly broad selectors
-                    const suspicious = rule.selectorText.includes('*') || 
-                        rule.selectorText === 'input' ||
-                        rule.selectorText === 'select' ||
-                        rule.selectorText === 'label' ||
-                        rule.selectorText.includes('form');
-                    
-                    if (suspicious) {
-                        // Check for problematic properties
-                        const hasProblematic = 
-                            rule.style.pointerEvents === 'none' ||
-                            rule.style.userSelect === 'none' ||
-                            rule.style.zIndex ||
-                            rule.style.position === 'absolute' ||
-                            rule.style.position === 'fixed';
-                            
-                        if (hasProblematic) {
-                            problematicRules.push({
-                                selector: rule.selectorText,
-                                styles: {
-                                    pointerEvents: rule.style.pointerEvents,
-                                    userSelect: rule.style.userSelect,
-                                    zIndex: rule.style.zIndex,
-                                    position: rule.style.position
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        } catch (e) {
-            console.log('Could not access stylesheet:', sheet.href || 'inline');
-        }
-    });
-    
-    if (problematicRules.length > 0) {
-        console.warn('Potentially problematic global rules found:');
-        problematicRules.forEach(rule => {
-            console.warn(rule);
-        });
-    } else {
-        console.log('✓ No problematic global rules found');
-    }
-}
-
-// Validate form structure
-function validateFormStructure() {
-    console.log('\n=== Validating Form Structure ===');
-    const issues = [];
-    
-    // Check labels
-    document.querySelectorAll('.field-label').forEach(label => {
-        const forAttr = label.getAttribute('for');
-        if (!forAttr) {
-            issues.push(`Label missing 'for' attribute: ${label.textContent}`);
-        } else {
-            const input = document.getElementById(forAttr);
-            if (!input) {
-                issues.push(`Label 'for' points to non-existent element: ${forAttr}`);
-            } else {
-                console.log(`✓ Label "${label.textContent}" correctly linked to #${forAttr}`);
-            }
-        }
-    });
-    
-    // Check inputs/selects
-    document.querySelectorAll('.field-input, .field-select').forEach(field => {
-        if (!field.id) {
-            issues.push(`Field missing 'id' attribute: ${field.name || 'unknown'}`);
-        }
-        if (!field.name) {
-            issues.push(`Field missing 'name' attribute: ${field.id || 'unknown'}`);
-        }
-        if (field.id && field.name) {
-            console.log(`✓ Field properly identified: #${field.id}`);
-        }
-    });
-    
-    // Check checkboxes
-    document.querySelectorAll('.checkbox-label').forEach(label => {
-        const checkbox = label.querySelector('input[type="checkbox"]');
-        if (!checkbox) {
-            issues.push('Checkbox label missing checkbox input');
-        } else {
-            console.log(`✓ Checkbox properly nested in label: #${checkbox.id || 'unnamed'}`);
-        }
-    });
-    
-    if (issues.length > 0) {
-        console.warn('Form structure issues found:');
-        issues.forEach(issue => console.warn('- ' + issue));
-    } else {
-        console.log('✓ Form structure is valid');
-    }
-}
-
-// Check for dead zones by adding click listeners everywhere
-function findDeadZones() {
-    console.log('\n=== Finding Dead Zones ===');
-    
-    // Add click listener to entire document
-    document.addEventListener('click', function(e) {
-        console.log('DOCUMENT CLICK:', e.target, 'at', e.clientX, e.clientY);
-    }, true);
-    
-    // Check element dimensions vs parent
-    document.querySelectorAll('.field-wrapper').forEach(wrapper => {
-        const input = wrapper.querySelector('input, select');
-        if (!input) return;
-        
-        const wrapperRect = wrapper.getBoundingClientRect();
-        const inputRect = input.getBoundingClientRect();
-        
-        // Check if input extends beyond wrapper
-        if (inputRect.right > wrapperRect.right) {
-            console.warn(`⚠️ Field ${wrapper.dataset.fieldId} INPUT OVERFLOWS wrapper by ${inputRect.right - wrapperRect.right}px`);
-        }
-        
-        // Check computed dimensions
-        const inputStyles = getComputedStyle(input);
-        console.log(`Field ${wrapper.dataset.fieldId}:`, {
-            boxSizing: inputStyles.boxSizing,
-            width: inputStyles.width,
-            padding: inputStyles.padding,
-            actualWidth: inputRect.width,
-            parentWidth: wrapperRect.width
-        });
-    });
-    
-    // Add visual overflow indicators
-    const style = document.createElement('style');
-    style.textContent = `
-        .field-wrapper { overflow: visible !important; }
-        .field-input, .field-select { 
-            box-shadow: 0 0 0 1px red !important; 
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Initialize all debugging
-function initFormDebugging() {
-    console.clear();
-    console.log('🔍 FORM DEBUGGING INITIALIZED');
-    console.log('================================\n');
-    
-    // Add visual debugging
-    document.body.classList.add('debug-forms');
-    console.log('✓ Visual debugging enabled (red=wrapper, blue=input, green=label)\n');
-    
-    // Run all checks
-    debugFormClicks();
-    checkInheritedStyles();
-    checkGlobalInterference();
-    validateFormStructure();
-    findDeadZones(); // NEW: Check for dead zones
-    
-    console.log('\n🎯 Click any form element to see detailed debug info');
-    console.log('🔄 Run initFormDebugging() again to refresh checks');
-    console.log('❌ Run document.body.classList.remove("debug-forms") to disable visual debugging');
-}
-
-// Export debugging functions
-window.formDebug = {
-    init: initFormDebugging,
-    clicks: debugFormClicks,
-    styles: checkInheritedStyles,
-    global: checkGlobalInterference,
-    structure: validateFormStructure
-};
