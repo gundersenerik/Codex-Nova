@@ -245,7 +245,7 @@ function createNorwegianStyleFields() {
             placeholder: 'e.g., 3FOR1, SUMMER24',
             maxLength: 8,
             required: false,
-            size: 'medium',
+            size: 'large',
             row: 4
         },
         {
@@ -254,7 +254,8 @@ function createNorwegianStyleFields() {
             type: 'checkbox',
             required: false,
             size: 'small',
-            row: 4
+            row: 2,
+            showWhen: { type: 'brandCountry', value: 'NO' }
         }
     ];
 }
@@ -314,6 +315,7 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     
     // Initialize conditional field visibility
     handleDiscountTypeChange();
+    handleBrandCountryVisibility();
 }
 
 // Clean event listener setup - no longer needed for styling
@@ -441,6 +443,12 @@ async function handleBrandChange() {
         
         currentBrandData = brandData;
         
+        // Store brand country for conditional fields
+        const formContainer = document.querySelector('#dynamic-form-container');
+        if (formContainer) {
+            formContainer.dataset.brandCountry = brandData.brand.country;
+        }
+        
         // Generate and render form
         const fields = createNorwegianStyleFields();
         
@@ -555,6 +563,31 @@ function handleDiscountTypeChange() {
                 // Clear hidden field values
                 const input = field.querySelector('input, select');
                 if (input) input.value = '';
+            }
+        }
+    });
+}
+
+// Handle brand country visibility (show/hide fields based on brand country)
+function handleBrandCountryVisibility() {
+    const formContainer = document.querySelector('#dynamic-form-container');
+    const brandCountry = formContainer?.dataset.brandCountry;
+    
+    // Handle conditional field visibility based on brand country
+    const allFields = document.querySelectorAll('[data-show-when]');
+    allFields.forEach(field => {
+        const showWhen = JSON.parse(field.dataset.showWhen);
+        
+        if (showWhen.type === 'brandCountry') {
+            if (showWhen.value === brandCountry) {
+                field.style.display = 'block';
+            } else {
+                field.style.display = 'none';
+                // Clear hidden field values
+                const input = field.querySelector('input');
+                if (input && input.type === 'checkbox') {
+                    input.checked = false;
+                }
             }
         }
     });

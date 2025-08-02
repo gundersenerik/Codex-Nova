@@ -886,25 +886,49 @@ select.form-input {
     }
     
     .form-row[data-row="4"] {
-        grid-template-columns: 2fr 1fr;
+        grid-template-columns: 1fr;
     }
 }
 
 @media (min-width: 1024px) {
-    .form-row[data-row="2"],
+    /* Row 1: Product and Rate Plan each span 2 columns in a 4-column grid */
+    .form-row[data-row="1"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .form-row[data-row="1"] .field-wrapper {
+        grid-column: span 2;
+    }
+    
+    /* Row 2: 4 fields (Lifecycle, Duration, Period, Under 30) */
+    .form-row[data-row="2"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
     .form-row[data-row="3"] {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (min-width: 1400px) {
-    .form-row[data-row="2"],
+    /* Row 1: Can use 6 columns for even tighter layout */
+    .form-row[data-row="1"] {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .form-row[data-row="1"] .field-wrapper {
+        grid-column: span 2;
+    }
+    
+    .form-row[data-row="2"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
     .form-row[data-row="3"] {
         grid-template-columns: repeat(4, 1fr);
     }
     
     .form-row[data-row="4"] {
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: 1fr;
+        max-width: 600px; /* Limit width of single custom text field */
     }
 }
 
