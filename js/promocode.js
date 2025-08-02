@@ -149,7 +149,7 @@ function createNorwegianStyleFields() {
             options: { '': 'Select a product' },
             required: true,
             size: 'medium',
-            row: 1
+            row: 2
         },
         {
             id: 'renewalRatePlan',
@@ -158,7 +158,7 @@ function createNorwegianStyleFields() {
             options: { '': 'Select a rate plan' },
             required: true,
             size: 'medium',
-            row: 1
+            row: 2
         },
         {
             id: 'lifecycle',
@@ -172,18 +172,7 @@ function createNorwegianStyleFields() {
             },
             required: false,
             size: 'small',
-            row: 2
-        },
-        {
-            id: 'offerDuration',
-            label: 'Initial Duration',
-            type: 'number',
-            placeholder: 'e.g., 3',
-            min: 1,
-            max: 24,
-            required: false,
-            size: 'small',
-            row: 2
+            row: 3
         },
         {
             id: 'offerPeriod',
@@ -199,7 +188,18 @@ function createNorwegianStyleFields() {
             },
             required: false,
             size: 'small',
-            row: 2
+            row: 3
+        },
+        {
+            id: 'offerDuration',
+            label: 'Initial Duration',
+            type: 'number',
+            placeholder: 'e.g., 3',
+            min: 1,
+            max: 24,
+            required: false,
+            size: 'small',
+            row: 3
         },
         {
             id: 'discountType',
@@ -216,7 +216,7 @@ function createNorwegianStyleFields() {
         },
         {
             id: 'offerPrice',
-            label: 'Offer Price (kr)',
+            label: 'Offer Price',
             type: 'number',
             placeholder: 'e.g., 199',
             min: 1,
@@ -224,7 +224,7 @@ function createNorwegianStyleFields() {
             required: false,
             showWhen: { field: 'discountType', value: 'kr' },
             size: 'small',
-            row: 3
+            row: 4
         },
         {
             id: 'discountValue',
@@ -236,11 +236,11 @@ function createNorwegianStyleFields() {
             required: false,
             showWhen: { field: 'discountType', value: 'pros' },
             size: 'small',
-            row: 3
+            row: 4
         },
         {
             id: 'customOfferText',
-            label: 'Custom Offer Text (Optional)',
+            label: 'Custom Offer Text',
             type: 'text',
             placeholder: 'e.g., 3FOR1, SUMMER24',
             maxLength: 8,
@@ -251,10 +251,10 @@ function createNorwegianStyleFields() {
         {
             id: 'isUnder30',
             label: 'Under 30',
-            type: 'checkbox',
+            type: 'toggle',
             required: false,
             size: 'small',
-            row: 2,
+            row: 4,
             showWhen: { type: 'brandCountry', value: 'NO' }
         }
     ];
@@ -274,6 +274,31 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     const form = document.createElement('form');
     form.className = 'promocode-form';
     form.setAttribute('novalidate', 'true'); // We handle validation ourselves
+    
+    // Row 1: Brand field (full width)
+    const brandRow = document.createElement('div');
+    brandRow.className = 'form-row';
+    
+    const brandGroup = document.createElement('div');
+    brandGroup.className = 'form-group';
+    
+    const brandLabel = document.createElement('label');
+    brandLabel.setAttribute('for', 'brand-display');
+    brandLabel.className = 'form-label';
+    brandLabel.innerHTML = 'Brand <span class="required">*</span>';
+    
+    const brandInput = document.createElement('input');
+    brandInput.type = 'text';
+    brandInput.id = 'brand-display';
+    brandInput.className = 'form-control';
+    brandInput.value = currentBrandData ? currentBrandData.brand.name : '';
+    brandInput.readOnly = true;
+    brandInput.style.backgroundColor = '#f5f5f5';
+    
+    brandGroup.appendChild(brandLabel);
+    brandGroup.appendChild(brandInput);
+    brandRow.appendChild(brandGroup);
+    form.appendChild(brandRow);
     
     // Group fields by row
     const fieldsByRow = {};
@@ -347,6 +372,33 @@ function createSimpleFormField(field) {
         label.textContent = field.label;
         
         group.appendChild(checkbox);
+        group.appendChild(label);
+        return group;
+    }
+    
+    // Special handling for toggle switch
+    if (field.type === 'toggle') {
+        group.className = 'toggle-container';
+        
+        const toggleSwitch = document.createElement('label');
+        toggleSwitch.className = 'toggle-switch';
+        
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = field.id;
+        input.name = field.id;
+        
+        const slider = document.createElement('span');
+        slider.className = 'toggle-slider';
+        
+        toggleSwitch.appendChild(input);
+        toggleSwitch.appendChild(slider);
+        
+        const label = document.createElement('span');
+        label.className = 'toggle-label';
+        label.textContent = field.label;
+        
+        group.appendChild(toggleSwitch);
         group.appendChild(label);
         return group;
     }
@@ -570,12 +622,12 @@ function handleBrandCountryVisibility() {
         
         if (showWhen.type === 'brandCountry') {
             if (showWhen.value === brandCountry) {
-                field.style.display = 'block';
+                field.style.display = field.classList.contains('toggle-container') ? 'flex' : 'block';
             } else {
                 field.style.display = 'none';
                 // Clear hidden field values
                 const input = field.querySelector('input');
-                if (input && input.type === 'checkbox') {
+                if (input && (input.type === 'checkbox' || field.classList.contains('toggle-container'))) {
                     input.checked = false;
                 }
             }
@@ -623,7 +675,7 @@ function collectFormValues() {
     fields.forEach(field => {
         const element = document.getElementById(field.id);
         if (element) {
-            if (field.type === 'checkbox') {
+            if (field.type === 'checkbox' || field.type === 'toggle') {
                 values[field.id] = element.checked;
             } else {
                 values[field.id] = element.value;
