@@ -782,6 +782,8 @@ select.form-input {
     background-color: var(--white);
     transition: all var(--transition-fast);
     cursor: pointer;
+    box-sizing: border-box; /* CRITICAL: Prevents overflow with padding */
+    display: block; /* Ensure block display */
 }
 
 .field-input:hover {
@@ -805,6 +807,7 @@ select.form-input {
     background-position: right var(--space-md) center;
     background-size: 12px;
     padding-right: calc(var(--space-md) * 3);
+    box-sizing: border-box; /* CRITICAL: Prevents overflow with padding */
 }
 
 /* Checkbox styles */

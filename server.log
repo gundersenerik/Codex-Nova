@@ -94,3 +94,70 @@
 ::1 - - [02/Aug/2025 21:51:36] "GET /js/lib/sql-wasm.wasm HTTP/1.1" 200 -
 ::1 - - [02/Aug/2025 21:51:36] code 404, message File not found
 ::1 - - [02/Aug/2025 21:51:36] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:02:48] "GET / HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/lib/sql-wasm.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /css/main.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /css/responsive.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/config.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/sql-database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/database-initializer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/mock-data.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/data-manager.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/csv-importer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/auth.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/promocode.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/navigation.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/main.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] "GET /js/lib/sql-wasm.wasm HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:02:48] code 404, message File not found
+::1 - - [02/Aug/2025 22:02:48] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:03:24] "GET /css/components.css HTTP/1.1" 304 -
+::1 - - [02/Aug/2025 22:03:24] code 404, message File not found
+::1 - - [02/Aug/2025 22:03:24] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:05:24] "GET / HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/lib/sql-wasm.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /css/main.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /css/responsive.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/config.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/sql-database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/mock-data.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/database-initializer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/data-manager.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/csv-importer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/auth.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/promocode.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/navigation.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/main.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] code 404, message File not found
+::1 - - [02/Aug/2025 22:05:25] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:05:25] "GET /js/lib/sql-wasm.wasm HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:25] code 404, message File not found
+::1 - - [02/Aug/2025 22:05:25] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:05:48] "GET / HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:48] "GET /js/lib/sql-wasm.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:48] code 404, message File not found
+::1 - - [02/Aug/2025 22:05:48] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:05:49] "GET /css/main.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/mock-data.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/config.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /css/responsive.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /css/components.css HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/sql-database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/database-initializer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/data-manager.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/database.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/csv-importer.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/auth.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/promocode.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/navigation.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/main.js HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] "GET /js/lib/sql-wasm.wasm HTTP/1.1" 200 -
+::1 - - [02/Aug/2025 22:05:49] code 404, message File not found
+::1 - - [02/Aug/2025 22:05:49] "GET /favicon.ico HTTP/1.1" 404 -
+::1 - - [02/Aug/2025 22:06:25] "GET /css/components.css HTTP/1.1" 304 -
+::1 - - [02/Aug/2025 22:06:25] code 404, message File not found
+::1 - - [02/Aug/2025 22:06:25] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -

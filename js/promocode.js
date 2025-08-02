@@ -1067,6 +1067,50 @@ function validateFormStructure() {
     }
 }
 
+// Check for dead zones by adding click listeners everywhere
+function findDeadZones() {
+    console.log('\n=== Finding Dead Zones ===');
+    
+    // Add click listener to entire document
+    document.addEventListener('click', function(e) {
+        console.log('DOCUMENT CLICK:', e.target, 'at', e.clientX, e.clientY);
+    }, true);
+    
+    // Check element dimensions vs parent
+    document.querySelectorAll('.field-wrapper').forEach(wrapper => {
+        const input = wrapper.querySelector('input, select');
+        if (!input) return;
+        
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const inputRect = input.getBoundingClientRect();
+        
+        // Check if input extends beyond wrapper
+        if (inputRect.right > wrapperRect.right) {
+            console.warn(`⚠️ Field ${wrapper.dataset.fieldId} INPUT OVERFLOWS wrapper by ${inputRect.right - wrapperRect.right}px`);
+        }
+        
+        // Check computed dimensions
+        const inputStyles = getComputedStyle(input);
+        console.log(`Field ${wrapper.dataset.fieldId}:`, {
+            boxSizing: inputStyles.boxSizing,
+            width: inputStyles.width,
+            padding: inputStyles.padding,
+            actualWidth: inputRect.width,
+            parentWidth: wrapperRect.width
+        });
+    });
+    
+    // Add visual overflow indicators
+    const style = document.createElement('style');
+    style.textContent = `
+        .field-wrapper { overflow: visible !important; }
+        .field-input, .field-select { 
+            box-shadow: 0 0 0 1px red !important; 
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Initialize all debugging
 function initFormDebugging() {
     console.clear();
@@ -1082,6 +1126,7 @@ function initFormDebugging() {
     checkInheritedStyles();
     checkGlobalInterference();
     validateFormStructure();
+    findDeadZones(); // NEW: Check for dead zones
     
     console.log('\n🎯 Click any form element to see detailed debug info');
     console.log('🔄 Run initFormDebugging() again to refresh checks');
