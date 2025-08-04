@@ -18,7 +18,13 @@ function generateUnifiedCode(brandCode, values) {
             throw new Error('Missing brand code or values');
         }
 
-        let codeParts = [brandCode];
+        // Use product-specific shortcode if available (for Omni products)
+        let shortcode = brandCode;
+        if (currentProductData && currentProductData.shortcode) {
+            shortcode = currentProductData.shortcode;
+        }
+
+        let codeParts = [shortcode];
         
         // Product part
         if (values.product) {
@@ -607,6 +613,18 @@ async function handleProductChange() {
         }
         
         currentProductData = selectedProduct;
+        
+        // Update brand display based on product selection
+        const brandInput = document.getElementById('brand-display');
+        if (brandInput && currentBrandData) {
+            // For Omni brand with custom shortcode, show it in parentheses
+            if (currentBrandData.brand.code === 'OM' && selectedProduct.shortcode) {
+                brandInput.value = `${currentBrandData.brand.name} (${selectedProduct.shortcode})`;
+            } else {
+                // For other brands or products without custom shortcode, show just the brand name
+                brandInput.value = currentBrandData.brand.name;
+            }
+        }
         
         // Fetch rate plans for this product
         const { data: ratePlans, error } = await window.database.fetchRatePlansForProduct(selectedProduct.id);

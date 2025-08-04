@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS products (
     brand_id INTEGER NOT NULL,
     name TEXT NOT NULL,                  -- "VG+", "Aftonbladet Plus"
     type TEXT NOT NULL,                  -- "digital" or "print"
+    shortcode TEXT,                      -- Product-specific shortcode (e.g., OM, OMB, OME)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE CASCADE
 );
