@@ -172,7 +172,7 @@ function createNorwegianStyleFields() {
             },
             required: false,
             size: 'small',
-            row: 3
+            row: 4
         },
         {
             id: 'offerPeriod',
@@ -224,7 +224,7 @@ function createNorwegianStyleFields() {
             required: false,
             showWhen: { field: 'discountType', value: 'kr' },
             size: 'small',
-            row: 4
+            row: 3
         },
         {
             id: 'discountValue',
@@ -236,7 +236,7 @@ function createNorwegianStyleFields() {
             required: false,
             showWhen: { field: 'discountType', value: 'pros' },
             size: 'small',
-            row: 4
+            row: 3
         },
         {
             id: 'customOfferText',
