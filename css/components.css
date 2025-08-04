@@ -1063,3 +1063,130 @@ select.form-input {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ============================================================================
+   BRAZE NAMING COMPONENTS
+   ============================================================================ */
+
+/* Braze forms */
+.braze-form {
+    max-width: 100%;
+}
+
+.braze-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+/* Form actions */
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--gray-100);
+    padding-top: var(--space-xl);
+}
+
+/* Buttons */
+.btn {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--gray-200);
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.75rem;
+}
+
+/* Result display */
+.result-display {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    border: 2px dashed var(--gray-300);
+}
+
+.result-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: var(--space-sm);
+}
+
+.result-value {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: var(--space-md);
+}
+
+.result-value pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.result-info {
+    margin-top: var(--space-lg);
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+/* Responsive adjustments for Braze forms */
+@media (max-width: 768px) {
+    .braze-form .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}

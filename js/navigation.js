@@ -243,6 +243,15 @@ async function initializeTabSpecificFeatures(tabId) {
                 }
                 break;
             
+            case 'braze-campaigns':
+            case 'braze-canvases':
+            case 'braze-segments':
+                // Initialize Braze naming functionality if not already initialized
+                if (window.brazeNaming && window.brazeNaming.initialize) {
+                    window.brazeNaming.initialize();
+                }
+                break;
+            
             // Add other tab-specific initializations here as needed
             default:
                 // No specific initialization needed

@@ -62,16 +62,16 @@
                         <button class="sub-nav-item" data-subtab="utm-campaign">Campaign Links</button>
                     </div>
 
-                    <button class="nav-item" data-tab="braze" data-expandable="true">
+                    <button class="nav-item" data-tab="braze-naming" data-expandable="true">
                         <span class="nav-item-icon">📱</span>
-                        <span>Braze</span>
+                        <span>Braze Naming</span>
                         <span class="nav-item-badge">3</span>
                     </button>
                     
-                    <div class="sub-nav" id="braze-subnav">
+                    <div class="sub-nav" id="braze-naming-subnav">
                         <button class="sub-nav-item active" data-subtab="braze-campaigns">Campaigns</button>
-                        <button class="sub-nav-item" data-subtab="braze-segments">Segments</button>
                         <button class="sub-nav-item" data-subtab="braze-canvases">Canvases</button>
+                        <button class="sub-nav-item" data-subtab="braze-segments">Segments</button>
                     </div>
 
                     <button class="nav-item" data-tab="vev">
@@ -334,28 +334,285 @@
 
                     <!-- Braze Campaigns Tab -->
                     <div class="tab-content" id="braze-campaigns">
-                        <div class="placeholder">
-                            <div class="placeholder-icon">📧</div>
-                            <h2>Braze Campaigns</h2>
-                            <p>Configure naming standards for Braze campaigns</p>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Campaign Configuration</h2>
+                                <div style="color: var(--gray-600); font-size: 0.875rem;">
+                                    Generate standardized Braze campaign names
+                                </div>
+                            </div>
+                            
+                            <form id="brazeCampaignForm" class="braze-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="campaign-purpose">
+                                            1. Purpose / Code <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="campaign-purpose" class="form-input form-select" required>
+                                            <option value="">-- Select Purpose --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="campaign-brand">
+                                            2. Brand <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="campaign-brand" class="form-input form-select" disabled required>
+                                            <option value="">-- Select Brand --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="campaign-package">
+                                            3. Package (Optional)
+                                        </label>
+                                        <select id="campaign-package" class="form-input form-select" disabled>
+                                            <option value="">-- No Package --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="campaign-comm-type">
+                                            4. Main Communication Type <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="campaign-comm-type" class="form-input form-select" disabled required>
+                                            <option value="">-- Select Main Type --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" id="campaign-specific-type-container" style="display: none;">
+                                        <label class="form-label" for="campaign-specific-type">
+                                            5. Specific Communication
+                                        </label>
+                                        <select id="campaign-specific-type" class="form-input form-select" disabled>
+                                            <option value="">-- Select Specific Type --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" id="campaign-reset-btn">
+                                        Reset All
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="campaign-generate-btn" disabled>
+                                        Generate Name
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </div>
 
-                    <!-- Braze Segments Tab -->
-                    <div class="tab-content" id="braze-segments">
-                        <div class="placeholder">
-                            <div class="placeholder-icon">👥</div>
-                            <h2>Braze Segments</h2>
-                            <p>Configure naming standards for Braze segments</p>
+                        <!-- Results Card -->
+                        <div class="card" id="campaign-result-container" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated Campaign Name</h3>
+                                <button id="copy-campaign-btn" class="btn btn-secondary btn-sm">
+                                    Copy
+                                </button>
+                            </div>
+                            
+                            <div class="result-display">
+                                <div class="result-label">Your Campaign Name:</div>
+                                <div class="result-value">
+                                    <pre id="generated-campaign-name"></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="result-info">
+                                <div><strong>Format:</strong> CMP_[CODE]_[BRAND]_[PACKAGE]_[COMM_TYPE]</div>
+                                <div><strong>Note:</strong> This name has been saved to history</div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Braze Canvases Tab -->
                     <div class="tab-content" id="braze-canvases">
-                        <div class="placeholder">
-                            <div class="placeholder-icon">🎨</div>
-                            <h2>Braze Canvases</h2>
-                            <p>Configure naming standards for Braze canvases</p>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Canvas Configuration</h2>
+                                <div style="color: var(--gray-600); font-size: 0.875rem;">
+                                    Generate standardized Braze canvas names
+                                </div>
+                            </div>
+                            
+                            <form id="brazeCanvasForm" class="braze-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="canvas-purpose">
+                                            1. Purpose / Code <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="canvas-purpose" class="form-input form-select" required>
+                                            <option value="">-- Select Purpose --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="canvas-brand">
+                                            2. Brand <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="canvas-brand" class="form-input form-select" disabled required>
+                                            <option value="">-- Select Brand --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="canvas-package">
+                                            3. Package (Optional)
+                                        </label>
+                                        <select id="canvas-package" class="form-input form-select" disabled>
+                                            <option value="">-- No Package --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="canvas-comm-type">
+                                            4. Main Communication Type <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="canvas-comm-type" class="form-input form-select" disabled required>
+                                            <option value="">-- Select Main Type --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" id="canvas-specific-type-container" style="display: none;">
+                                        <label class="form-label" for="canvas-specific-type">
+                                            5. Specific Communication
+                                        </label>
+                                        <select id="canvas-specific-type" class="form-input form-select" disabled>
+                                            <option value="">-- Select Specific Type --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" id="canvas-reset-btn">
+                                        Reset All
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="canvas-generate-btn" disabled>
+                                        Generate Name
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Results Card -->
+                        <div class="card" id="canvas-result-container" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated Canvas Name</h3>
+                                <button id="copy-canvas-btn" class="btn btn-secondary btn-sm">
+                                    Copy
+                                </button>
+                            </div>
+                            
+                            <div class="result-display">
+                                <div class="result-label">Your Canvas Name:</div>
+                                <div class="result-value">
+                                    <pre id="generated-canvas-name"></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="result-info">
+                                <div><strong>Format:</strong> CAN_[CODE]_[BRAND]_[PACKAGE]_[COMM_TYPE]</div>
+                                <div><strong>Note:</strong> This name has been saved to history</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Braze Segments Tab -->
+                    <div class="tab-content" id="braze-segments">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Segment Configuration</h2>
+                                <div style="color: var(--gray-600); font-size: 0.875rem;">
+                                    Generate standardized Braze segment names
+                                </div>
+                            </div>
+                            
+                            <form id="brazeSegmentForm" class="braze-form">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="segment-purpose">
+                                            1. Purpose / Code <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="segment-purpose" class="form-input form-select" required>
+                                            <option value="">-- Select Purpose --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="segment-brand">
+                                            2. Brand <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="segment-brand" class="form-input form-select" disabled required>
+                                            <option value="">-- Select Brand --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="segment-package">
+                                            3. Package (Optional)
+                                        </label>
+                                        <select id="segment-package" class="form-input form-select" disabled>
+                                            <option value="">-- No Package --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="segment-comm-type">
+                                            4. Main Type (Segment Specific) <span style="color: var(--danger);">*</span>
+                                        </label>
+                                        <select id="segment-comm-type" class="form-input form-select" disabled required>
+                                            <option value="">-- Select Main Type --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" id="segment-specific-type-container" style="display: none;">
+                                        <label class="form-label" for="segment-specific-type">
+                                            5. Specific Type (Segment Specific)
+                                        </label>
+                                        <select id="segment-specific-type" class="form-input form-select" disabled>
+                                            <option value="">-- Select Specific Type --</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" id="segment-custom-suffix-container" style="display: none;">
+                                        <label class="form-label" for="segment-custom-suffix">
+                                            6. Custom Suffix (Optional)
+                                        </label>
+                                        <input type="text" id="segment-custom-suffix" class="form-input" 
+                                               placeholder="e.g., Helg_Sport_A" disabled>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" id="segment-reset-btn">
+                                        Reset All
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="segment-generate-btn" disabled>
+                                        Generate Name
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Results Card -->
+                        <div class="card" id="segment-result-container" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">Generated Segment Name</h3>
+                                <button id="copy-segment-btn" class="btn btn-secondary btn-sm">
+                                    Copy
+                                </button>
+                            </div>
+                            
+                            <div class="result-display">
+                                <div class="result-label">Your Segment Name:</div>
+                                <div class="result-value">
+                                    <pre id="generated-segment-name"></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="result-info">
+                                <div><strong>Format:</strong> SEG_[CODE]_[BRAND]_[PACKAGE]_[COMM_TYPE]_[SUFFIX]</div>
+                                <div><strong>Note:</strong> This name has been saved to history</div>
+                            </div>
                         </div>
                     </div>
 
@@ -555,6 +812,8 @@
     <script src="js/csv-importer.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/promocode.js"></script>
+    <script src="js/braze-naming-data.js"></script>
+    <script src="js/braze-naming.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/main.js"></script>
 </body>

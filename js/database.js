@@ -341,6 +341,34 @@ async function getUserGenerations(platform = null, limit = 50) {
     }
 }
 
+// Save Braze naming to history
+async function saveBrazeName(data) {
+    try {
+        const result = window.sqlDB.exec(
+            `INSERT INTO braze_naming_history 
+            (name_type, generated_name, purpose_code, brand, package, comm_type, specific_type, custom_suffix, created_by) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                data.name_type,
+                data.generated_name,
+                data.purpose_code,
+                data.brand,
+                data.package,
+                data.comm_type,
+                data.specific_type,
+                data.custom_suffix,
+                getCurrentUser() || 'anonymous'
+            ]
+        );
+        
+        console.log('Braze name saved to history');
+        return { success: true, error: null };
+    } catch (error) {
+        console.error('Error saving Braze name:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
@@ -494,6 +522,7 @@ window.database = {
     // History
     saveGeneration,
     getUserGenerations,
+    saveBrazeName,
     
     // Utilities
     clearCache,

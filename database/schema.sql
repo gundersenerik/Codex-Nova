@@ -108,3 +108,24 @@ SELECT
     p.created_at
 FROM products p
 JOIN brands b ON p.brand_id = b.id;
+
+-- ============================================================================
+-- BRAZE NAMING HISTORY TABLE - Store Braze naming convention history
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS braze_naming_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name_type TEXT NOT NULL CHECK (name_type IN ('campaign', 'canvas', 'segment')),
+    generated_name TEXT NOT NULL,
+    purpose_code TEXT,
+    brand TEXT,
+    package TEXT,
+    comm_type TEXT,
+    specific_type TEXT,
+    custom_suffix TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_by TEXT
+);
+
+-- Create index for Braze naming history
+CREATE INDEX IF NOT EXISTS idx_braze_naming_type ON braze_naming_history(name_type);
+CREATE INDEX IF NOT EXISTS idx_braze_naming_created_at ON braze_naming_history(created_at);
