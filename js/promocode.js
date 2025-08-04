@@ -228,7 +228,7 @@ function createNorwegianStyleFields() {
         },
         {
             id: 'discountValue',
-            label: 'Discount Value (%)',
+            label: 'Discount',
             type: 'number',
             placeholder: 'e.g., 50',
             min: 1,
@@ -329,10 +329,36 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
         
         rowDiv.className = `form-row form-row-${columnCount}`;
         
-        fieldsInRow.forEach(field => {
-            const fieldElement = createSimpleFormField(field);
-            rowDiv.appendChild(fieldElement);
-        });
+        // Special handling for row 3 to group conditional fields
+        if (rowNum === '3') {
+            let conditionalFieldsWrapper = null;
+            
+            fieldsInRow.forEach(field => {
+                // Check if this is one of the conditional price fields
+                if (field.id === 'offerPrice' || field.id === 'discountValue') {
+                    // Create wrapper if it doesn't exist
+                    if (!conditionalFieldsWrapper) {
+                        conditionalFieldsWrapper = document.createElement('div');
+                        conditionalFieldsWrapper.className = 'conditional-fields-wrapper';
+                        conditionalFieldsWrapper.style.position = 'relative';
+                        rowDiv.appendChild(conditionalFieldsWrapper);
+                    }
+                    // Add field to wrapper
+                    const fieldElement = createSimpleFormField(field);
+                    conditionalFieldsWrapper.appendChild(fieldElement);
+                } else {
+                    // Regular field
+                    const fieldElement = createSimpleFormField(field);
+                    rowDiv.appendChild(fieldElement);
+                }
+            });
+        } else {
+            // Normal row processing
+            fieldsInRow.forEach(field => {
+                const fieldElement = createSimpleFormField(field);
+                rowDiv.appendChild(fieldElement);
+            });
+        }
         
         form.appendChild(rowDiv);
     });

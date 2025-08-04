@@ -997,6 +997,36 @@ select.form-input {
     pointer-events: none;
 }
 
+/* Ensure row 3 conditional fields maintain grid position */
+.form-row-4 .form-group[data-show-when] {
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* When fields are hidden with visibility, ensure they don't affect layout */
+.form-group[style*="visibility: hidden"] {
+    pointer-events: none;
+}
+
+/* Wrapper for conditional fields that share the same grid position */
+.conditional-fields-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Stack conditional fields on top of each other */
+.conditional-fields-wrapper .form-group {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* First child should be relative to establish height */
+.conditional-fields-wrapper .form-group:first-child {
+    position: relative;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row-2,
@@ -1023,7 +1053,13 @@ select.form-input {
 
 /* Tablet adjustments */
 @media (min-width: 769px) and (max-width: 1024px) {
+    /* Keep 4 columns for row 3 to accommodate all fields including dynamic ones */
     .form-row-4 {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    /* Row 4 can use 3 columns on tablets */
+    .form-row-3 {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
