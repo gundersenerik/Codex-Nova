@@ -344,7 +344,7 @@ async function getUserGenerations(platform = null, limit = 50) {
 // Save Braze naming to history
 async function saveBrazeName(data) {
     try {
-        const result = window.sqlDB.exec(
+        const result = window.sqlDB.execute(
             `INSERT INTO braze_naming_history 
             (name_type, generated_name, purpose_code, brand, package, comm_type, specific_type, custom_suffix, created_by) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -357,7 +357,7 @@ async function saveBrazeName(data) {
                 data.comm_type,
                 data.specific_type,
                 data.custom_suffix,
-                getCurrentUser() || 'anonymous'
+                (window.auth && window.auth.getCurrentUser && window.auth.getCurrentUser()) || 'anonymous'
             ]
         );
         
