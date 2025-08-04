@@ -313,9 +313,21 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
         const rowDiv = document.createElement('div');
         const fieldsInRow = fieldsByRow[rowNum];
         
-        // Determine grid columns based on number of visible fields
-        const visibleFields = fieldsInRow.filter(f => !f.showWhen || f.showWhen.type === 'brandCountry');
-        rowDiv.className = `form-row form-row-${visibleFields.length}`;
+        // Use fixed column count for specific rows to handle conditional fields
+        let columnCount;
+        if (rowNum === '3') {
+            // Row 3 always uses 4 columns to accommodate dynamic discount fields
+            columnCount = 4;
+        } else if (rowNum === '4') {
+            // Row 4 always uses 3 columns
+            columnCount = 3;
+        } else {
+            // Other rows calculate based on visible fields
+            const visibleFields = fieldsInRow.filter(f => !f.showWhen || f.showWhen.type === 'brandCountry');
+            columnCount = visibleFields.length;
+        }
+        
+        rowDiv.className = `form-row form-row-${columnCount}`;
         
         fieldsInRow.forEach(field => {
             const fieldElement = createSimpleFormField(field);
@@ -352,8 +364,17 @@ function createSimpleFormField(field) {
     
     // Handle conditional visibility
     if (field.showWhen) {
-        group.style.display = 'none';
         group.dataset.showWhen = JSON.stringify(field.showWhen);
+        
+        // For row 3 discount fields, use visibility instead of display to maintain grid layout
+        if (field.row === 3 && (field.id === 'offerPrice' || field.id === 'discountValue')) {
+            group.style.visibility = 'hidden';
+            group.style.opacity = '0';
+            group.style.transform = 'scale(0.95)';
+            group.style.transition = 'visibility 0.2s, opacity 0.2s, transform 0.2s';
+        } else {
+            group.style.display = 'none';
+        }
     }
     
     // Special handling for checkbox
@@ -595,13 +616,30 @@ function handleDiscountTypeChange() {
         const showWhen = JSON.parse(field.dataset.showWhen);
         
         if (showWhen.field === 'discountType') {
+            // Check if this field is in row 3 (discount-related fields)
+            const isRow3Field = field.querySelector('#offerPrice') || field.querySelector('#discountValue');
+            
             if (showWhen.value === discountType) {
-                field.style.display = 'block';
+                if (isRow3Field) {
+                    // For row 3 fields, use visibility to maintain grid layout
+                    field.style.visibility = 'visible';
+                    field.style.opacity = '1';
+                    field.style.transform = 'scale(1)';
+                } else {
+                    field.style.display = 'block';
+                }
                 field.classList.add('fade-in');
                 // Remove animation class after animation completes
                 setTimeout(() => field.classList.remove('fade-in'), 300);
             } else {
-                field.style.display = 'none';
+                if (isRow3Field) {
+                    // For row 3 fields, hide with visibility to maintain grid layout
+                    field.style.visibility = 'hidden';
+                    field.style.opacity = '0';
+                    field.style.transform = 'scale(0.95)';
+                } else {
+                    field.style.display = 'none';
+                }
                 // Clear hidden field values
                 const input = field.querySelector('input, select');
                 if (input) input.value = '';
