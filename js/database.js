@@ -62,6 +62,10 @@ async function fetchAllBrands() {
             // Use SQLite
             const result = window.sqlDB.query(`
                 SELECT * FROM brands 
+                WHERE code IS NOT NULL 
+                  AND code != '' 
+                  AND name IS NOT NULL 
+                  AND name != ''
                 ORDER BY country, name
             `);
             

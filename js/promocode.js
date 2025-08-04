@@ -948,6 +948,11 @@ async function populateBrandDropdown() {
             const norwegianGroup = document.createElement('optgroup');
             norwegianGroup.label = 'Norway';
             brandGroups.norwegian.forEach(brand => {
+                // Skip empty or invalid brands
+                if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
+                    console.warn('Skipping invalid Norwegian brand:', brand);
+                    return;
+                }
                 const option = document.createElement('option');
                 option.value = brand.code;
                 option.textContent = brand.name;
@@ -961,6 +966,11 @@ async function populateBrandDropdown() {
             const swedishGroup = document.createElement('optgroup');
             swedishGroup.label = 'Sweden';
             brandGroups.swedish.forEach(brand => {
+                // Skip empty or invalid brands
+                if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
+                    console.warn('Skipping invalid Swedish brand:', brand);
+                    return;
+                }
                 const option = document.createElement('option');
                 option.value = brand.code;
                 option.textContent = brand.name;

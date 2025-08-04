@@ -13,6 +13,21 @@ async function consolidateOmniBrands() {
     try {
         console.log('Starting Omni brand consolidation...');
         
+        // First, clean up any empty or invalid brand entries
+        const cleanupResult = window.sqlDB.execute(`
+            DELETE FROM brands 
+            WHERE name = '' 
+               OR name IS NULL 
+               OR code = '' 
+               OR code IS NULL
+        `);
+        
+        if (cleanupResult.error) {
+            console.log('Note during cleanup:', cleanupResult.error);
+        } else {
+            console.log('Cleaned up any empty brand entries');
+        }
+        
         // Check if shortcode column exists, if not add it
         const addColumnResult = window.sqlDB.execute(`
             ALTER TABLE products ADD COLUMN shortcode TEXT
@@ -68,10 +83,13 @@ async function consolidateOmniBrands() {
                 return false;
             }
             
-            // Delete the extra Omni brands
+            // Delete the extra Omni brands and any duplicates
             const deleteResult = window.sqlDB.execute(`
                 DELETE FROM brands 
                 WHERE code IN ('OMB', 'OME', 'OMEB', 'OMMER', 'OMMERB', 'OMSP')
+                   OR (code = 'OM' AND id != ${mainOmniId})
+                   OR name = ''
+                   OR name IS NULL
             `);
             
             if (deleteResult.error) {
@@ -80,6 +98,12 @@ async function consolidateOmniBrands() {
             }
             
             console.log('✅ Omni brands consolidated successfully');
+            
+            // Clear the database cache to ensure fresh data
+            if (window.database && window.database.clearCache) {
+                window.database.clearCache();
+                console.log('Database cache cleared after consolidation');
+            }
             
             // Verify the result
             const verifyResult = window.sqlDB.query(`
