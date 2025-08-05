@@ -806,6 +806,12 @@
     <!-- CJC Namespace - Load this FIRST to prevent conflicts -->
     <script src="js/cjc-namespace.js"></script>
     
+    <!-- CJC Modules - Load these before original scripts -->
+    <script src="js/modules/sql-database.js"></script>
+    <script src="js/modules/mock-data.js"></script>
+    <script src="js/modules/database.js"></script>
+    
+    <!-- Original JavaScript Dependencies (with compatibility layers) -->
     <script src="js/config.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/sql-database.js"></script>
