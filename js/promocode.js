@@ -268,38 +268,47 @@ function createNorwegianStyleFields() {
 
 // Clean form rendering system
 function renderFormFields(fields, containerSelector = '#dynamic-form-container') {
-    const container = document.querySelector(containerSelector);
-    if (!container) {
-        console.error('Form container not found:', containerSelector);
-        return;
-    }
-    
-    container.innerHTML = '';
-    
-    // Create main form element
-    const form = document.createElement('form');
-    form.className = 'promocode-form';
-    form.setAttribute('novalidate', 'true'); // We handle validation ourselves
-    
-    // Row 1: Brand field (full width)
-    const brandRow = document.createElement('div');
-    brandRow.className = 'form-row';
-    
-    const brandGroup = document.createElement('div');
-    brandGroup.className = 'form-group';
-    
-    const brandLabel = document.createElement('label');
-    brandLabel.setAttribute('for', 'brand-display');
-    brandLabel.className = 'form-label';
-    brandLabel.innerHTML = 'Brand <span class="required">*</span>';
-    
-    const brandInput = document.createElement('input');
-    brandInput.type = 'text';
-    brandInput.id = 'brand-display';
-    brandInput.className = 'form-control';
-    brandInput.value = currentBrandData ? currentBrandData.brand.name : '';
-    brandInput.readOnly = true;
-    brandInput.style.backgroundColor = '#f5f5f5';
+    try {
+        const container = document.querySelector(containerSelector);
+        if (!container) {
+            console.error('Form container not found:', containerSelector);
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        // Create main form element
+        const form = document.createElement('form');
+        form.className = 'promocode-form';
+        form.setAttribute('novalidate', 'true'); // We handle validation ourselves
+        
+        // Row 1: Brand field (full width)
+        const brandRow = document.createElement('div');
+        brandRow.className = 'form-row';
+        
+        const brandGroup = document.createElement('div');
+        brandGroup.className = 'form-group';
+        
+        const brandLabel = document.createElement('label');
+        brandLabel.setAttribute('for', 'brand-display');
+        brandLabel.className = 'form-label';
+        brandLabel.innerHTML = 'Brand <span class="required">*</span>';
+        
+        const brandInput = document.createElement('input');
+        brandInput.type = 'text';
+        brandInput.id = 'brand-display';
+        brandInput.className = 'form-control';
+        
+        // Verify brand data structure
+        if (!currentBrandData || !currentBrandData.brand) {
+            console.error('Invalid brand data:', currentBrandData);
+            brandInput.value = 'Error: Invalid brand data';
+        } else {
+            brandInput.value = currentBrandData.brand.name;
+        }
+        
+        brandInput.readOnly = true;
+        brandInput.style.backgroundColor = '#f5f5f5';
     
     brandGroup.appendChild(brandLabel);
     brandGroup.appendChild(brandInput);
@@ -387,6 +396,11 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     // Initialize conditional field visibility
     handleDiscountTypeChange();
     handleBrandCountryVisibility();
+    
+    } catch (error) {
+        console.error('Error rendering form fields:', error);
+        showError('Failed to render form: ' + error.message);
+    }
 }
 
 // Create simple form field with clean structure
@@ -526,7 +540,7 @@ function setupFormEventListeners() {
 // ============================================================================
 
 // Handle brand selection change
-async function handleBrandChange() {
+async function handlePromocodeBrandChange() {
     const brandSelect = document.getElementById('brand-select');
     if (!brandSelect) return;
     
@@ -891,9 +905,18 @@ async function saveToHistory(promocode, values) {
 // INITIALIZATION
 // ============================================================================
 
+// Track if page has been initialized
+let promocodePageInitialized = false;
+
 // Initialize promocode page
 async function initializePromocodePage() {
     try {
+        // Prevent re-initialization
+        if (promocodePageInitialized) {
+            console.log('Promocode page already initialized, skipping...');
+            return;
+        }
+        
         console.log('Initializing promocode page...');
         
         // Initialize database connection
@@ -907,7 +930,7 @@ async function initializePromocodePage() {
         // Setup main brand selection handler
         const brandSelect = document.getElementById('brand-select');
         if (brandSelect) {
-            brandSelect.addEventListener('change', handleBrandChange);
+            brandSelect.addEventListener('change', handlePromocodeBrandChange);
         }
         
         // Setup copy button
@@ -921,6 +944,8 @@ async function initializePromocodePage() {
             });
         }
         
+        // Mark as initialized
+        promocodePageInitialized = true;
         console.log('Promocode page initialized successfully');
         
     } catch (error) {
@@ -935,6 +960,9 @@ async function populateBrandDropdown() {
     if (!brandSelect) return;
     
     try {
+        // Store current selection before clearing
+        const currentSelection = brandSelect.value;
+        
         const { data: brandGroups, error } = await window.database.getBrandsGrouped();
         
         if (error) {
@@ -979,6 +1007,12 @@ async function populateBrandDropdown() {
             brandSelect.appendChild(swedishGroup);
         }
         
+        // Restore previous selection if it exists
+        if (currentSelection) {
+            brandSelect.value = currentSelection;
+            console.log('Restored brand selection:', currentSelection);
+        }
+        
     } catch (error) {
         console.error('Error populating brand dropdown:', error);
         showError('Failed to load brands: ' + error.message);
@@ -994,7 +1028,7 @@ window.promocode = {
     initialize: initializePromocodePage,
     generateUnifiedCode,
     reversePromocode,
-    handleBrandChange,
+    handlePromocodeBrandChange,
     collectFormValues
 };
 

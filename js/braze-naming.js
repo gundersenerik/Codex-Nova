@@ -28,8 +28,17 @@ const brazeState = {
     }
 };
 
+// Track initialization state
+let brazeInitialized = false;
+
 // Initialize Braze naming functionality
 function initializeBrazeNaming() {
+    // Prevent duplicate initialization
+    if (brazeInitialized) {
+        console.log('Braze naming already initialized');
+        return;
+    }
+    
     // Check if we have the required data
     if (!window.brazeNamingData) {
         console.error('Braze naming data not loaded');
@@ -40,12 +49,21 @@ function initializeBrazeNaming() {
     initializeBrazeForm('campaign');
     initializeBrazeForm('canvas');
     initializeBrazeForm('segment');
+    
+    // Mark as initialized
+    brazeInitialized = true;
 }
 
 // Initialize a specific form type
 function initializeBrazeForm(type) {
     const form = document.getElementById(`braze${capitalizeFirst(type)}Form`);
     if (!form) return;
+    
+    // Ensure state exists for this type
+    if (!brazeState[type]) {
+        console.error(`No state defined for type: ${type}`);
+        return;
+    }
     
     // Populate purpose codes
     const purposeSelect = document.getElementById(`${type}-purpose`);
@@ -91,8 +109,13 @@ function setupBrazeEventListeners(type) {
     // Brand change
     const brandSelect = document.getElementById(`${type}-brand`);
     if (brandSelect) {
-        brandSelect.addEventListener('change', () => {
-            state.selectedBrand = brandSelect.value;
+        brandSelect.addEventListener('change', function() {
+            const state = brazeState[type];
+            if (!state) {
+                console.error(`No state found for type: ${type}`);
+                return;
+            }
+            state.selectedBrand = this.value;
             handleBrandChange(type);
         });
     }
@@ -166,6 +189,12 @@ function setupBrazeEventListeners(type) {
 
 // Handle brand selection changes
 function handleBrandChange(type) {
+    // Validate type parameter
+    if (!type || !brazeState[type]) {
+        console.error(`Invalid type parameter: ${type}`);
+        return;
+    }
+    
     const state = brazeState[type];
     const packageSelect = document.getElementById(`${type}-package`);
     const mainCommSelect = document.getElementById(`${type}-comm-type`);
