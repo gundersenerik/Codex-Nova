@@ -189,8 +189,16 @@ function setupBrazeEventListeners(type) {
 
 // Handle brand selection changes
 function handleBrandChange(type) {
+    // Check if type is an event object (defensive programming)
+    if (type && typeof type === 'object' && type.target) {
+        console.error('handleBrandChange received an Event object instead of a type string');
+        console.error('This suggests an event handler is incorrectly wired');
+        console.error('Event target:', type.target);
+        return;
+    }
+    
     // Validate type parameter
-    if (!type || !brazeState[type]) {
+    if (!type || typeof type !== 'string' || !brazeState[type]) {
         console.error(`Invalid type parameter: ${type}`);
         return;
     }
