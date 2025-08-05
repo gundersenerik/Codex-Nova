@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Codebase Analyzer</title>
+    <style>
+        body {
+            font-family: monospace;
+            margin: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 10px;
+            background: #2d2d2d;
+            border-radius: 5px;
+        }
+        .conflict {
+            background: #5a1e1e;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border-left: 4px solid #ff6b6b;
+        }
+        .warning {
+            background: #5a4e1e;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            border-left: 4px solid #ffa500;
+        }
+        h2 { color: #4ec9b0; }
+        h3 { color: #9cdcfe; }
+        .file-ref { color: #ce9178; }
+        pre { 
+            background: #1e1e1e; 
+            padding: 10px; 
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+        button:hover { background: #005a9e; }
+    </style>
+</head>
+<body>
+    <h1>Codebase Analyzer</h1>
+    <button onclick="analyzeCodebase()">Analyze Codebase</button>
+    <button onclick="downloadReport()">Download Report</button>
+    <div id="results"></div>
+
+    <script>
+    // List of JS files to analyze
+    const jsFiles = [
+        'js/config.js',
+        'js/mock-data.js',
+        'js/sql-database.js',
+        'js/database-initializer.js',
+        'js/data-manager.js',
+        'js/database.js',
+        'js/csv-importer.js',
+        'js/auth.js',
+        'js/promocode.js',
+        'js/braze-naming-data.js',
+        'js/braze-naming.js',
+        'js/navigation.js',
+        'js/main.js'
+    ];
+
+    const inventory = {
+        globalFunctions: new Map(),
+        windowAssignments: new Map(),
+        eventListeners: [],
+        globalVariables: new Map(),
+        moduleExports: new Map(),
+        duplicateFunctions: new Map(),
+        potentialConflicts: []
+    };
+
+    async function analyzeCodebase() {
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '<h2>Analyzing...</h2>';
+        
+        // Reset inventory
+        inventory.globalFunctions.clear();
+        inventory.windowAssignments.clear();
+        inventory.eventListeners = [];
+        inventory.globalVariables.clear();
+        inventory.moduleExports.clear();
+        inventory.duplicateFunctions.clear();
+        inventory.potentialConflicts = [];
+        
+        // Analyze each file
+        for (const file of jsFiles) {
+            try {
+                const response = await fetch(file);
+                const content = await response.text();
+                analyzeFile(file, content);
+            } catch (error) {
+                console.error(`Failed to analyze ${file}:`, error);
+            }
+        }
+        
+        identifyConflicts();
+        displayResults();
+    }
+
+    function analyzeFile(filePath, content) {
+        const lines = content.split('\n');
+        
+        // Function declarations
+        const funcPattern = /^function\s+(\w+)\s*\(/gm;
+        let match;
+        while ((match = funcPattern.exec(content)) !== null) {
+            const funcName = match[1];
+            const lineNum = content.substring(0, match.index).split('\n').length;
+            
+            if (!inventory.globalFunctions.has(funcName)) {
+                inventory.globalFunctions.set(funcName, []);
+            }
+            inventory.globalFunctions.get(funcName).push({
+                file: filePath,
+                line: lineNum
+            });
+        }
+        
+        // Window assignments
+        const windowPattern = /window\.(\w+)\s*=/gm;
+        while ((match = windowPattern.exec(content)) !== null) {
+            const propName = match[1];
+            const lineNum = content.substring(0, match.index).split('\n').length;
+            
+            if (!inventory.windowAssignments.has(propName)) {
+                inventory.windowAssignments.set(propName, []);
+            }
+            inventory.windowAssignments.get(propName).push({
+                file: filePath,
+                line: lineNum
+            });
+        }
+        
+        // Event listeners
+        const eventPattern = /addEventListener\s*\(\s*['"`](\w+)['"`]\s*,\s*([^,\)]+)/gm;
+        while ((match = eventPattern.exec(content)) !== null) {
+            const eventType = match[1];
+            const handler = match[2].trim();
+            const lineNum = content.substring(0, match.index).split('\n').length;
+            
+            inventory.eventListeners.push({
+                file: filePath,
+                line: lineNum,
+                event: eventType,
+                handler: handler
+            });
+        }
+        
+        // Global variables (top-level only)
+        const varPattern = /^(var|let|const)\s+(\w+)\s*=/gm;
+        while ((match = varPattern.exec(content)) !== null) {
+            const varName = match[2];
+            const lineNum = content.substring(0, match.index).split('\n').length;
+            
+            // Check if it's at the top level
+            const lineContent = lines[lineNum - 1];
+            if (lineContent && !lineContent.match(/^\s+/)) {
+                if (!inventory.globalVariables.has(varName)) {
+                    inventory.globalVariables.set(varName, []);
+                }
+                inventory.globalVariables.get(varName).push({
+                    file: filePath,
+                    line: lineNum
+                });
+            }
+        }
+    }
+
+    function identifyConflicts() {
+        // Find duplicate function names
+        for (const [funcName, locations] of inventory.globalFunctions) {
+            if (locations.length > 1) {
+                inventory.duplicateFunctions.set(funcName, locations);
+                inventory.potentialConflicts.push({
+                    type: 'DUPLICATE_FUNCTION',
+                    name: funcName,
+                    locations: locations
+                });
+            }
+        }
+        
+        // Find window property conflicts
+        for (const [propName, locations] of inventory.windowAssignments) {
+            if (locations.length > 1) {
+                inventory.potentialConflicts.push({
+                    type: 'MULTIPLE_WINDOW_ASSIGNMENTS',
+                    name: propName,
+                    locations: locations
+                });
+            }
+        }
+        
+        // Find handleBrandChange specifically
+        const handleBrandChangeFuncs = inventory.globalFunctions.get('handleBrandChange') || [];
+        if (handleBrandChangeFuncs.length > 0) {
+            inventory.potentialConflicts.push({
+                type: 'SPECIFIC_CONFLICT',
+                name: 'handleBrandChange still exists!',
+                locations: handleBrandChangeFuncs
+            });
+        }
+    }
+
+    function displayResults() {
+        const resultsDiv = document.getElementById('results');
+        let html = '';
+        
+        // Summary
+        html += '<div class="section">';
+        html += '<h2>Summary</h2>';
+        html += `<p>Files analyzed: ${jsFiles.length}</p>`;
+        html += `<p>Global functions: ${inventory.globalFunctions.size}</p>`;
+        html += `<p>Window assignments: ${inventory.windowAssignments.size}</p>`;
+        html += `<p>Event listeners: ${inventory.eventListeners.length}</p>`;
+        html += `<p>Potential conflicts: ${inventory.potentialConflicts.length}</p>`;
+        html += '</div>';
+        
+        // Critical Conflicts
+        if (inventory.potentialConflicts.length > 0) {
+            html += '<div class="section">';
+            html += '<h2>🚨 Critical Conflicts</h2>';
+            
+            for (const conflict of inventory.potentialConflicts) {
+                html += '<div class="conflict">';
+                html += `<h3>${conflict.type}: ${conflict.name}</h3>`;
+                html += '<ul>';
+                for (const loc of conflict.locations) {
+                    html += `<li class="file-ref">${loc.file}:${loc.line}</li>`;
+                }
+                html += '</ul>';
+                html += '</div>';
+            }
+            html += '</div>';
+        }
+        
+        // Event Listeners with "brand"
+        const brandListeners = inventory.eventListeners.filter(l => 
+            l.handler.includes('Brand') || l.handler.includes('brand')
+        );
+        if (brandListeners.length > 0) {
+            html += '<div class="section">';
+            html += '<h2>Brand-related Event Listeners</h2>';
+            for (const listener of brandListeners) {
+                html += '<div class="warning">';
+                html += `<p class="file-ref">${listener.file}:${listener.line}</p>`;
+                html += `<p>Event: ${listener.event}</p>`;
+                html += `<p>Handler: ${listener.handler}</p>`;
+                html += '</div>';
+            }
+            html += '</div>';
+        }
+        
+        // All functions
+        html += '<div class="section">';
+        html += '<h2>All Global Functions</h2>';
+        html += '<pre>';
+        for (const [funcName, locations] of inventory.globalFunctions) {
+            html += `${funcName}:\n`;
+            for (const loc of locations) {
+                html += `  - ${loc.file}:${loc.line}\n`;
+            }
+        }
+        html += '</pre>';
+        html += '</div>';
+        
+        resultsDiv.innerHTML = html;
+    }
+
+    function downloadReport() {
+        let report = 'CODEBASE ANALYSIS REPORT\n';
+        report += '========================\n\n';
+        report += `Generated: ${new Date().toISOString()}\n\n`;
+        
+        report += 'CRITICAL CONFLICTS\n';
+        report += '------------------\n';
+        for (const conflict of inventory.potentialConflicts) {
+            report += `\n${conflict.type}: ${conflict.name}\n`;
+            for (const loc of conflict.locations) {
+                report += `  - ${loc.file}:${loc.line}\n`;
+            }
+        }
+        
+        report += '\n\nALL GLOBAL FUNCTIONS\n';
+        report += '--------------------\n';
+        for (const [funcName, locations] of inventory.globalFunctions) {
+            report += `\n${funcName}:\n`;
+            for (const loc of locations) {
+                report += `  - ${loc.file}:${loc.line}\n`;
+            }
+        }
+        
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'codebase-analysis.txt';
+        a.click();
+    }
+    </script>
+</body>
+</html>

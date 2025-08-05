@@ -399,7 +399,7 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     
     } catch (error) {
         console.error('Error rendering form fields:', error);
-        showError('Failed to render form: ' + error.message);
+        showPromocodeError('Failed to render form: ' + error.message);
     }
 }
 
@@ -594,7 +594,7 @@ async function handlePromocodeBrandChange() {
     } catch (error) {
         console.error('Error handling brand change:', error);
         hideLoading();
-        showError('Failed to load brand data: ' + error.message);
+        showPromocodeError('Failed to load brand data: ' + error.message);
     }
 }
 
@@ -660,7 +660,7 @@ async function handleProductChange() {
         
     } catch (error) {
         console.error('Error handling product change:', error);
-        showError('Failed to load rate plans: ' + error.message);
+        showPromocodeError('Failed to load rate plans: ' + error.message);
     }
 }
 
@@ -755,7 +755,7 @@ function handleGenerateClick() {
         
     } catch (error) {
         console.error('Error generating promocode:', error);
-        showError(error.message);
+        showPromocodeError(error.message);
     }
 }
 
@@ -874,7 +874,7 @@ function hideLoading() {
 }
 
 // Show error message
-function showError(message) {
+function showPromocodeError(message) {
     if (window.showNotification) {
         window.showNotification(message, 'error');
     } else {
@@ -950,7 +950,7 @@ async function initializePromocodePage() {
         
     } catch (error) {
         console.error('Error initializing promocode page:', error);
-        showError('Failed to initialize promocode page: ' + error.message);
+        showPromocodeError('Failed to initialize promocode page: ' + error.message);
     }
 }
 
@@ -1015,7 +1015,7 @@ async function populateBrandDropdown() {
         
     } catch (error) {
         console.error('Error populating brand dropdown:', error);
-        showError('Failed to load brands: ' + error.message);
+        showPromocodeError('Failed to load brands: ' + error.message);
     }
 }
 
