@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Global Functions</title>
+</head>
+<body>
+    <h1>Check Global Functions</h1>
+    <p>Open the console to see the results</p>
+    
+    <script>
+        // Wait for page to load
+        window.addEventListener('load', function() {
+            console.log('=== Checking for global handleBrandChange ===');
+            
+            // Check if handleBrandChange exists globally
+            if (typeof window.handleBrandChange !== 'undefined') {
+                console.error('FOUND: window.handleBrandChange exists!');
+                console.log('Type:', typeof window.handleBrandChange);
+                console.log('Function:', window.handleBrandChange);
+                console.log('Function toString:', window.handleBrandChange.toString());
+            } else {
+                console.log('Good: window.handleBrandChange does not exist');
+            }
+            
+            // Check for any function with 'handleBrand' in the name
+            console.log('\n=== Checking for any handleBrand* functions ===');
+            for (let key in window) {
+                if (key.toLowerCase().includes('handlebrand')) {
+                    console.log(`Found: window.${key}`, window[key]);
+                }
+            }
+            
+            // Check all global functions
+            console.log('\n=== All global functions ===');
+            const globalFunctions = [];
+            for (let key in window) {
+                try {
+                    if (typeof window[key] === 'function' && !key.includes('webkit') && !key.includes('native')) {
+                        globalFunctions.push(key);
+                    }
+                } catch (e) {
+                    // Some properties throw errors when accessed
+                }
+            }
+            console.log('Total global functions:', globalFunctions.length);
+            console.log('Functions with "handle":', globalFunctions.filter(f => f.includes('handle')));
+            console.log('Functions with "brand":', globalFunctions.filter(f => f.toLowerCase().includes('brand')));
+        });
+    </script>
+</body>
+</html>

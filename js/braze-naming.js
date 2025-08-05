@@ -101,7 +101,7 @@ function setupBrazeEventListeners(type) {
                 resetBrazeDropdown(brandSelect, 'Select Brand');
                 brandSelect.disabled = true;
                 state.selectedBrand = null;
-                handleBrandChange(type);
+                handleBrazeBrandChange(type);
             }
         });
     }
@@ -116,7 +116,7 @@ function setupBrazeEventListeners(type) {
                 return;
             }
             state.selectedBrand = this.value;
-            handleBrandChange(type);
+            handleBrazeBrandChange(type);
         });
     }
     
@@ -188,12 +188,18 @@ function setupBrazeEventListeners(type) {
 }
 
 // Handle brand selection changes
-function handleBrandChange(type) {
+function handleBrazeBrandChange(type) {
     // Check if type is an event object (defensive programming)
     if (type && typeof type === 'object' && type.target) {
-        console.error('handleBrandChange received an Event object instead of a type string');
+        console.error('handleBrazeBrandChange received an Event object instead of a type string');
         console.error('This suggests an event handler is incorrectly wired');
         console.error('Event target:', type.target);
+        console.error('Stack trace:', new Error().stack);
+        
+        // Try to determine which element triggered this
+        if (type.target && type.target.id) {
+            console.error('Element ID that triggered this:', type.target.id);
+        }
         return;
     }
     
@@ -501,3 +507,18 @@ window.brazeNaming = {
     generateName: generateBrazeName,
     reset: resetBrazeForm
 };
+
+// Temporary: Catch any calls to the old function name
+if (!window.handleBrandChange) {
+    window.handleBrandChange = function(param) {
+        console.error('DEPRECATED: handleBrandChange called with:', param);
+        console.error('This function has been renamed to handleBrazeBrandChange');
+        console.error('Stack trace:', new Error().stack);
+        
+        // If it's being called with a string parameter, redirect to the new function
+        if (typeof param === 'string' && brazeState[param]) {
+            console.log('Redirecting to handleBrazeBrandChange with type:', param);
+            handleBrazeBrandChange(param);
+        }
+    };
+}
