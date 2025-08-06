@@ -157,11 +157,31 @@ CJC.defineModule('brazeNaming', function() {
                     // Enable brand selection
                     populateBrazeDropdown(brandSelect, window.brazeNamingData.brands, 'fullName', 'fullName');
                     brandSelect.disabled = false;
+                    
+                    // Enable and populate communication types based on purpose code
+                    const mainCommSelect = document.getElementById(`${type}-comm-type`);
+                    const commTypes = type === 'segment' 
+                        ? window.brazeNamingData.segmentCommunicationTypes 
+                        : window.brazeNamingData.communicationTypes;
+                    
+                    // Filter by valid codes
+                    const validCommTypes = commTypes.filter(ct => 
+                        ct.validCodes.includes(state.selectedPurposeCode)
+                    );
+                    
+                    populateBrazeDropdown(mainCommSelect, validCommTypes, 'name', 'name');
+                    mainCommSelect.disabled = false;
                 } else {
                     // Reset downstream fields
                     resetBrazeDropdown(brandSelect, 'Select Brand');
                     brandSelect.disabled = true;
                     state.selectedBrand = null;
+                    
+                    const mainCommSelect = document.getElementById(`${type}-comm-type`);
+                    resetBrazeDropdown(mainCommSelect, 'Select Main Type');
+                    mainCommSelect.disabled = true;
+                    state.selectedMainCommType = null;
+                    
                     handleBrazeBrandChange(type);
                 }
             });
@@ -300,33 +320,19 @@ CJC.defineModule('brazeNaming', function() {
         const packageSelect = document.getElementById(`${type}-package`);
         const mainCommSelect = document.getElementById(`${type}-comm-type`);
         
-        if (state.selectedBrand && state.selectedPurposeCode) {
-            // Enable package selection
+        if (state.selectedBrand) {
+            // Enable package selection when brand is selected
             populateBrazeDropdown(packageSelect, window.brazeNamingData.packages, 'fullName', 'fullName', true);
             packageSelect.disabled = false;
-            
-            // Enable and populate communication types
-            const commTypes = type === 'segment' 
-                ? window.brazeNamingData.segmentCommunicationTypes 
-                : window.brazeNamingData.communicationTypes;
-            
-            // Filter by valid codes
-            const validCommTypes = commTypes.filter(ct => 
-                ct.validCodes.includes(state.selectedPurposeCode)
-            );
-            
-            populateBrazeDropdown(mainCommSelect, validCommTypes, 'name', 'name');
-            mainCommSelect.disabled = false;
         } else {
-            // Reset downstream fields
+            // Reset package field if no brand selected
             resetBrazeDropdown(packageSelect, 'No Package', true);
             packageSelect.disabled = true;
             state.selectedPackage = null;
-            
-            resetBrazeDropdown(mainCommSelect, 'Select Main Type');
-            mainCommSelect.disabled = true;
-            state.selectedMainCommType = null;
         }
+        
+        // Note: Communication types are now handled in purpose code change event
+        // They don't depend on brand selection anymore
         
         handleMainCommTypeChange(type);
     }
