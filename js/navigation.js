@@ -208,22 +208,35 @@ function activateTab(tabId) {
     const subNavItem = document.querySelector(`[data-subtab="${tabId}"]`);
     
     if (navItem) {
-        // It's a main nav item
+        // It's a main nav item - clear all and activate this one
         activateNavItem(navItem);
     } else if (subNavItem) {
         // It's a sub nav item
-        // First, activate the sub nav item
+        // Clear all main nav items active state
+        if (navItems) {
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        
+        // Clear all sub-nav items active state
         document.querySelectorAll('.sub-nav-item').forEach(item => {
             item.classList.remove('active');
         });
+        
+        // Activate the sub nav item
         subNavItem.classList.add('active');
         
-        // Then activate the parent nav item
+        // Find and activate the parent nav item
         const parentSubNav = subNavItem.closest('.sub-nav');
         if (parentSubNav) {
+            // Keep the sub-nav open
+            parentSubNav.classList.add('active');
+            
+            // Activate the parent nav item
             const parentNavItem = parentSubNav.previousElementSibling;
             if (parentNavItem) {
-                activateNavItem(parentNavItem);
+                parentNavItem.classList.add('active');
             }
         }
     }
@@ -246,11 +259,22 @@ function activateTab(tabId) {
 }
 
 function activateNavItem(navItem) {
+    // Remove active class from all main nav items
     if (navItems) {
         navItems.forEach(item => {
             item.classList.remove('active');
         });
     }
+    
+    // Also remove active class from all sub-nav items
+    document.querySelectorAll('.sub-nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Close all sub-navs when activating a main nav item
+    document.querySelectorAll('.sub-nav').forEach(nav => {
+        nav.classList.remove('active');
+    });
     
     if (navItem) {
         navItem.classList.add('active');
