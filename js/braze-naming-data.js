@@ -72,12 +72,12 @@ const brazeCommunicationTypes = [
         name: "Checkout Cancelled",
         generatedString: "Checkout_Cancelled",
         validCodes: ["2000"],
-        description: "Communication sent related to checkout cancelled or checkout payment failed."
+        description: "Communication sent related to checkout cancelled or checkout payment failed"
     },
     {
         name: "Confirmation",
         validCodes: ["1000"],
-        description: "Order confirmations for stop, address changes.",
+        description: "Order confirmations for stop, address changes",
         subTypes: [
             { name: "Purchase", generatedString: "Confirmation_Purchase" },
             { name: "Stop", generatedString: "Confirmation_Stop" },
@@ -90,12 +90,12 @@ const brazeCommunicationTypes = [
         name: "Digitalytelsesloven",
         generatedString: "Digitalytelsesloven",
         validCodes: ["1000"],
-        description: "Information to the customer about their digital product at Schibsted."
+        description: "Information to the customer about their digital product at Schibsted"
     },
     {
         name: "Distribution",
         validCodes: ["1000"],
-        description: "Failed delivery, problems with delivery.",
+        description: "Failed delivery, problems with delivery",
         subTypes: [
             { name: "Late Delivery (Mon-Fri)", generatedString: "Distribution_Late_Delivery_Man_Fri" },
             { name: "Late Delivery (Sat)", generatedString: "Distribution_Late_Delivery_Sat" },
@@ -109,36 +109,36 @@ const brazeCommunicationTypes = [
         name: "Engagement",
         generatedString: "Engagement",
         validCodes: ["2000", "3000", "YEAR"],
-        description: "Engagement related, either ad hoc or permanent."
+        description: "Engagement related, either ad hoc or permanent"
     },
     {
         name: "Fullprice Notification",
         generatedString: "Fullprice_Notification",
         validCodes: ["1000"],
-        description: "Reminders sent when campaign price is going over to fullprice."
+        description: "Reminders sent when campaign price is going over to fullprice"
     },
     {
         name: "Holdback",
         generatedString: "Holdback",
         validCodes: ["2000"],
-        description: "Holdback related communication."
+        description: "Holdback related communication"
     },
     {
         name: "Newsletter",
         generatedString: "Newsletter",
         validCodes: ["YEAR"],
-        description: "All newsletters."
+        description: "All newsletters"
     },
     {
         name: "Onboarding",
         generatedString: "Onboarding",
         validCodes: ["2000"],
-        description: "Onboarding related communication."
+        description: "Onboarding related communication"
     },
     {
         name: "Payment",
         validCodes: ["1000"],
-        description: "CC expire, payment reminders and payment stop.",
+        description: "CC expire, payment reminders and payment stop",
         subTypes: [
             { name: "Reminder", generatedString: "Payment_Reminder" },
             { name: "Stop", generatedString: "Payment_Stop" },
@@ -149,18 +149,18 @@ const brazeCommunicationTypes = [
         name: "Pricing",
         generatedString: "Pricing",
         validCodes: ["YEAR"],
-        description: "Communication related to price adjustments."
+        description: "Communication related to price adjustments"
     },
     {
         name: "Sale",
         generatedString: "Sale",
         validCodes: ["YEAR"],
-        description: "Campaigns."
+        description: "Campaigns"
     },
     {
         name: "Share",
         validCodes: ["1000"],
-        description: "All communication related to sharing of subscription.",
+        description: "All communication related to sharing of subscription",
         subTypes: [
             { name: "Secondary Subscriber Invitation", generatedString: "Share_Secondary_Invitation" },
             { name: "Primary Invitation Accepted", generatedString: "Share_Primary_Invitation_Accepted" },
@@ -175,22 +175,28 @@ const brazeCommunicationTypes = [
         description: "Stop survey, feedback surveys etc."
     },
     {
+        name: "Transactional",
+        generatedString: "Transactional",
+        validCodes: ["1000"],
+        description: "Receipt from sale (*only used by CCS)"
+    },
+    {
         name: "Upsale",
         generatedString: "Upsale",
         validCodes: ["2000", "YEAR"],
-        description: "Upsale initiatives."
+        description: "Upsale initiatives"
     },
     {
         name: "Infra",
         generatedString: "Infra",
         validCodes: ["3000"],
-        description: "Infrastructure and operational objects (suppression, housekeeping, etc.)."
+        description: "Infrastructure and operational objects (suppression, housekeeping, etc.)"
     },
     {
         name: "Winback",
         generatedString: "Winback",
         validCodes: ["2000"],
-        description: "Winback related communication."
+        description: "Winback related communication"
     }
 ];
 
