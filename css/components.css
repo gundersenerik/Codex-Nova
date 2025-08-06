@@ -1089,6 +1089,41 @@ select.form-input {
     padding-top: var(--space-xl);
 }
 
+/* Checkbox labels */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--gray-700);
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkbox-label:hover {
+    color: var(--gray-900);
+}
+
+/* Form helper text */
+.form-text {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    margin-top: var(--space-xs);
+    display: block;
+}
+
+/* Flags container */
+.flags-container {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
 /* Buttons */
 .btn {
     padding: var(--space-sm) var(--space-lg);

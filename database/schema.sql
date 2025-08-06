@@ -114,7 +114,7 @@ JOIN brands b ON p.brand_id = b.id;
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS braze_naming_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name_type TEXT NOT NULL CHECK (name_type IN ('campaign', 'canvas', 'segment')),
+    name_type TEXT NOT NULL CHECK (name_type IN ('campaign', 'canvas', 'segment', 'template', 'webhook', 'report', 'tag')),
     generated_name TEXT NOT NULL,
     purpose_code TEXT,
     brand TEXT,
@@ -122,6 +122,8 @@ CREATE TABLE IF NOT EXISTS braze_naming_history (
     comm_type TEXT,
     specific_type TEXT,
     custom_suffix TEXT,
+    description TEXT,
+    flags TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     created_by TEXT
 );

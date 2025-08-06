@@ -37,25 +37,20 @@ INSERT INTO rate_plan_types (code, name, category, sort_order) VALUES
 
 -- ============================================================================
 -- BRANDS - Norwegian & Swedish Media Companies
+-- Updated to match new Braze naming convention (2-4 letter codes)
 -- ============================================================================
 INSERT INTO brands (code, name, country) VALUES
 ('AP', 'Aftenposten', 'NO'),
-('BT', 'Bergens Tidende', 'NO'),
-('E24', 'E24', 'NO'),
-('R24', 'Randaberg24', 'NO'),
-('SA', 'Stavanger Aftenblad', 'NO'),
-('VG', 'Verdens Gang', 'NO'),
-('PM', 'Podme', 'NO'),
-('VK', 'VektKlubb', 'NO'),
 ('AB', 'Aftonbladet', 'SE'),
-('SVD', 'Svenska Dagbladet', 'SE'),
+('BT', 'Bergens Tidende', 'NO'),
+('DP', 'Dine Penger', 'NO'),
+('E24', 'E24', 'NO'),
+('FT', 'Full Tilgang', 'NO'),
 ('OM', 'Omni', 'SE'),
-('OMB', 'Omni Bundle', 'SE'),
-('OME', 'Omni Ekonomi', 'SE'),
-('OMEB', 'Omni Ekonomi Bas', 'SE'),
-('OMMER', 'Omni Mer', 'SE'),
-('OMMERB', 'Omni Mer Bas', 'SE'),
-('OMSP', 'Omni Superpaketet', 'SE'),
+('SA', 'Stavanger Aftenblad', 'NO'),
+('SVD', 'Svenska Dagbladet', 'SE'),
+('VG', 'VG', 'NO'),
+('VK', 'Vektklubb', 'NO'),
 ('W', 'Wellobe', 'SE');
 
 -- ============================================================================

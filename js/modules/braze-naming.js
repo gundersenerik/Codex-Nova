@@ -12,14 +12,18 @@ CJC.defineModule('brazeNaming', function() {
             selectedBrand: null,
             selectedPackage: null,
             selectedMainCommType: null,
-            selectedSpecificCommType: null
+            selectedSpecificCommType: null,
+            description: '',
+            flags: []
         },
         canvas: {
             selectedPurposeCode: null,
             selectedBrand: null,
             selectedPackage: null,
             selectedMainCommType: null,
-            selectedSpecificCommType: null
+            selectedSpecificCommType: null,
+            description: '',
+            flags: []
         },
         segment: {
             selectedPurposeCode: null,
@@ -27,7 +31,9 @@ CJC.defineModule('brazeNaming', function() {
             selectedPackage: null,
             selectedMainCommType: null,
             selectedSpecificCommType: null,
-            customSuffix: ''
+            customSuffix: '',
+            description: '',
+            flags: []
         }
     };
     
@@ -37,6 +43,19 @@ CJC.defineModule('brazeNaming', function() {
     // Private helper functions
     function capitalizeFirst(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+    
+    // Convert string to kebab-case
+    function toKebabCase(str) {
+        if (!str) return '';
+        return str
+            .trim()
+            .replace(/([a-z])([A-Z])/g, '$1-$2')  // camelCase to kebab-case
+            .replace(/[\s_]+/g, '-')              // spaces and underscores to hyphens
+            .replace(/[^a-zA-Z0-9-]/g, '')        // remove non-alphanumeric except hyphens
+            .replace(/-+/g, '-')                   // multiple hyphens to single
+            .replace(/^-|-$/g, '')                 // remove leading/trailing hyphens
+            .toLowerCase();
     }
     
     function populateBrazeDropdown(selectElement, items, valueField, textField, isPackageDropdown = false) {
@@ -110,7 +129,9 @@ CJC.defineModule('brazeNaming', function() {
                 package: state.selectedPackage || null,
                 comm_type: state.selectedMainCommType,
                 specific_type: state.selectedSpecificCommType || null,
-                custom_suffix: type === 'segment' ? state.customSuffix : null
+                custom_suffix: type === 'segment' ? state.customSuffix : null,
+                description: state.description || null,
+                flags: state.flags.length > 0 ? state.flags.join('|') : null
             };
             
             // Save to database (this will be implemented when database is ready)
@@ -187,7 +208,16 @@ CJC.defineModule('brazeNaming', function() {
             });
         }
         
-        // Custom suffix for segments
+        // Description field (for all types)
+        const descriptionInput = document.getElementById(`${type}-description`);
+        if (descriptionInput) {
+            descriptionInput.addEventListener('input', () => {
+                state.description = descriptionInput.value;
+                updateBrazeFormState(type);
+            });
+        }
+        
+        // Custom suffix for segments (legacy)
         if (type === 'segment') {
             const customSuffixInput = document.getElementById('segment-custom-suffix');
             if (customSuffixInput) {
@@ -196,6 +226,24 @@ CJC.defineModule('brazeNaming', function() {
                     updateBrazeFormState(type);
                 });
             }
+        }
+        
+        // Flags checkboxes
+        const flagsContainer = document.getElementById(`${type}-flags`);
+        if (flagsContainer) {
+            const flagCheckboxes = flagsContainer.querySelectorAll('input[type="checkbox"]');
+            flagCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        if (!state.flags.includes(checkbox.value)) {
+                            state.flags.push(checkbox.value);
+                        }
+                    } else {
+                        state.flags = state.flags.filter(f => f !== checkbox.value);
+                    }
+                    updateBrazeFormState(type);
+                });
+            });
         }
         
         // Reset button
@@ -421,12 +469,25 @@ CJC.defineModule('brazeNaming', function() {
         // Build final name
         let finalName = `${prefix}_${codePart}_${brandPart}_${commPart}`;
         
-        // Add custom suffix for segments
-        if (type === 'segment' && state.customSuffix) {
+        // Add description if provided (works for all types)
+        if (state.description) {
+            const kebabDescription = toKebabCase(state.description);
+            if (kebabDescription) {
+                finalName += `_${kebabDescription}`;
+            }
+        }
+        
+        // Add custom suffix for segments (legacy support)
+        if (type === 'segment' && state.customSuffix && !state.description) {
             const sanitizedSuffix = state.customSuffix.trim().replace(/\s+/g, '_');
             if (sanitizedSuffix) {
                 finalName += `_${sanitizedSuffix}`;
             }
+        }
+        
+        // Add flags if selected
+        if (state.flags && state.flags.length > 0) {
+            finalName += `_${state.flags.join('|')}`;
         }
         
         // Display the result
@@ -456,6 +517,8 @@ CJC.defineModule('brazeNaming', function() {
         state.selectedPackage = null;
         state.selectedMainCommType = null;
         state.selectedSpecificCommType = null;
+        state.description = '';
+        state.flags = [];
         if (type === 'segment') {
             state.customSuffix = '';
         }
@@ -479,6 +542,21 @@ CJC.defineModule('brazeNaming', function() {
             document.getElementById('segment-custom-suffix').value = '';
             document.getElementById('segment-custom-suffix').disabled = true;
             document.getElementById('segment-custom-suffix-container').style.display = 'none';
+        }
+        
+        // Reset description field
+        const descriptionInput = document.getElementById(`${type}-description`);
+        if (descriptionInput) {
+            descriptionInput.value = '';
+        }
+        
+        // Reset flags checkboxes
+        const flagsContainer = document.getElementById(`${type}-flags`);
+        if (flagsContainer) {
+            const flagCheckboxes = flagsContainer.querySelectorAll('input[type="checkbox"]');
+            flagCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
         }
         
         // Hide result

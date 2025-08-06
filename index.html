@@ -388,6 +388,34 @@
                                             <option value="">-- Select Specific Type --</option>
                                         </select>
                                     </div>
+                                    
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label" for="campaign-description">
+                                            6. Description (Optional)
+                                        </label>
+                                        <input type="text" id="campaign-description" class="form-input" placeholder="e.g., BackInStock, SummerKickoff (will be converted to kebab-case)">
+                                        <small class="form-text">Optional descriptive text, will be converted to kebab-case format</small>
+                                    </div>
+                                    
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label">
+                                            7. Flags (Optional)
+                                        </label>
+                                        <div id="campaign-flags" class="flags-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="oneoff"> One-off
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="abtest"> A/B Test
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="v2"> Version 2
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="sv"> Swedish
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-actions">
@@ -418,7 +446,7 @@
                             </div>
                             
                             <div class="result-info">
-                                <div><strong>Format:</strong> CMP_[CODE]_[BRAND]_[PACKAGE]_[COMM_TYPE]</div>
+                                <div><strong>Format:</strong> CMP_[CODE]_[BRAND]_[COMM_TYPE]_[DESCRIPTION]_[FLAGS]</div>
                                 <div><strong>Note:</strong> This name has been saved to history</div>
                             </div>
                         </div>
@@ -480,6 +508,34 @@
                                             <option value="">-- Select Specific Type --</option>
                                         </select>
                                     </div>
+                                    
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label" for="canvas-description">
+                                            6. Description (Optional)
+                                        </label>
+                                        <input type="text" id="canvas-description" class="form-input" placeholder="e.g., BackInStock, SummerKickoff (will be converted to kebab-case)">
+                                        <small class="form-text">Optional descriptive text, will be converted to kebab-case format</small>
+                                    </div>
+                                    
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label">
+                                            7. Flags (Optional)
+                                        </label>
+                                        <div id="canvas-flags" class="flags-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="oneoff"> One-off
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="abtest"> A/B Test
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="v2"> Version 2
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="sv"> Swedish
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-actions">
@@ -510,7 +566,7 @@
                             </div>
                             
                             <div class="result-info">
-                                <div><strong>Format:</strong> CAN_[CODE]_[BRAND]_[PACKAGE]_[COMM_TYPE]</div>
+                                <div><strong>Format:</strong> CAN_[CODE]_[BRAND]_[COMM_TYPE]_[DESCRIPTION]_[FLAGS]</div>
                                 <div><strong>Note:</strong> This name has been saved to history</div>
                             </div>
                         </div>
@@ -575,10 +631,38 @@
                                     
                                     <div class="form-group" id="segment-custom-suffix-container" style="display: none;">
                                         <label class="form-label" for="segment-custom-suffix">
-                                            6. Custom Suffix (Optional)
+                                            6. Custom Suffix (Legacy - Use Description instead)
                                         </label>
                                         <input type="text" id="segment-custom-suffix" class="form-input" 
                                                placeholder="e.g., Helg_Sport_A" disabled>
+                                    </div>
+                                    
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label" for="segment-description">
+                                            7. Description (Optional)
+                                        </label>
+                                        <input type="text" id="segment-description" class="form-input" placeholder="e.g., SuppressInactive30d (will be converted to kebab-case)">
+                                        <small class="form-text">Optional descriptive text, will be converted to kebab-case format</small>
+                                    </div>
+                                    
+                                    <div class="form-group" style="grid-column: 1 / -1;">
+                                        <label class="form-label">
+                                            8. Flags (Optional)
+                                        </label>
+                                        <div id="segment-flags" class="flags-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="oneoff"> One-off
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="abtest"> A/B Test
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="v2"> Version 2
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" value="sv"> Swedish
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -610,7 +694,7 @@
                             </div>
                             
                             <div class="result-info">
-                                <div><strong>Format:</strong> SEG_[CODE]_[BRAND]_[PACKAGE]_[COMM_TYPE]_[SUFFIX]</div>
+                                <div><strong>Format:</strong> SEG_[CODE]_[BRAND]_[COMM_TYPE]_[DESCRIPTION]_[FLAGS]</div>
                                 <div><strong>Note:</strong> This name has been saved to history</div>
                             </div>
                         </div>

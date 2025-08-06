@@ -2,34 +2,44 @@
    BRAZE NAMING DATA - Data constants for Braze naming conventions
    ============================================================================ */
 
-// Brand definitions
-const brazeBrands = [
-    { initial: "AP", fullName: "Aftenposten" },
-    { initial: "BT", fullName: "Bergens Tidende" },
-    { initial: "SA", fullName: "Stavanger Aftenblad" },
-    { initial: "VG", fullName: "VG" },
-    { initial: "E24", fullName: "E24" },
-    { initial: "DP", fullName: "Dine Penger" },
-    { initial: "VK", fullName: "Vektklubb" },
-    { initial: "Vink", fullName: "Vink" },
-    { initial: "Vinklubben", fullName: "Vinklubben" },
-    { initial: "Magasin+", fullName: "Magasin+" },
-    { initial: "Innsikt", fullName: "Aftenposten Innsikt" },
-    { initial: "Historie", fullName: "Aftenposten Historie" },
-    { initial: "MFN", fullName: "Mat fra Norge" },
-    { initial: "Hytte", fullName: "Hyttemagasinet" },
-    { initial: "APJR", fullName: "Aftenposten Junior" },
-    { initial: "AB", fullName: "Aftonbladet" },
-    { initial: "SvD", fullName: "Svenska Dagbladet" },
-    { initial: "Omni", fullName: "Omni" },
-    { initial: "OmniEko", fullName: "Omni Ekonomi" },
-    { initial: "Wellobe", fullName: "Wellobe" }
+// Object type definitions
+const brazeObjectTypes = [
+    { code: "CMP", name: "Campaign", description: "Braze Campaign" },
+    { code: "CAN", name: "Canvas", description: "Braze Canvas" },
+    { code: "SEG", name: "Segment", description: "Braze Segment" },
+    { code: "TPL", name: "Template", description: "Braze Template" },
+    { code: "WHK", name: "Webhook", description: "Braze Webhook" },
+    { code: "RPT", name: "Report", description: "Braze Report" },
+    { code: "TAG", name: "Tag", description: "Braze Tag" }
 ];
 
-// Package definitions
+// Brand definitions - Updated with proper 2-4 letter codes
+const brazeBrands = [
+    { initial: "AP", fullName: "Aftenposten" },
+    { initial: "AB", fullName: "Aftonbladet" },
+    { initial: "BT", fullName: "Bergens Tidende" },
+    { initial: "DP", fullName: "Dine Penger" },
+    { initial: "E24", fullName: "E24" },
+    { initial: "FT", fullName: "Full Tilgang" },
+    { initial: "OM", fullName: "Omni" },
+    { initial: "SA", fullName: "Stavanger Aftenblad" },
+    { initial: "SVD", fullName: "Svenska Dagbladet" },
+    { initial: "VG", fullName: "VG" },
+    { initial: "VK", fullName: "Vektklubb" },
+    { initial: "W", fullName: "Wellobe" }
+];
+
+// Package definitions (Note: FT moved to brands)
 const brazePackages = [
-    { initial: "FT", fullName: "Full tilgang" },
-    { initial: "SP", fullName: "Superpaketet" }
+    // Packages are optional and can be empty
+];
+
+// Flags definitions
+const brazeFlags = [
+    { value: "oneoff", name: "One-off", description: "One-time send" },
+    { value: "abtest", name: "A/B Test", description: "A/B test variant" },
+    { value: "v2", name: "Version 2", description: "Second version" },
+    { value: "sv", name: "Swedish", description: "Swedish language variant" }
 ];
 
 // Purpose code definitions
@@ -45,8 +55,13 @@ const brazePurposeCodes = [
         codeValue: "2000"
     },
     {
+        id: "operational",
+        display: "Operational (3000)",
+        codeValue: "3000"
+    },
+    {
         id: "adhoc",
-        display: "Ad-hoc Communication (Current Year)",
+        display: "Ad-hoc/One-off (Current Year)",
         codeValue: "YEAR"
     }
 ];
@@ -93,7 +108,7 @@ const brazeCommunicationTypes = [
     {
         name: "Engagement",
         generatedString: "Engagement",
-        validCodes: ["2000", "YEAR"],
+        validCodes: ["2000", "3000", "YEAR"],
         description: "Engagement related, either ad hoc or permanent."
     },
     {
@@ -166,6 +181,12 @@ const brazeCommunicationTypes = [
         description: "Upsale initiatives."
     },
     {
+        name: "Infra",
+        generatedString: "Infra",
+        validCodes: ["3000"],
+        description: "Infrastructure and operational objects (suppression, housekeeping, etc.)."
+    },
+    {
         name: "Winback",
         generatedString: "Winback",
         validCodes: ["2000"],
@@ -178,9 +199,11 @@ const brazeSegmentCommunicationTypes = JSON.parse(JSON.stringify(brazeCommunicat
 
 // Export for use in other modules
 window.brazeNamingData = {
+    objectTypes: brazeObjectTypes,
     brands: brazeBrands,
     packages: brazePackages,
     purposeCodes: brazePurposeCodes,
     communicationTypes: brazeCommunicationTypes,
-    segmentCommunicationTypes: brazeSegmentCommunicationTypes
+    segmentCommunicationTypes: brazeSegmentCommunicationTypes,
+    flags: brazeFlags
 };
