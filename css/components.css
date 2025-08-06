@@ -1225,3 +1225,83 @@ select.form-input {
         width: 100%;
     }
 }
+
+/* ============================================================================
+   BRAZE NAMING V2
+   ============================================================================ */
+
+.naming-preview {
+    transition: all 0.2s ease;
+}
+
+.naming-preview.has-preview {
+    border-color: var(--success) !important;
+}
+
+.naming-preview .preview-text {
+    color: var(--gray-900);
+    font-weight: 500;
+}
+
+.history-item {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--gray-200);
+    transition: background-color 0.2s ease;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-item:hover {
+    background-color: var(--gray-50);
+}
+
+.history-name {
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.history-meta {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-meta .btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.history-meta .btn-small:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.no-history {
+    padding: 2rem;
+    margin: 0;
+}
+
+.warning-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-hint {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin-top: 0.25rem;
+}

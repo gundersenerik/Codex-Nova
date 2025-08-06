@@ -332,373 +332,123 @@
                         </script>
                     </div>
 
-                    <!-- Braze Campaigns Tab -->
+                    <!-- Unified Braze Naming Section -->
                     <div class="tab-content" id="braze-campaigns">
                         <div class="card">
                             <div class="card-header">
-                                <h2 class="card-title">Campaign Configuration</h2>
+                                <h2 class="card-title">Braze Naming Generator v2</h2>
                                 <div style="color: var(--gray-600); font-size: 0.875rem;">
-                                    Generate standardized Braze campaign names
+                                    Generate standardized names for all Braze object types
                                 </div>
                             </div>
                             
-                            <form id="brazeCampaignForm" class="braze-form">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label" for="campaign-purpose">
-                                            1. Purpose / Code <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="campaign-purpose" class="form-input form-select" required>
-                                            <option value="">-- Select Purpose --</option>
-                                        </select>
+                            <div class="naming-container">
+                                <!-- Live Preview -->
+                                <div class="preview-container" style="margin-bottom: 2rem; padding: 1.5rem; background: var(--gray-50); border-radius: 8px;">
+                                    <h3 style="margin-bottom: 1rem; font-size: 1rem; color: var(--gray-700);">Live Preview</h3>
+                                    <div id="naming-preview" class="naming-preview" style="font-family: monospace; font-size: 1.25rem; padding: 1rem; background: white; border: 2px solid var(--primary); border-radius: 4px; min-height: 3rem; display: flex; align-items: center;">
+                                        <span class="preview-placeholder" style="color: var(--gray-500);">Select options to generate name...</span>
                                     </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="campaign-brand">
-                                            2. Brand <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="campaign-brand" class="form-input form-select" disabled required>
-                                            <option value="">-- Select Brand --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="campaign-package">
-                                            3. Package (Optional)
-                                        </label>
-                                        <select id="campaign-package" class="form-input form-select" disabled>
-                                            <option value="">-- No Package --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="campaign-comm-type">
-                                            4. Main Communication Type <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="campaign-comm-type" class="form-input form-select" disabled required>
-                                            <option value="">-- Select Main Type --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group" id="campaign-specific-type-container" style="display: none;">
-                                        <label class="form-label" for="campaign-specific-type">
-                                            5. Specific Communication
-                                        </label>
-                                        <select id="campaign-specific-type" class="form-input form-select" disabled>
-                                            <option value="">-- Select Specific Type --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label class="form-label" for="campaign-description">
-                                            6. Description (Optional)
-                                        </label>
-                                        <input type="text" id="campaign-description" class="form-input" placeholder="e.g., BackInStock, SummerKickoff (will be converted to kebab-case)">
-                                        <small class="form-text">Optional descriptive text, will be converted to kebab-case format</small>
-                                    </div>
-                                    
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label class="form-label">
-                                            7. Flags (Optional)
-                                        </label>
-                                        <div id="campaign-flags" class="flags-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="oneoff"> One-off
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="abtest"> A/B Test
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="v2"> Version 2
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="sv"> Swedish
-                                            </label>
-                                        </div>
+                                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                        <button id="copy-name-btn" class="btn btn-secondary btn-sm" disabled>Copy Name</button>
+                                        <button id="copy-utm-btn" class="btn btn-secondary btn-sm" disabled>Copy as UTM</button>
                                     </div>
                                 </div>
                                 
-                                <div class="form-actions">
-                                    <button type="button" class="btn btn-secondary" id="campaign-reset-btn">
-                                        Reset All
-                                    </button>
-                                    <button type="submit" class="btn btn-primary" id="campaign-generate-btn" disabled>
-                                        Generate Name
-                                    </button>
+                                <!-- Form -->
+                                <form id="brazeNamingForm" class="braze-naming-form">
+                                    <div class="form-grid">
+                                        <!-- Object Type -->
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                1. Object Type <span style="color: var(--danger);">*</span>
+                                            </label>
+                                            <select id="object-type" class="form-input form-select" required>
+                                                <option value="">-- Select Type --</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Code -->
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                2. Code/Purpose <span style="color: var(--danger);">*</span>
+                                            </label>
+                                            <select id="code-type" class="form-input form-select" required>
+                                                <option value="">-- Select Code --</option>
+                                            </select>
+                                            <!-- Year input for YYYY code -->
+                                            <input type="number" id="year-input" class="form-input" 
+                                                   min="2020" max="2099" style="display:none; margin-top: 0.5rem;" 
+                                                   placeholder="Year">
+                                        </div>
+                                        
+                                        <!-- Brand -->
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                3. Brand <span style="color: var(--danger);">*</span>
+                                            </label>
+                                            <select id="brand-select" class="form-input form-select" required>
+                                                <option value="">-- Select Brand --</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Communication Type -->
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                4. Communication Type <span style="color: var(--danger);">*</span>
+                                            </label>
+                                            <select id="comm-type" class="form-input form-select" required>
+                                                <option value="">-- Select Type --</option>
+                                            </select>
+                                            <small id="comm-type-hint" class="form-hint" style="margin-top: 0.25rem; color: var(--gray-600);"></small>
+                                            <div id="code-override-warning" class="warning-message" style="display:none; margin-top: 0.5rem; padding: 0.5rem; background: var(--warning-light); color: var(--warning-dark); border-radius: 4px; font-size: 0.875rem;">
+                                                ⚠️ This communication type typically uses code <span id="default-code" style="font-weight: bold;"></span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Description (Optional) -->
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label class="form-label">
+                                                5. Description (Optional)
+                                            </label>
+                                            <input type="text" id="description-input" class="form-input" 
+                                                   placeholder="e.g., WelcomeStep1, BlackFriday">
+                                            <small class="form-hint">Will be converted to kebab-case</small>
+                                        </div>
+                                        
+                                        <!-- Flags -->
+                                        <div class="form-group" style="grid-column: 1 / -1;">
+                                            <label class="form-label">
+                                                6. Flags (Optional)
+                                            </label>
+                                            <label class="checkbox-label" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                                                <input type="checkbox" id="abtest-flag" value="abtest">
+                                                <span>A/B Test</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Actions -->
+                                    <div class="form-actions">
+                                        <button type="submit" id="generate-btn" class="btn btn-primary" disabled>Generate Name</button>
+                                        <button type="reset" id="reset-btn" class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </form>
+                                
+                                <!-- History -->
+                                <div class="history-container" style="margin-top: 2rem;">
+                                    <h3 style="margin-bottom: 1rem;">Recent Names</h3>
+                                    <div id="naming-history" class="naming-history" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: 4px; padding: 1rem;">
+                                        <p class="no-history" style="color: var(--gray-500); text-align: center;">No naming history yet</p>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
-
-                        <!-- Results Card -->
-                        <div class="card" id="campaign-result-container" style="display: none;">
-                            <div class="card-header">
-                                <h3 class="card-title">Generated Campaign Name</h3>
-                                <button id="copy-campaign-btn" class="btn btn-secondary btn-sm">
-                                    Copy
-                                </button>
-                            </div>
-                            
-                            <div class="result-display">
-                                <div class="result-label">Your Campaign Name:</div>
-                                <div class="result-value">
-                                    <pre id="generated-campaign-name"></pre>
-                                </div>
-                            </div>
-                            
-                            <div class="result-info">
-                                <div><strong>Format:</strong> CMP_[CODE]_[BRAND]_[COMM_TYPE]_[DESCRIPTION]_[FLAGS]</div>
-                                <div><strong>Note:</strong> This name has been saved to history</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Braze Canvases Tab -->
-                    <div class="tab-content" id="braze-canvases">
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Canvas Configuration</h2>
-                                <div style="color: var(--gray-600); font-size: 0.875rem;">
-                                    Generate standardized Braze canvas names
-                                </div>
-                            </div>
-                            
-                            <form id="brazeCanvasForm" class="braze-form">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label" for="canvas-purpose">
-                                            1. Purpose / Code <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="canvas-purpose" class="form-input form-select" required>
-                                            <option value="">-- Select Purpose --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="canvas-brand">
-                                            2. Brand <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="canvas-brand" class="form-input form-select" disabled required>
-                                            <option value="">-- Select Brand --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="canvas-package">
-                                            3. Package (Optional)
-                                        </label>
-                                        <select id="canvas-package" class="form-input form-select" disabled>
-                                            <option value="">-- No Package --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="canvas-comm-type">
-                                            4. Main Communication Type <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="canvas-comm-type" class="form-input form-select" disabled required>
-                                            <option value="">-- Select Main Type --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group" id="canvas-specific-type-container" style="display: none;">
-                                        <label class="form-label" for="canvas-specific-type">
-                                            5. Specific Communication
-                                        </label>
-                                        <select id="canvas-specific-type" class="form-input form-select" disabled>
-                                            <option value="">-- Select Specific Type --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label class="form-label" for="canvas-description">
-                                            6. Description (Optional)
-                                        </label>
-                                        <input type="text" id="canvas-description" class="form-input" placeholder="e.g., BackInStock, SummerKickoff (will be converted to kebab-case)">
-                                        <small class="form-text">Optional descriptive text, will be converted to kebab-case format</small>
-                                    </div>
-                                    
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label class="form-label">
-                                            7. Flags (Optional)
-                                        </label>
-                                        <div id="canvas-flags" class="flags-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="oneoff"> One-off
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="abtest"> A/B Test
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="v2"> Version 2
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="sv"> Swedish
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-actions">
-                                    <button type="button" class="btn btn-secondary" id="canvas-reset-btn">
-                                        Reset All
-                                    </button>
-                                    <button type="submit" class="btn btn-primary" id="canvas-generate-btn" disabled>
-                                        Generate Name
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Results Card -->
-                        <div class="card" id="canvas-result-container" style="display: none;">
-                            <div class="card-header">
-                                <h3 class="card-title">Generated Canvas Name</h3>
-                                <button id="copy-canvas-btn" class="btn btn-secondary btn-sm">
-                                    Copy
-                                </button>
-                            </div>
-                            
-                            <div class="result-display">
-                                <div class="result-label">Your Canvas Name:</div>
-                                <div class="result-value">
-                                    <pre id="generated-canvas-name"></pre>
-                                </div>
-                            </div>
-                            
-                            <div class="result-info">
-                                <div><strong>Format:</strong> CAN_[CODE]_[BRAND]_[COMM_TYPE]_[DESCRIPTION]_[FLAGS]</div>
-                                <div><strong>Note:</strong> This name has been saved to history</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Braze Segments Tab -->
-                    <div class="tab-content" id="braze-segments">
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Segment Configuration</h2>
-                                <div style="color: var(--gray-600); font-size: 0.875rem;">
-                                    Generate standardized Braze segment names
-                                </div>
-                            </div>
-                            
-                            <form id="brazeSegmentForm" class="braze-form">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label" for="segment-purpose">
-                                            1. Purpose / Code <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="segment-purpose" class="form-input form-select" required>
-                                            <option value="">-- Select Purpose --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="segment-brand">
-                                            2. Brand <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="segment-brand" class="form-input form-select" disabled required>
-                                            <option value="">-- Select Brand --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="segment-package">
-                                            3. Package (Optional)
-                                        </label>
-                                        <select id="segment-package" class="form-input form-select" disabled>
-                                            <option value="">-- No Package --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label class="form-label" for="segment-comm-type">
-                                            4. Main Type (Segment Specific) <span style="color: var(--danger);">*</span>
-                                        </label>
-                                        <select id="segment-comm-type" class="form-input form-select" disabled required>
-                                            <option value="">-- Select Main Type --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group" id="segment-specific-type-container" style="display: none;">
-                                        <label class="form-label" for="segment-specific-type">
-                                            5. Specific Type (Segment Specific)
-                                        </label>
-                                        <select id="segment-specific-type" class="form-input form-select" disabled>
-                                            <option value="">-- Select Specific Type --</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group" id="segment-custom-suffix-container" style="display: none;">
-                                        <label class="form-label" for="segment-custom-suffix">
-                                            6. Custom Suffix (Legacy - Use Description instead)
-                                        </label>
-                                        <input type="text" id="segment-custom-suffix" class="form-input" 
-                                               placeholder="e.g., Helg_Sport_A" disabled>
-                                    </div>
-                                    
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label class="form-label" for="segment-description">
-                                            7. Description (Optional)
-                                        </label>
-                                        <input type="text" id="segment-description" class="form-input" placeholder="e.g., SuppressInactive30d (will be converted to kebab-case)">
-                                        <small class="form-text">Optional descriptive text, will be converted to kebab-case format</small>
-                                    </div>
-                                    
-                                    <div class="form-group" style="grid-column: 1 / -1;">
-                                        <label class="form-label">
-                                            8. Flags (Optional)
-                                        </label>
-                                        <div id="segment-flags" class="flags-container" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="oneoff"> One-off
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="abtest"> A/B Test
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="v2"> Version 2
-                                            </label>
-                                            <label class="checkbox-label">
-                                                <input type="checkbox" value="sv"> Swedish
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-actions">
-                                    <button type="button" class="btn btn-secondary" id="segment-reset-btn">
-                                        Reset All
-                                    </button>
-                                    <button type="submit" class="btn btn-primary" id="segment-generate-btn" disabled>
-                                        Generate Name
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Results Card -->
-                        <div class="card" id="segment-result-container" style="display: none;">
-                            <div class="card-header">
-                                <h3 class="card-title">Generated Segment Name</h3>
-                                <button id="copy-segment-btn" class="btn btn-secondary btn-sm">
-                                    Copy
-                                </button>
-                            </div>
-                            
-                            <div class="result-display">
-                                <div class="result-label">Your Segment Name:</div>
-                                <div class="result-value">
-                                    <pre id="generated-segment-name"></pre>
-                                </div>
-                            </div>
-                            
-                            <div class="result-info">
-                                <div><strong>Format:</strong> SEG_[CODE]_[BRAND]_[COMM_TYPE]_[DESCRIPTION]_[FLAGS]</div>
-                                <div><strong>Note:</strong> This name has been saved to history</div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Keep the empty placeholders for other tabs but consolidate -->
+                    <div class="tab-content" id="braze-canvases" style="display: none;"></div>
+                    <div class="tab-content" id="braze-segments" style="display: none;"></div>
 
                     <!-- UTM Purchase Links Tab -->
                     <div class="tab-content" id="utm-purchase">
@@ -897,7 +647,7 @@
     <script src="js/modules/auth.js"></script>
     <script src="js/modules/navigation.js"></script>
     <script src="js/modules/promocode.js"></script>
-    <script src="js/modules/braze-naming.js"></script>
+    <!-- Removed old braze-naming.js -->
     <script src="js/modules/data-manager.js"></script>
     <script src="js/modules/csv-importer.js"></script>
     
@@ -911,8 +661,9 @@
     <script src="js/csv-importer.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/promocode.js"></script>
-    <script src="js/braze-naming-data.js"></script>
-    <script src="js/braze-naming.js"></script>
+    <!-- Braze Naming v2 -->
+    <script src="js/braze-naming-v2-data.js"></script>
+    <script src="js/braze-naming-v2.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/main.js"></script>
 </body>
