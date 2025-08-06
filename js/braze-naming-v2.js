@@ -144,22 +144,6 @@
         // Reset comm type selection if current selection is not valid
         if (state.commType && !validTypes.find(t => t.tag === state.commType)) {
             state.commType = null;
-            showCodeOverrideWarning();
-        }
-    }
-    
-    function showCodeOverrideWarning() {
-        if (!state.code || !state.commType) {
-            document.getElementById('code-override-warning').style.display = 'none';
-            return;
-        }
-        
-        const commType = window.brazeNamingV2Data.communicationTypes.find(t => t.tag === state.commType);
-        if (commType && commType.defaultCode !== state.code && state.code !== 'YYYY') {
-            document.getElementById('default-code').textContent = commType.defaultCode;
-            document.getElementById('code-override-warning').style.display = 'block';
-        } else {
-            document.getElementById('code-override-warning').style.display = 'none';
         }
     }
     
@@ -303,9 +287,6 @@
         document.getElementById('description-input').value = '';
         document.getElementById('abtest-flag').checked = false;
         
-        // Hide warnings
-        document.getElementById('code-override-warning').style.display = 'none';
-        
         // Update preview
         updatePreview();
     }
@@ -363,7 +344,6 @@
             
             // Update communication types dropdown
             updateCommunicationTypes();
-            showCodeOverrideWarning();
             updatePreview();
         });
         
@@ -382,7 +362,6 @@
         // Communication type change
         document.getElementById('comm-type')?.addEventListener('change', function() {
             state.commType = this.value;
-            showCodeOverrideWarning();
             
             // Update hint
             const commType = window.brazeNamingV2Data.communicationTypes.find(t => t.tag === this.value);
