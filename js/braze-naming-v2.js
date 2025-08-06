@@ -282,7 +282,7 @@
         document.getElementById('code-type').value = '';
         document.getElementById('year-input').value = state.year;
         document.getElementById('year-input').style.display = 'none';
-        document.getElementById('brand-select').value = '';
+        document.getElementById('braze-brand-select').value = '';
         document.getElementById('comm-type').value = '';
         document.getElementById('description-input').value = '';
         document.getElementById('abtest-flag').checked = false;
@@ -302,7 +302,7 @@
         // Populate dropdowns
         populateDropdown('object-type', window.brazeNamingV2Data.objectTypes, 'code', 'name');
         populateDropdown('code-type', window.brazeNamingV2Data.codes, 'value', 'name');
-        populateDropdown('brand-select', window.brazeNamingV2Data.brands, 'code', 'name');
+        populateDropdown('braze-brand-select', window.brazeNamingV2Data.brands, 'code', 'name');
         
         // Load history from localStorage
         try {
@@ -354,7 +354,7 @@
         });
         
         // Brand change
-        document.getElementById('brand-select')?.addEventListener('change', function() {
+        document.getElementById('braze-brand-select')?.addEventListener('change', function() {
             state.brand = this.value;
             updatePreview();
         });
