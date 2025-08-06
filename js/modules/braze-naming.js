@@ -151,15 +151,10 @@ CJC.defineModule('brazeNaming', function() {
         if (purposeSelect) {
             purposeSelect.addEventListener('change', () => {
                 state.selectedPurposeCode = purposeSelect.value;
-                const brandSelect = document.getElementById(`${type}-brand`);
+                const mainCommSelect = document.getElementById(`${type}-comm-type`);
                 
                 if (state.selectedPurposeCode) {
-                    // Enable brand selection
-                    populateBrazeDropdown(brandSelect, window.brazeNamingData.brands, 'fullName', 'fullName');
-                    brandSelect.disabled = false;
-                    
-                    // Enable and populate communication types based on purpose code
-                    const mainCommSelect = document.getElementById(`${type}-comm-type`);
+                    // Update communication types based on purpose code
                     const commTypes = type === 'segment' 
                         ? window.brazeNamingData.segmentCommunicationTypes 
                         : window.brazeNamingData.communicationTypes;
@@ -169,21 +164,28 @@ CJC.defineModule('brazeNaming', function() {
                         ct.validCodes.includes(state.selectedPurposeCode)
                     );
                     
+                    // Reset and repopulate communication types
+                    const currentCommType = state.selectedMainCommType;
                     populateBrazeDropdown(mainCommSelect, validCommTypes, 'name', 'name');
                     mainCommSelect.disabled = false;
-                } else {
-                    // Reset downstream fields
-                    resetBrazeDropdown(brandSelect, 'Select Brand');
-                    brandSelect.disabled = true;
-                    state.selectedBrand = null;
                     
-                    const mainCommSelect = document.getElementById(`${type}-comm-type`);
+                    // Try to preserve the current selection if it's still valid
+                    if (currentCommType && validCommTypes.some(ct => ct.name === currentCommType)) {
+                        mainCommSelect.value = currentCommType;
+                    } else {
+                        // Only clear if the current type is not valid for the new purpose code
+                        state.selectedMainCommType = null;
+                        handleMainCommTypeChange(type);
+                    }
+                } else {
+                    // Only reset communication types when no purpose code is selected
                     resetBrazeDropdown(mainCommSelect, 'Select Main Type');
                     mainCommSelect.disabled = true;
                     state.selectedMainCommType = null;
-                    
-                    handleBrazeBrandChange(type);
+                    handleMainCommTypeChange(type);
                 }
+                
+                updateBrazeFormState(type);
             });
         }
         
@@ -397,6 +399,13 @@ CJC.defineModule('brazeNaming', function() {
             populateBrazeDropdown(purposeSelect, window.brazeNamingData.purposeCodes, 'codeValue', 'display');
         }
         
+        // Populate brands - always enabled and populated
+        const brandSelect = document.getElementById(`${type}-brand`);
+        if (brandSelect) {
+            populateBrazeDropdown(brandSelect, window.brazeNamingData.brands, 'fullName', 'fullName');
+            brandSelect.disabled = false;
+        }
+        
         // Set up event listeners
         setupBrazeEventListeners(type);
         
@@ -531,8 +540,13 @@ CJC.defineModule('brazeNaming', function() {
         
         // Reset form elements
         document.getElementById(`${type}-purpose`).value = '';
-        resetBrazeDropdown(document.getElementById(`${type}-brand`), 'Select Brand');
-        document.getElementById(`${type}-brand`).disabled = true;
+        document.getElementById(`${type}-brand`).value = '';
+        // Keep brand dropdown enabled with all brands
+        const brandSelect = document.getElementById(`${type}-brand`);
+        if (brandSelect) {
+            populateBrazeDropdown(brandSelect, window.brazeNamingData.brands, 'fullName', 'fullName');
+            brandSelect.disabled = false;
+        }
         resetBrazeDropdown(document.getElementById(`${type}-package`), 'No Package', true);
         document.getElementById(`${type}-package`).disabled = true;
         resetBrazeDropdown(document.getElementById(`${type}-comm-type`), 'Select Main Type');
