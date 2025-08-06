@@ -203,6 +203,31 @@ function activateTab(tabId) {
         targetContent.classList.add('active');
     }
     
+    // Update navigation highlighting
+    const navItem = document.querySelector(`[data-tab="${tabId}"]`);
+    const subNavItem = document.querySelector(`[data-subtab="${tabId}"]`);
+    
+    if (navItem) {
+        // It's a main nav item
+        activateNavItem(navItem);
+    } else if (subNavItem) {
+        // It's a sub nav item
+        // First, activate the sub nav item
+        document.querySelectorAll('.sub-nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        subNavItem.classList.add('active');
+        
+        // Then activate the parent nav item
+        const parentSubNav = subNavItem.closest('.sub-nav');
+        if (parentSubNav) {
+            const parentNavItem = parentSubNav.previousElementSibling;
+            if (parentNavItem) {
+                activateNavItem(parentNavItem);
+            }
+        }
+    }
+    
     // Initialize tab-specific functionality
     initializeTabSpecificFeatures(tabId);
     
@@ -243,12 +268,17 @@ async function initializeTabSpecificFeatures(tabId) {
                 }
                 break;
             
-            case 'braze-campaigns':
-            case 'braze-canvases':
-            case 'braze-segments':
-                // Initialize Braze naming functionality if not already initialized
-                if (window.brazeNaming && window.brazeNaming.initialize) {
-                    window.brazeNaming.initialize();
+            case 'braze-naming':
+                // Initialize Braze naming v2 functionality if not already initialized
+                if (window.brazeNamingV2 && window.brazeNamingV2.initialize) {
+                    window.brazeNamingV2.initialize();
+                }
+                break;
+            
+            case 'history':
+                // Initialize history manager if not already initialized
+                if (window.historyManager && window.historyManager.updateDisplay) {
+                    window.historyManager.updateDisplay();
                 }
                 break;
             
@@ -270,9 +300,7 @@ function updateHeaderTitle(tabId) {
         'utm-landing': 'Landing Page Links',
         'utm-email': 'Email Links',
         'utm-campaign': 'Campaign Links',
-        'braze-campaigns': 'Braze Campaigns',
-        'braze-segments': 'Braze Segments', 
-        'braze-canvases': 'Braze Canvases',
+        'braze-naming': 'Braze Naming',
         'vev': 'VEV',
         'sales-poster': 'Sales Poster Service',
         'reverse-lookup': 'Reverse Lookup',
