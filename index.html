@@ -62,17 +62,10 @@
                         <button class="sub-nav-item" data-subtab="utm-campaign">Campaign Links</button>
                     </div>
 
-                    <button class="nav-item" data-tab="braze-naming" data-expandable="true">
+                    <button class="nav-item" data-tab="braze-naming">
                         <span class="nav-item-icon">📱</span>
                         <span>Braze Naming</span>
-                        <span class="nav-item-badge">3</span>
                     </button>
-                    
-                    <div class="sub-nav" id="braze-naming-subnav">
-                        <button class="sub-nav-item active" data-subtab="braze-campaigns">Campaigns</button>
-                        <button class="sub-nav-item" data-subtab="braze-canvases">Canvases</button>
-                        <button class="sub-nav-item" data-subtab="braze-segments">Segments</button>
-                    </div>
 
                     <button class="nav-item" data-tab="vev">
                         <span class="nav-item-icon">📊</span>
@@ -333,7 +326,7 @@
                     </div>
 
                     <!-- Unified Braze Naming Section -->
-                    <div class="tab-content" id="braze-campaigns">
+                    <div class="tab-content" id="braze-naming">
                         <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">Braze Naming Generator v2</h2>
@@ -428,24 +421,12 @@
                                     </div>
                                     <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
                                         <button id="copy-name-btn" class="btn btn-secondary btn-sm" disabled>Copy Name</button>
-                                        <button id="copy-utm-btn" class="btn btn-secondary btn-sm" disabled>Copy as UTM</button>
-                                    </div>
-                                </div>
-                                
-                                <!-- History -->
-                                <div class="history-container" style="margin-top: 2rem;">
-                                    <h3 style="margin-bottom: 1rem;">Recent Names</h3>
-                                    <div id="naming-history" class="naming-history" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: 4px; padding: 1rem;">
-                                        <p class="no-history" style="color: var(--gray-500); text-align: center;">No naming history yet</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Keep the empty placeholders for other tabs but consolidate -->
-                    <div class="tab-content" id="braze-canvases" style="display: none;"></div>
-                    <div class="tab-content" id="braze-segments" style="display: none;"></div>
 
                     <!-- UTM Purchase Links Tab -->
                     <div class="tab-content" id="utm-purchase">
@@ -531,10 +512,39 @@
 
                     <!-- History Tab -->
                     <div class="tab-content" id="history">
-                        <div class="placeholder">
-                            <div class="placeholder-icon">📜</div>
-                            <h2>Generation History</h2>
-                            <p>Your recently generated naming standards will appear here</p>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Generation History</h2>
+                                <div style="color: var(--gray-600); font-size: 0.875rem;">
+                                    All your generated naming standards in one place
+                                </div>
+                            </div>
+                            
+                            <!-- Filter Controls -->
+                            <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-lg); align-items: center;">
+                                <select id="history-filter" class="form-input form-select" style="width: 200px;">
+                                    <option value="all">All Types</option>
+                                    <option value="promocode">Promocodes</option>
+                                    <option value="braze">Braze Names</option>
+                                    <option value="utm">UTM Links</option>
+                                </select>
+                                
+                                <button id="clear-history-btn" class="btn btn-secondary btn-sm">
+                                    Clear History
+                                </button>
+                                
+                                <div style="margin-left: auto; color: var(--gray-600); font-size: 0.875rem;">
+                                    <span id="history-count">0</span> items
+                                </div>
+                            </div>
+                            
+                            <!-- History List -->
+                            <div id="history-list" style="border: 1px solid var(--gray-200); border-radius: 8px; max-height: 600px; overflow-y: auto;">
+                                <div class="history-empty" style="padding: var(--space-xl); text-align: center; color: var(--gray-500);">
+                                    <div style="font-size: 2rem; margin-bottom: var(--space-md);">📭</div>
+                                    <p>No history yet. Start generating naming standards!</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -661,6 +671,8 @@
     <!-- Braze Naming v2 -->
     <script src="js/braze-naming-v2-data.js"></script>
     <script src="js/braze-naming-v2.js"></script>
+    <!-- History Manager -->
+    <script src="js/history-manager.js"></script>
     <script src="js/navigation.js"></script>
     <script src="js/main.js"></script>
 </body>

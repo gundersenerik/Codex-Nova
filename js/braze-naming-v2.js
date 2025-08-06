@@ -78,7 +78,6 @@
         const hasCompleteName = state.objectType && state.code && state.brand && state.commType;
         document.getElementById('generate-btn').disabled = !hasCompleteName;
         document.getElementById('copy-name-btn').disabled = !state.generatedName;
-        document.getElementById('copy-utm-btn').disabled = !state.generatedName;
     }
     
     function populateDropdown(selectId, items, valueField, textField) {
@@ -194,6 +193,7 @@
     
     function addToHistory(name) {
         const historyItem = {
+            type: 'braze',
             name: name,
             timestamp: new Date().toISOString(),
             objectType: state.objectType,
@@ -204,43 +204,28 @@
             hasABTest: state.hasABTest
         };
         
-        // Add to beginning of history
-        state.history.unshift(historyItem);
-        
-        // Keep only last 20 items
-        if (state.history.length > 20) {
-            state.history = state.history.slice(0, 20);
+        // Save to central history
+        if (window.historyManager && window.historyManager.addItem) {
+            window.historyManager.addItem(historyItem);
+        } else {
+            // Fallback to localStorage
+            try {
+                let allHistory = JSON.parse(localStorage.getItem('namingStandardsHistory') || '[]');
+                allHistory.unshift(historyItem);
+                // Keep only last 100 items
+                if (allHistory.length > 100) {
+                    allHistory = allHistory.slice(0, 100);
+                }
+                localStorage.setItem('namingStandardsHistory', JSON.stringify(allHistory));
+            } catch (e) {
+                console.error('Failed to save to central history:', e);
+            }
         }
-        
-        // Save to localStorage
-        try {
-            localStorage.setItem('brazeNamingV2History', JSON.stringify(state.history));
-        } catch (e) {
-            console.error('Failed to save history:', e);
-        }
-        
-        // Update history display
-        updateHistoryDisplay();
     }
     
     function updateHistoryDisplay() {
-        const container = document.getElementById('naming-history');
-        if (!container) return;
-        
-        if (state.history.length === 0) {
-            container.innerHTML = '<p class="no-history">No naming history yet</p>';
-            return;
-        }
-        
-        container.innerHTML = state.history.map((item, index) => `
-            <div class="history-item">
-                <div class="history-name">${item.name}</div>
-                <div class="history-meta">
-                    ${new Date(item.timestamp).toLocaleString()}
-                    <button class="btn-small" onclick="window.brazeNamingV2.copyToClipboard('${item.name}')">Copy</button>
-                </div>
-            </div>
-        `).join('');
+        // History is now displayed in the central History tab
+        // This function is no longer needed but kept for compatibility
     }
     
     function copyToClipboard(text) {
@@ -258,13 +243,6 @@
             });
     }
     
-    function copyAsUTM() {
-        if (!state.generatedName) return;
-        
-        // Convert to UTM format: lowercase with underscores
-        const utmFormat = state.generatedName.toLowerCase();
-        copyToClipboard(utmFormat);
-    }
     
     function resetForm() {
         // Reset state
@@ -304,16 +282,7 @@
         populateDropdown('code-type', window.brazeNamingV2Data.codes, 'value', 'name');
         populateDropdown('braze-brand-select', window.brazeNamingV2Data.brands, 'code', 'name');
         
-        // Load history from localStorage
-        try {
-            const savedHistory = localStorage.getItem('brazeNamingV2History');
-            if (savedHistory) {
-                state.history = JSON.parse(savedHistory);
-                updateHistoryDisplay();
-            }
-        } catch (e) {
-            console.error('Failed to load history:', e);
-        }
+        // History is now managed centrally
         
         // Set up event listeners
         setupEventListeners();
@@ -402,10 +371,6 @@
             if (state.generatedName) {
                 copyToClipboard(state.generatedName);
             }
-        });
-        
-        document.getElementById('copy-utm-btn')?.addEventListener('click', function() {
-            copyAsUTM();
         });
     }
     

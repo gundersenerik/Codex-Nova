@@ -893,7 +893,25 @@ async function saveToHistory(promocode, values) {
             ...values
         };
         
+        // Save to database (for backend compatibility)
         await window.database.saveGeneration('promocodes', promocode, parameters);
+        
+        // Also save to central history
+        const historyItem = {
+            type: 'promocode',
+            name: promocode,
+            timestamp: new Date().toISOString(),
+            brand: currentBrandData.brand.code,
+            brandName: currentBrandData.brand.name,
+            product: values.product,
+            offer: values.offer_type,
+            lifecycle: values.lifecycle_stage,
+            renewal: values.renewal_rate
+        };
+        
+        if (window.historyManager && window.historyManager.addItem) {
+            window.historyManager.addItem(historyItem);
+        }
         
     } catch (error) {
         console.log('Failed to save to history:', error.message);
