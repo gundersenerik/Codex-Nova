@@ -88,23 +88,23 @@
             return;
         }
         
-        console.log(`Populating ${selectId} with ${items?.length || 0} items`);
-        
         // Keep first option (placeholder)
         const firstOption = select.options[0];
         select.innerHTML = '';
         select.appendChild(firstOption);
         
         // Add items
-        items.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item[valueField];
-            option.textContent = item[textField];
-            if (item.description) {
-                option.title = item.description;
-            }
-            select.appendChild(option);
-        });
+        if (items && items.length > 0) {
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valueField];
+                option.textContent = item[textField];
+                if (item.description) {
+                    option.title = item.description;
+                }
+                select.appendChild(option);
+            });
+        }
     }
     
     function updateCommunicationTypes() {
@@ -317,9 +317,6 @@
             setTimeout(initializeForm, 100);
             return;
         }
-        
-        console.log('Initializing Braze Naming v2...');
-        console.log('Brands data:', window.brazeNamingV2Data.brands);
         
         // Populate dropdowns
         populateDropdown('object-type', window.brazeNamingV2Data.objectTypes, 'code', 'name');
