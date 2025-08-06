@@ -10,8 +10,7 @@ window.brazeNamingV2Data = {
         { code: "SEG", name: "Segment", description: "Braze Segment" },
         { code: "TPL", name: "Template", description: "Braze Template" },
         { code: "WHK", name: "Webhook", description: "Braze Webhook" },
-        { code: "RPT", name: "Report", description: "Braze Report" },
-        { code: "TAG", name: "Tag", description: "Braze Tag" }
+        { code: "RPT", name: "Report", description: "Braze Report" }
     ],
     
     // Code definitions

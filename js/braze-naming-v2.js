@@ -83,7 +83,12 @@
     
     function populateDropdown(selectId, items, valueField, textField) {
         const select = document.getElementById(selectId);
-        if (!select) return;
+        if (!select) {
+            console.error(`Dropdown element not found: ${selectId}`);
+            return;
+        }
+        
+        console.log(`Populating ${selectId} with ${items?.length || 0} items`);
         
         // Keep first option (placeholder)
         const firstOption = select.options[0];
@@ -111,25 +116,36 @@
         select.innerHTML = '';
         select.appendChild(firstOption);
         
-        // Sort communication types by tag name
-        const sortedTypes = [...window.brazeNamingV2Data.communicationTypes].sort((a, b) => 
-            a.tag.localeCompare(b.tag)
-        );
+        if (!state.code) {
+            return;
+        }
         
-        // Add all communication types
-        sortedTypes.forEach(type => {
+        // Filter communication types by code
+        const validTypes = window.brazeNamingV2Data.communicationTypes.filter(type => {
+            // For YYYY code, allow types with defaultCode 2000 or YYYY
+            if (state.code === 'YYYY') {
+                return type.defaultCode === '2000' || type.defaultCode === 'YYYY';
+            }
+            return type.defaultCode === state.code;
+        });
+        
+        // Sort by tag name
+        validTypes.sort((a, b) => a.tag.localeCompare(b.tag));
+        
+        // Add filtered communication types
+        validTypes.forEach(type => {
             const option = document.createElement('option');
             option.value = type.tag;
             option.textContent = type.tag;
             option.title = type.purpose;
-            
-            // Add visual indicator for default code
-            if (type.defaultCode !== state.code && state.code && state.code !== 'YYYY') {
-                option.textContent += ` (typically ${type.defaultCode})`;
-            }
-            
             select.appendChild(option);
         });
+        
+        // Reset comm type selection if current selection is not valid
+        if (state.commType && !validTypes.find(t => t.tag === state.commType)) {
+            state.commType = null;
+            showCodeOverrideWarning();
+        }
     }
     
     function showCodeOverrideWarning() {
@@ -301,6 +317,9 @@
             setTimeout(initializeForm, 100);
             return;
         }
+        
+        console.log('Initializing Braze Naming v2...');
+        console.log('Brands data:', window.brazeNamingV2Data.brands);
         
         // Populate dropdowns
         populateDropdown('object-type', window.brazeNamingV2Data.objectTypes, 'code', 'name');

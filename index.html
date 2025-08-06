@@ -343,18 +343,6 @@
                             </div>
                             
                             <div class="naming-container">
-                                <!-- Live Preview -->
-                                <div class="preview-container" style="margin-bottom: 2rem; padding: 1.5rem; background: var(--gray-50); border-radius: 8px;">
-                                    <h3 style="margin-bottom: 1rem; font-size: 1rem; color: var(--gray-700);">Live Preview</h3>
-                                    <div id="naming-preview" class="naming-preview" style="font-family: monospace; font-size: 1.25rem; padding: 1rem; background: white; border: 2px solid var(--primary); border-radius: 4px; min-height: 3rem; display: flex; align-items: center;">
-                                        <span class="preview-placeholder" style="color: var(--gray-500);">Select options to generate name...</span>
-                                    </div>
-                                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                                        <button id="copy-name-btn" class="btn btn-secondary btn-sm" disabled>Copy Name</button>
-                                        <button id="copy-utm-btn" class="btn btn-secondary btn-sm" disabled>Copy as UTM</button>
-                                    </div>
-                                </div>
-                                
                                 <!-- Form -->
                                 <form id="brazeNamingForm" class="braze-naming-form">
                                     <div class="form-grid">
@@ -401,9 +389,6 @@
                                                 <option value="">-- Select Type --</option>
                                             </select>
                                             <small id="comm-type-hint" class="form-hint" style="margin-top: 0.25rem; color: var(--gray-600);"></small>
-                                            <div id="code-override-warning" class="warning-message" style="display:none; margin-top: 0.5rem; padding: 0.5rem; background: var(--warning-light); color: var(--warning-dark); border-radius: 4px; font-size: 0.875rem;">
-                                                ⚠️ This communication type typically uses code <span id="default-code" style="font-weight: bold;"></span>
-                                            </div>
                                         </div>
                                         
                                         <!-- Description (Optional) -->
@@ -434,6 +419,18 @@
                                         <button type="reset" id="reset-btn" class="btn btn-secondary">Reset</button>
                                     </div>
                                 </form>
+                                
+                                <!-- Live Preview -->
+                                <div class="preview-container" style="margin-top: 2rem; padding: 1.5rem; background: var(--gray-50); border-radius: 8px;">
+                                    <h3 style="margin-bottom: 1rem; font-size: 1rem; color: var(--gray-700);">Generated Name</h3>
+                                    <div id="naming-preview" class="naming-preview" style="font-family: monospace; font-size: 1.25rem; padding: 1rem; background: white; border: 2px solid var(--primary); border-radius: 4px; min-height: 3rem; display: flex; align-items: center;">
+                                        <span class="preview-placeholder" style="color: var(--gray-500);">Select options to generate name...</span>
+                                    </div>
+                                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                        <button id="copy-name-btn" class="btn btn-secondary btn-sm" disabled>Copy Name</button>
+                                        <button id="copy-utm-btn" class="btn btn-secondary btn-sm" disabled>Copy as UTM</button>
+                                    </div>
+                                </div>
                                 
                                 <!-- History -->
                                 <div class="history-container" style="margin-top: 2rem;">
