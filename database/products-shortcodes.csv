@@ -1,0 +1,67 @@
+brand_code,product_name,shortcode,notes
+AP,Aftenposten A-magasinet,APAM,Print magazine
+AP,Aftenposten Duo,APDUO,Digital duo package
+AP,Aftenposten Full Tilgang,APFT,Full access digital
+AP,Aftenposten Helg,APHELG,Weekend edition
+AP,Aftenposten Solo,APSOLO,Solo digital
+AP,Aftenposten Uke,APUKE,Weekly edition
+BT,BT Basis,BTBAS,Basic subscription
+BT,BT Familie,BTFAM,Family package
+BT,BT Full tilgang,BTFT,Full access
+BT,BT Full tilgang Helg,BTFTH,Full access weekend
+BT,BT Full tilgang Komplett,BTFTK,Full access complete
+BT,BT Helg,BTHELG,Weekend edition
+BT,BT Komplett,BTKOMP,Complete package
+BT,BT mandag til fredag,BTMF,Weekday edition
+BT,BT Premium,BTPREM,Premium subscription
+E24,E24 Basis,E24BAS,Basic subscription
+E24,E24 Full tilgang,E24FT,Full access
+E24,E24 og Dine penger+,E24DP,With Dine Penger
+E24,E24 Pro,E24PRO,Professional
+E24,E24 sanntidskurser,E24ST,Real-time quotes
+E24,E24 uten deling,E24UD,No sharing
+SA,Aftenbladet Basis,SABAS,Basic subscription
+SA,Aftenbladet Familie,SAFAM,Family package
+SA,Aftenbladet Full tilgang,SAFT,Full access
+SA,Aftenbladet Full tillgang Helg,SAFTH,Full access weekend
+SA,Aftenbladet Full tillgang Komplett,SAFTK,Full access complete
+SA,Aftenbladet Helg,SAHELG,Weekend edition
+SA,Aftenbladet Komplett,SAKOMP,Complete package
+SA,Aftenbladet mandag til fredag,SAMF,Weekday edition
+SA,Aftenbladet Premium,SAPREM,Premium subscription
+VG,VG eavis,VGEA,E-newspaper
+VG,VG Weekend hele helgen,VGWHH,Full weekend
+VG,VG Weekend fredag-lørdag,VGWFS,Friday-Saturday
+VG,VG Weekend lørdag-søndag,VGWLS,Saturday-Sunday
+VG,VG+ Basis,VGBAS,Basic subscription
+VG,VG+,VGPLUS,Standard VG+
+VG,VG+ og Dine penger+,VGDP,With Dine Penger
+VG,VG+ Sport,VGSPORT,Sports package
+VG,VG+ Total,VGTOT,Total package
+VG,VG+ Full tilgang,VGFT,Full access
+VG,VG+ Flex,VGFLEX,Flexible plan
+VG,VG+ og PodMe,VGPOD,With PodMe
+VG,MinMote strikk,VGMM,MinMote knitting
+VG,VG eAvis med VG+,VGEAP,E-paper with VG+
+VG,Dine penger+,VGDPP,Dine Penger Plus
+AB,Aftonbladet e-tidning,ABET,E-newspaper
+AB,Aftonbladet Plus,ABPLUS,Plus subscription
+AB,Aftonbladet Plus & Podme,ABPOD,Plus with Podme
+AB,Aftonbladet Superpaketet,ABSUPER,Super package
+AB,Plus & SvenskHockey.tv,ABHOCKEY,Plus with Hockey
+SVD,SvD digital premium,SVDPREM,Premium digital
+SVD,SvD digital standard,SVDSTD,Standard digital
+SVD,SvD Superpaketet - tillägg alla dagar,SVDSTAD,Super all days
+SVD,SvD Superpaketet - tillägg helg,SVDSTH,Super weekend
+SVD,SvD Superpaketet - tillägg digital premium,SVDSTDP,Super digital premium
+SVD,SvD Vinklubb,SVDVIN,Wine club
+SVD,SvD Superpaketet,SVDSUPER,Super package
+OM,Omni annonsfritt,OM,Ad-free
+OM,Omni Bundle,OM,Bundle
+OM,Omni Bundle Bas,OMB,Bundle basic
+OM,Omni Ekonomi,OME,Economy
+OM,Omni Ekonomi Bas,OMEB,Economy basic
+OM,Omni Mer,OMMER,More
+OM,Omni Mer Bas,OMMERB,More basic
+OM,Omni Superpaketet,OMSP,Super package
+,Randaberg24,R24,Local news

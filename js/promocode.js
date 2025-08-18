@@ -18,10 +18,13 @@ function generateUnifiedCode(brandCode, values) {
             throw new Error('Missing brand code or values');
         }
 
-        // Use product-specific shortcode if available (for Omni products)
+        // Always use product-specific shortcode if available, fallback to brand code
         let shortcode = brandCode;
         if (currentProductData && currentProductData.shortcode) {
             shortcode = currentProductData.shortcode;
+        } else {
+            // If no shortcode assigned, use brand code as fallback
+            console.warn(`No shortcode for product: ${currentProductData?.name || 'unknown'}, using brand code: ${brandCode}`);
         }
 
         let codeParts = [shortcode];
