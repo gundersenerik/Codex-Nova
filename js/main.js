@@ -1,5 +1,5 @@
 /* ============================================================================
-   MAIN APPLICATION - SQLite Frontend-Only Version
+   MAIN APPLICATION - Airtable Cloud Database Version
    ============================================================================ */
 
 // ============================================================================
@@ -17,8 +17,8 @@ async function startApplicationInitialization() {
     try {
         showLoadingOverlay('Initializing application...');
         
-        // Step 1: Initialize SQL.js database
-        console.log('🔧 Step 1: Initializing SQLite database...');
+        // Step 1: Initialize Airtable database
+        console.log('🔧 Step 1: Initializing Airtable database...');
         await initializeDatabaseLayer();
         
         // Step 2: Load/Initialize data
@@ -58,94 +58,40 @@ async function startApplicationInitialization() {
 // Step 1: Initialize database layer
 async function initializeDatabaseLayer() {
     try {
-        // Try to initialize SQL.js
-        await window.sqlDB.initialize();
-        
-        // Verify database is ready
-        if (!window.sqlDB.isReady()) {
-            throw new Error('SQLite database failed to initialize');
+        // Initialize Airtable database
+        const success = window.database.initialize();
+        if (!success) {
+            throw new Error('Airtable database failed to initialize');
         }
         
-        console.log('✅ SQLite database initialized');
+        console.log('✅ Airtable database initialized');
         return { success: true };
         
     } catch (error) {
-        console.error('❌ SQLite initialization failed, falling back to mock data:', error);
-        
-        // Fallback to mock database
-        if (window.MockDatabase) {
-            window.MockDatabase.initialize();
-            console.log('✅ Mock database initialized as fallback');
-            return { success: true, fallback: true };
-        }
-        
-        throw new Error('Failed to initialize any database: ' + error.message);
+        console.error('❌ Database initialization failed:', error);
+        throw error;
     }
 }
 
 // Step 2: Load database data
 async function initializeData() {
     try {
-        // Check if we're using mock data (only if SQLite failed)
-        if (window.MockDatabase && window.MockDatabase.isReady() && !window.sqlDB.isReady()) {
-            console.log('📂 Using mock database - data already loaded');
-            const stats = window.MockDatabase.getStats();
-            if (stats.data) {
-                console.log('📊 Mock database stats:', stats.data);
-            }
-            return { success: true };
+        // Airtable doesn't need initial data loading
+        // Data is fetched on-demand from Airtable API
+        console.log('📂 Airtable database ready - data will be fetched on demand');
+        
+        // Optionally, pre-fetch brands to verify connection
+        const { data: brands, error } = await window.database.fetchAllBrands();
+        if (error) {
+            throw new Error('Failed to connect to Airtable: ' + error);
         }
         
-        // SQLite initialization
-        // Check if database exists in localStorage
-        if (window.dataManager.hasStoredDatabase()) {
-            // Load existing database from localStorage
-            const loadResult = window.dataManager.load();
-            if (loadResult.success) {
-                console.log('📂 Loaded existing database from localStorage');
-                const stats = window.sqlDB.getStats();
-                if (stats.data) {
-                    console.log('📊 Database stats:', stats.data);
-                }
-                return { success: true };
-            }
-        }
-        
-        // No existing database - load pre-populated database
-        console.log('🚀 First run detected - loading pre-populated database...');
-        
-        // Load the pre-populated database
-        if (window.loadPrePopulatedDatabase) {
-            const result = await window.loadPrePopulatedDatabase();
-            if (result.success) {
-                console.log('✅ Pre-populated database loaded successfully');
-                console.log('📊 Database stats:', result.stats);
-                
-                // Save to localStorage for next time
-                await window.dataManager.save();
-                console.log('💾 Database saved to localStorage for future use');
-                
-                return { success: true };
-            } else {
-                console.warn('⚠️ Failed to load pre-populated database:', result.error);
-            }
-        }
-        
-        // Fallback: Load empty schema if pre-populated database failed
-        console.log('📂 Loading default schema as fallback...');
-        await window.sqlDB.loadSchema();
-        
-        // Verify data was loaded
-        const stats = window.sqlDB.getStats();
-        if (stats.data) {
-            console.log('📊 Database stats:', stats.data);
-        }
-        
+        console.log(`📊 Airtable connected - ${brands ? brands.length : 0} brands available`);
         return { success: true };
         
     } catch (error) {
         console.error('❌ Data initialization failed:', error);
-        throw new Error('Failed to load database data: ' + error.message);
+        throw new Error('Failed to connect to Airtable: ' + error.message);
     }
 }
 
@@ -226,25 +172,13 @@ async function initializeBusinessLogic() {
 // Step 6: Finalize application
 async function finalizeApplication() {
     try {
-        // Start auto-save
-        if (window.AppConfig.SETTINGS.AUTO_SAVE) {
-            window.dataManager.startAutoSave();
-            console.log('✅ Auto-save started');
-        }
-        
+        // Airtable doesn't need auto-save (data is stored in cloud)
         // Set up periodic cache clearing
         setInterval(() => {
             if (window.database && window.database.clearCache) {
                 window.database.clearCache();
             }
         }, window.AppConfig.SETTINGS.CACHE_DURATION || 300000);
-        
-        // Set up window beforeunload handler for data saving
-        window.addEventListener('beforeunload', () => {
-            if (window.dataManager) {
-                window.dataManager.save();
-            }
-        });
         
         console.log('✅ Application finalized');
         return { success: true };
@@ -344,7 +278,7 @@ function showApplication() {
     
     // Show success notification
     if (typeof showNotification === 'function') {
-        showNotification('Application loaded successfully! Using local SQLite database.', 'success');
+        showNotification('Application loaded successfully! Connected to Airtable database.', 'success');
     }
 }
 
