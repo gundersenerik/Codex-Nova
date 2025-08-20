@@ -29,12 +29,16 @@ function generateUnifiedCode(brandCode, values) {
 
         let codeParts = [shortcode];
         
-        // Product part
-        if (values.product) {
-            // Convert product name to clean code format
+        // Product part - Use product shortcode if available
+        if (currentProductData && currentProductData.shortcode) {
+            // Use the product's shortcode (e.g., "APD" for Aftenposten Digital)
+            codeParts.push(currentProductData.shortcode);
+        } else if (values.product) {
+            // Fallback: If no shortcode, use cleaned product name (shouldn't happen with proper data)
+            console.warn(`No shortcode for product: ${values.product}, using cleaned name as fallback`);
             const productCode = values.product.toUpperCase()
                 .replace(/[^A-Z0-9]/g, '')
-                .substring(0, 10); // Limit length
+                .substring(0, 10);
             codeParts.push(productCode);
         }
         

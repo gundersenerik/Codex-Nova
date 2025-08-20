@@ -4,8 +4,8 @@
 
 // Configuration - Replace with your actual values
 const AIRTABLE_CONFIG = {
-    BASE_ID: 'your_base_id_here',
-    PERSONAL_ACCESS_TOKEN: 'your_personal_access_token_here', // Starts with 'pat...'
+    BASE_ID: 'appRxCHj7Tts5Wa6M/tbljMCjsllcZgdJSv/viw0tJRU4c5tR0198',
+    PERSONAL_ACCESS_TOKEN: 'patKi2x7fzyR5qciZ.3d6c1e51ffa0ebe3e0535d72d499216905a20567efbcf229df118141d9d9cf12', // Starts with 'pat...'
     BASE_URL: 'https://api.airtable.com/v0'
 };
 
