@@ -27,7 +27,7 @@ function generateUnifiedCode(brandCode, values) {
             // Omni special case: OME, OMB, OMP, etc. replace the brand prefix
             if (currentProductData.shortcode.startsWith('OM')) {
                 brandPrefix = currentProductData.shortcode;
-                console.log(`Using Omni product-specific brand prefix: ${brandPrefix}`);
+                // Using Omni product-specific brand prefix
             }
         }
 
@@ -104,7 +104,7 @@ function generateUnifiedCode(brandCode, values) {
         return finalCode;
         
     } catch (error) {
-        console.error('Error generating promocode:', error);
+        // Error generating promocode
         throw error;
     }
 }
@@ -145,7 +145,7 @@ function reversePromocode(code) {
         return result;
         
     } catch (error) {
-        console.error('Error reversing promocode:', error);
+        // Error reversing promocode
         return { error: 'Failed to reverse engineer code' };
     }
 }
@@ -280,7 +280,7 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     try {
         const container = document.querySelector(containerSelector);
         if (!container) {
-            console.error('Form container not found:', containerSelector);
+            // Form container not found
             return;
         }
         
@@ -310,7 +310,7 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
         
         // Verify brand data structure
         if (!currentBrandData || !currentBrandData.brand) {
-            console.error('Invalid brand data:', currentBrandData);
+            // Invalid brand data
             brandInput.value = 'Error: Invalid brand data';
         } else {
             brandInput.value = currentBrandData.brand.name;
@@ -407,7 +407,7 @@ function renderFormFields(fields, containerSelector = '#dynamic-form-container')
     handleBrandCountryVisibility();
     
     } catch (error) {
-        console.error('Error rendering form fields:', error);
+        // Error rendering form fields
         showPromocodeError('Failed to render form: ' + error.message);
     }
 }
@@ -601,7 +601,7 @@ async function handlePromocodeBrandChange() {
         hideLoading();
         
     } catch (error) {
-        console.error('Error handling brand change:', error);
+        // Error handling brand change
         hideLoading();
         showPromocodeError('Failed to load brand data: ' + error.message);
     }
@@ -631,7 +631,7 @@ async function handleProductChange() {
         });
         
         if (!selectedProduct) {
-            console.error('Selected product not found:', selectedProductKey);
+            // Selected product not found
             return;
         }
         
@@ -639,7 +639,7 @@ async function handleProductChange() {
         
         // Validate that product has a shortcode
         if (!selectedProduct.shortcode) {
-            console.error('Product missing shortcode:', selectedProduct);
+            // Product missing shortcode
             showPromocodeError(`Warning: Product "${selectedProduct.name}" is missing a shortcode. You will not be able to generate a promocode until this is fixed in the database.`);
         }
         
@@ -677,7 +677,7 @@ async function handleProductChange() {
         });
         
     } catch (error) {
-        console.error('Error handling product change:', error);
+        // Error handling product change
         showPromocodeError('Failed to load rate plans: ' + error.message);
     }
 }
@@ -772,7 +772,7 @@ function handleGenerateClick() {
         saveToHistory(promocode, values);
         
     } catch (error) {
-        console.error('Error generating promocode:', error);
+        // Error generating promocode
         showPromocodeError(error.message);
     }
 }
@@ -937,7 +937,7 @@ async function saveToHistory(promocode, values) {
         }
         
     } catch (error) {
-        console.log('Failed to save to history:', error.message);
+        // Failed to save to history
         // Don't show error to user for history saving failures
     }
 }
@@ -954,11 +954,11 @@ async function initializePromocodePage() {
     try {
         // Prevent re-initialization
         if (promocodePageInitialized) {
-            console.log('Promocode page already initialized, skipping...');
+            // Promocode page already initialized
             return;
         }
         
-        console.log('Initializing promocode page...');
+        // Initializing promocode page
         
         // Initialize database connection
         if (!window.database.initialize()) {
@@ -987,10 +987,10 @@ async function initializePromocodePage() {
         
         // Mark as initialized
         promocodePageInitialized = true;
-        console.log('Promocode page initialized successfully');
+        // Promocode page initialized
         
     } catch (error) {
-        console.error('Error initializing promocode page:', error);
+        // Error initializing promocode page
         showPromocodeError('Failed to initialize promocode page: ' + error.message);
     }
 }
@@ -1019,7 +1019,7 @@ async function populateBrandDropdown() {
             brandGroups.norwegian.forEach(brand => {
                 // Skip empty or invalid brands
                 if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
-                    console.warn('Skipping invalid Norwegian brand:', brand);
+                    // Skipping invalid Norwegian brand
                     return;
                 }
                 const option = document.createElement('option');
@@ -1037,7 +1037,7 @@ async function populateBrandDropdown() {
             brandGroups.swedish.forEach(brand => {
                 // Skip empty or invalid brands
                 if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
-                    console.warn('Skipping invalid Swedish brand:', brand);
+                    // Skipping invalid Swedish brand
                     return;
                 }
                 const option = document.createElement('option');
@@ -1051,11 +1051,11 @@ async function populateBrandDropdown() {
         // Restore previous selection if it exists
         if (currentSelection) {
             brandSelect.value = currentSelection;
-            console.log('Restored brand selection:', currentSelection);
+            // Restored brand selection
         }
         
     } catch (error) {
-        console.error('Error populating brand dropdown:', error);
+        // Error populating brand dropdown
         showPromocodeError('Failed to load brands: ' + error.message);
     }
 }
@@ -1073,4 +1073,4 @@ window.promocode = {
     collectFormValues
 };
 
-console.log('Promocode logic loaded successfully');
+// Promocode logic loaded

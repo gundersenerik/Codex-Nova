@@ -19,7 +19,7 @@
                 history = JSON.parse(saved);
             }
         } catch (e) {
-            console.error('Failed to load history:', e);
+            // Failed to load history
             history = [];
         }
     }
@@ -29,7 +29,7 @@
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
         } catch (e) {
-            console.error('Failed to save history:', e);
+            // Failed to save history
         }
     }
     
@@ -37,7 +37,7 @@
     function addItem(item) {
         // Ensure required fields
         if (!item.type || !item.name || !item.timestamp) {
-            console.error('Invalid history item:', item);
+            // Invalid history item
             return;
         }
         
@@ -197,7 +197,7 @@
                 }
             })
             .catch(err => {
-                console.error('Failed to copy:', err);
+                // Failed to copy
                 if (window.showNotification) {
                     window.showNotification('Failed to copy', 'error');
                 }

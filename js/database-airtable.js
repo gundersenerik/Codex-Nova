@@ -63,17 +63,17 @@ async function airtableRequest(tableName, params = {}) {
         };
         
     } catch (error) {
-        console.error('Airtable request failed:', error);
+        // API request failed silently
         return { data: null, error: error.message };
     }
 }
 
 // ============================================================================
-// CORE DATABASE FUNCTIONS (Same interface as SQLite version)
+// CORE DATABASE FUNCTIONS
 // ============================================================================
 
 function initializeDatabase() {
-    console.log('✅ Database service initialized with Airtable');
+    // Airtable service ready
     return true;
 }
 
@@ -91,7 +91,7 @@ async function fetchAllBrands() {
         const result = await airtableRequest('Brands');
         if (result.error) throw new Error(result.error);
         
-        // Transform to match SQLite format
+        // Transform data format
         const data = result.data.map(brand => ({
             id: brand.id,
             code: brand['Brand Code'],
@@ -105,7 +105,7 @@ async function fetchAllBrands() {
         
         return { data, error: null };
     } catch (error) {
-        console.error('Error fetching brands:', error);
+        // Failed to fetch brands
         return { data: null, error: error.message };
     }
 }
@@ -152,7 +152,7 @@ async function fetchProductsByBrand(brandCode) {
         
         if (result.error) throw new Error(result.error);
         
-        // Transform to match SQLite format
+        // Transform data format
         const data = result.data.map(product => ({
             id: product.id,
             brand_id: brand.id,
@@ -167,7 +167,7 @@ async function fetchProductsByBrand(brandCode) {
         
         return { data, error: null };
     } catch (error) {
-        console.error('Error fetching products:', error);
+        // Failed to fetch products
         return { data: null, error: error.message };
     }
 }
@@ -187,7 +187,7 @@ async function getProductById(productId) {
         
         return { data: product, error: null };
     } catch (error) {
-        console.error('Error fetching product:', error);
+        // Failed to fetch product
         return { data: null, error: error.message };
     }
 }
@@ -213,7 +213,7 @@ async function fetchRatePlansForProduct(productId) {
         
         if (result.error) throw new Error(result.error);
         
-        // Transform to match SQLite format
+        // Transform data format
         const data = result.data.map(plan => ({
             id: plan.id,
             product_id: productId,
@@ -223,7 +223,7 @@ async function fetchRatePlansForProduct(productId) {
             category: plan['Category'] || 'standard'
         }));
         
-        console.log(`Fetched ${data.length} rate plans for product ${productId}`);
+        // Rate plans loaded
         
         // Update cache
         dbCache.ratePlans[cacheKey] = data;
@@ -231,7 +231,7 @@ async function fetchRatePlansForProduct(productId) {
         
         return { data, error: null };
     } catch (error) {
-        console.error('Error fetching rate plans:', error);
+        // Failed to fetch rate plans
         return { data: null, error: error.message };
     }
 }
@@ -253,7 +253,7 @@ function clearCache() {
         ratePlans: {},
         lastFetch: {}
     };
-    console.log('Database cache cleared');
+    // Cache cleared
 }
 
 function transformProductsToOptions(products) {
@@ -329,7 +329,7 @@ async function getFullBrandData(brandCode) {
             error: null
         };
     } catch (error) {
-        console.error('Error fetching full brand data:', error);
+        // Failed to fetch brand data
         return { data: null, error: error.message };
     }
 }
@@ -342,7 +342,7 @@ async function getUserGenerations() { return { data: [], error: null }; }
 async function saveBrazeName() { return { success: true, error: null }; }
 
 // ============================================================================
-// EXPORT FUNCTIONS (Same interface as SQLite version)
+// EXPORT FUNCTIONS
 // ============================================================================
 
 window.database = {
@@ -376,4 +376,4 @@ window.database = {
     getFullBrandData
 };
 
-console.log('Database service loaded successfully (Airtable version)');
+// Airtable service loaded

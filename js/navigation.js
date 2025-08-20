@@ -128,7 +128,7 @@ function setupKeyboardShortcuts() {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
             e.preventDefault();
             // TODO: Show command palette
-            console.log('Command palette triggered');
+            // Command palette triggered
         }
         
         // Escape key to close mobile menu
@@ -312,7 +312,7 @@ async function initializeTabSpecificFeatures(tabId) {
                 break;
         }
     } catch (error) {
-        console.error(`Failed to initialize features for tab ${tabId}:`, error);
+        // Failed to initialize features for tab
         // Don't throw error to prevent navigation failure
     }
 }

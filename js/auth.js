@@ -13,7 +13,7 @@ let isDemo = true; // Always demo mode in frontend-only version
 // Initialize authentication on page load
 async function initializeAuth() {
     try {
-        console.log('🔐 Initializing authentication...');
+        // Initializing authentication
         
         // Check if user was previously logged in
         const savedUser = localStorage.getItem('current_user');
@@ -21,9 +21,9 @@ async function initializeAuth() {
             try {
                 currentUser = JSON.parse(savedUser);
                 updateAuthUI(true);
-                console.log('✅ User restored from localStorage:', currentUser.email);
+                // User restored from localStorage
             } catch (e) {
-                console.warn('Failed to parse saved user, clearing localStorage');
+                // Failed to parse saved user
                 localStorage.removeItem('current_user');
             }
         } else {
@@ -32,7 +32,7 @@ async function initializeAuth() {
         
         return { success: true };
     } catch (error) {
-        console.error('❌ Auth initialization error:', error);
+        // Auth initialization error
         updateAuthUI(false);
         return { success: false, error: error.message };
     }
@@ -78,10 +78,10 @@ async function handleLogin(event) {
         // Show welcome message
         showNotification(`Welcome ${currentUser.name}! This is a demo environment.`, 'success');
         
-        console.log('✅ Login successful:', currentUser.email);
+        // Login successful
         
     } catch (error) {
-        console.error('❌ Login error:', error);
+        // Login error
         showError('loginError', error.message);
     }
     
@@ -133,10 +133,10 @@ async function handleSignup(event) {
         
         showNotification('Demo account created! Your data is stored locally.', 'success');
         
-        console.log('✅ Signup successful:', currentUser.email);
+        // Signup successful
         
     } catch (error) {
-        console.error('❌ Signup error:', error);
+        // Signup error
         showError('signupError', error.message);
     }
     
@@ -158,10 +158,10 @@ async function logout() {
         
         showNotification('Logged out successfully', 'info');
         
-        console.log('✅ Logout successful');
+        // Logout successful
         
     } catch (error) {
-        console.error('❌ Logout error:', error);
+        // Logout error
         showNotification('Error signing out. Please try again.', 'error');
     }
 }
@@ -402,4 +402,4 @@ window.auth = {
     hasRole
 };
 
-console.log('✅ Simplified authentication loaded');
+// Simplified authentication loaded

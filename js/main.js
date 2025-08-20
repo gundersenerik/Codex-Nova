@@ -8,7 +8,6 @@
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Naming Standards Hub - Frontend Edition Starting...');
     startApplicationInitialization();
 });
 
@@ -17,36 +16,18 @@ async function startApplicationInitialization() {
     try {
         showLoadingOverlay('Initializing application...');
         
-        // Step 1: Initialize Airtable database
-        console.log('🔧 Step 1: Initializing Airtable database...');
+        // Initialize all components
         await initializeDatabaseLayer();
-        
-        // Step 2: Load/Initialize data
-        console.log('🔧 Step 2: Loading database data...');
         await initializeData();
-        
-        // Step 3: Initialize authentication
-        console.log('🔧 Step 3: Initializing authentication...');
         await initializeAuthSystem();
-        
-        // Step 4: Initialize UI components
-        console.log('🔧 Step 4: Initializing UI components...');
         await initializeUIComponents();
-        
-        // Step 5: Initialize business logic
-        console.log('🔧 Step 5: Initializing business logic...');
         await initializeBusinessLogic();
-        
-        // Step 6: Start auto-save and finalize
-        console.log('🔧 Step 6: Finalizing application...');
         await finalizeApplication();
-        
-        console.log('✅ Application initialized successfully');
         hideLoadingOverlay();
         showApplication();
         
     } catch (error) {
-        console.error('❌ Application initialization failed:', error);
+        console.error('Failed to start application:', error.message);
         showInitializationError(error);
     }
 }
@@ -64,11 +45,11 @@ async function initializeDatabaseLayer() {
             throw new Error('Airtable database failed to initialize');
         }
         
-        console.log('✅ Airtable database initialized');
+        // Database ready
         return { success: true };
         
     } catch (error) {
-        console.error('❌ Database initialization failed:', error);
+        console.error('Failed to connect to Airtable:', error.message);
         throw error;
     }
 }
@@ -76,21 +57,15 @@ async function initializeDatabaseLayer() {
 // Step 2: Load database data
 async function initializeData() {
     try {
-        // Airtable doesn't need initial data loading
-        // Data is fetched on-demand from Airtable API
-        console.log('📂 Airtable database ready - data will be fetched on demand');
-        
-        // Optionally, pre-fetch brands to verify connection
+        // Test database connection
         const { data: brands, error } = await window.database.fetchAllBrands();
         if (error) {
-            throw new Error('Failed to connect to Airtable: ' + error);
+            throw new Error('Failed to fetch brands: ' + error);
         }
-        
-        console.log(`📊 Airtable connected - ${brands ? brands.length : 0} brands available`);
         return { success: true };
         
     } catch (error) {
-        console.error('❌ Data initialization failed:', error);
+        console.error('Failed to load data:', error.message);
         throw new Error('Failed to connect to Airtable: ' + error.message);
     }
 }
@@ -103,11 +78,11 @@ async function initializeAuthSystem() {
             throw new Error(result.error);
         }
         
-        console.log('✅ Authentication system initialized');
+        // Auth ready
         return { success: true };
         
     } catch (error) {
-        console.error('❌ Auth initialization failed:', error);
+        console.error('Authentication error:', error.message);
         throw new Error('Failed to initialize authentication: ' + error.message);
     }
 }
@@ -118,25 +93,25 @@ async function initializeUIComponents() {
         // Initialize navigation system
         if (typeof initializeNavigation === 'function') {
             initializeNavigation();
-            console.log('✅ Navigation initialized');
+            // Navigation ready
         }
         
         // Initialize search functionality (if exists)
         if (typeof initializeSearch === 'function') {
             initializeSearch();
-            console.log('✅ Search initialized');
+            // Search ready
         }
         
         // Handle URL routing (if exists)
         if (typeof initializeFromURL === 'function') {
             initializeFromURL();
-            console.log('✅ URL routing initialized');
+            // URL routing ready
         }
         
         return { success: true };
         
     } catch (error) {
-        console.error('❌ UI initialization failed:', error);
+        console.error('UI error:', error.message);
         throw new Error('Failed to initialize UI components: ' + error.message);
     }
 }
@@ -150,21 +125,19 @@ async function initializeBusinessLogic() {
             if (!dbInitResult) {
                 throw new Error('Database service initialization failed');
             }
-            console.log('✅ Database service initialized');
+            // Database service ready
         }
         
         // Initialize promocode functionality
         if (window.promocode && window.promocode.initialize) {
             await window.promocode.initialize();
-            console.log('✅ Promocode system initialized');
+            // Promocode system ready
         }
         
         return { success: true };
         
     } catch (error) {
-        console.error('❌ Business logic initialization failed:', error);
-        // Don't throw - business logic failures shouldn't break the app
-        console.warn('⚠️ Continuing with partial business logic initialization');
+        // Non-critical error - continue
         return { success: false, error: error.message };
     }
 }
@@ -180,11 +153,11 @@ async function finalizeApplication() {
             }
         }, window.AppConfig.SETTINGS.CACHE_DURATION || 300000);
         
-        console.log('✅ Application finalized');
+        // Application ready
         return { success: true };
         
     } catch (error) {
-        console.error('❌ Application finalization failed:', error);
+        // Non-critical finalization error
         // Don't throw - finalization issues shouldn't break the app
         return { success: false, error: error.message };
     }
@@ -278,7 +251,7 @@ function showApplication() {
     
     // Show success notification
     if (typeof showNotification === 'function') {
-        showNotification('Application loaded successfully! Connected to Airtable database.', 'success');
+        showNotification('Application ready', 'success');
     }
 }
 
@@ -384,7 +357,7 @@ function fallbackCopyToClipboard(text) {
             showNotification('Copied to clipboard!', 'success');
         }
     } catch (err) {
-        console.error('Fallback copy failed:', err);
+        // Copy failed
         if (typeof showNotification === 'function') {
             showNotification('Failed to copy to clipboard', 'error');
         }
@@ -427,7 +400,7 @@ function debounce(func, wait) {
 
 // Global error handler
 window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
+    // Global error caught
     
     if (event.error && event.error.message && typeof showNotification === 'function') {
         showNotification('An unexpected error occurred. Check console for details.', 'error');
@@ -436,7 +409,7 @@ window.addEventListener('error', (event) => {
 
 // Unhandled promise rejection handler
 window.addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
+    // Unhandled promise
     event.preventDefault();
     
     if (typeof showNotification === 'function') {
@@ -453,4 +426,4 @@ window.copyToClipboard = copyToClipboard;
 window.formatDate = formatDate;
 window.debounce = debounce;
 
-console.log('✅ Main application script loaded');
+// Main script loaded
