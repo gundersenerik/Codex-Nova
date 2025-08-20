@@ -18,23 +18,29 @@ function generateUnifiedCode(brandCode, values) {
             throw new Error('Missing brand code or values');
         }
 
-        // Always use product-specific shortcode if available, fallback to brand code
-        let shortcode = brandCode;
-        if (currentProductData && currentProductData.shortcode) {
-            shortcode = currentProductData.shortcode;
-        } else {
-            // If no shortcode assigned, use brand code as fallback
-            console.warn(`No shortcode for product: ${currentProductData?.name || 'unknown'}, using brand code: ${brandCode}`);
+        // Start with brand code as the base
+        let brandPrefix = brandCode;
+        
+        // Special case: Omni products may have brand-specific prefixes
+        // Only for Omni (OM), use product shortcode as brand prefix if it starts with "OM"
+        if (brandCode === 'OM' && currentProductData && currentProductData.shortcode) {
+            // Omni special case: OME, OMB, OMP, etc. replace the brand prefix
+            if (currentProductData.shortcode.startsWith('OM')) {
+                brandPrefix = currentProductData.shortcode;
+                console.log(`Using Omni product-specific brand prefix: ${brandPrefix}`);
+            }
         }
 
-        let codeParts = [shortcode];
+        let codeParts = [brandPrefix];
         
-        // Product part - Use product shortcode if available
+        // Product part - Add product shortcode after brand
         if (currentProductData && currentProductData.shortcode) {
-            // Use the product's shortcode (e.g., "APD" for Aftenposten Digital)
-            codeParts.push(currentProductData.shortcode);
+            // Don't add product code if it's already used as brand prefix (Omni case)
+            if (brandCode !== 'OM' || !currentProductData.shortcode.startsWith('OM')) {
+                codeParts.push(currentProductData.shortcode);
+            }
         } else if (values.product) {
-            // Fallback: If no shortcode, use cleaned product name (shouldn't happen with proper data)
+            // Fallback: If no shortcode, use cleaned product name
             console.warn(`No shortcode for product: ${values.product}, using cleaned name as fallback`);
             const productCode = values.product.toUpperCase()
                 .replace(/[^A-Z0-9]/g, '')
