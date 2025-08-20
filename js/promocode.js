@@ -33,19 +33,15 @@ function generateUnifiedCode(brandCode, values) {
 
         let codeParts = [brandPrefix];
         
-        // Product part - Add product shortcode after brand
+        // Product part - ALWAYS use product shortcode (no fallback to product name)
         if (currentProductData && currentProductData.shortcode) {
             // Don't add product code if it's already used as brand prefix (Omni case)
             if (brandCode !== 'OM' || !currentProductData.shortcode.startsWith('OM')) {
                 codeParts.push(currentProductData.shortcode);
             }
-        } else if (values.product) {
-            // Fallback: If no shortcode, use cleaned product name
-            console.warn(`No shortcode for product: ${values.product}, using cleaned name as fallback`);
-            const productCode = values.product.toUpperCase()
-                .replace(/[^A-Z0-9]/g, '')
-                .substring(0, 10);
-            codeParts.push(productCode);
+        } else {
+            // No fallback - shortcode is required for all products
+            throw new Error(`Product shortcode is missing for: ${values.product || 'selected product'}. Please ensure all products have shortcodes configured in the database.`);
         }
         
         // Offer segments
@@ -641,15 +637,24 @@ async function handleProductChange() {
         
         currentProductData = selectedProduct;
         
+        // Validate that product has a shortcode
+        if (!selectedProduct.shortcode) {
+            console.error('Product missing shortcode:', selectedProduct);
+            showPromocodeError(`Warning: Product "${selectedProduct.name}" is missing a shortcode. You will not be able to generate a promocode until this is fixed in the database.`);
+        }
+        
         // Update brand display based on product selection
         const brandInput = document.getElementById('brand-display');
         if (brandInput && currentBrandData) {
             // For Omni brand with custom shortcode, show it in parentheses
             if (currentBrandData.brand.code === 'OM' && selectedProduct.shortcode) {
                 brandInput.value = `${currentBrandData.brand.name} (${selectedProduct.shortcode})`;
+            } else if (selectedProduct.shortcode) {
+                // For other brands with shortcode, show brand name and product shortcode
+                brandInput.value = `${currentBrandData.brand.name} (Product: ${selectedProduct.shortcode})`;
             } else {
-                // For other brands or products without custom shortcode, show just the brand name
-                brandInput.value = currentBrandData.brand.name;
+                // No shortcode - show warning
+                brandInput.value = `${currentBrandData.brand.name} (⚠️ Missing shortcode)`;
             }
         }
         
@@ -815,6 +820,11 @@ function validateForm() {
     try {
         const values = collectFormValues();
         validateRequiredFields(values);
+        
+        // Additional validation: ensure product has shortcode
+        if (currentProductData && !currentProductData.shortcode) {
+            throw new Error('Selected product is missing shortcode');
+        }
         
         generateBtn.disabled = false;
         generateBtn.style.opacity = '1';
