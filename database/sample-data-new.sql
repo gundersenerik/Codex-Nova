@@ -1,47 +1,18 @@
 -- ============================================================================
--- NAMING STANDARDS HUB - Sample Data
--- Generated from Codex Nova Database CSV
+-- CODEX NOVA DATABASE IMPORT
+-- Generated: 2025-08-19T11:58:43.382Z
 -- Brands: 12
--- Products: 87 (displayed WITHOUT brand prefixes)
+-- Products: 87
 -- Rate Plans: 266
 -- ============================================================================
 
--- Clear existing data
+
+-- STEP 2: CLEAR EXISTING DATA
 DELETE FROM rate_plans;
 DELETE FROM products;
 DELETE FROM brands;
-DELETE FROM rate_plan_types;
 
--- ============================================================================
--- RATE PLAN TYPES - Standardized Plan Codes
--- ============================================================================
-INSERT INTO rate_plan_types (code, name, category, sort_order) VALUES
-('APP_3M', 'In-app 3 mån', 'app', 1),
-('APP_6M', 'in-app 6 mån', 'app', 2),
-('B2B_Y', 'B2B Year', 'business', 3),
-('FO_Y', 'Företag År', 'business', 4),
-('H', '6 months', 'standard', 5),
-('HM', '6-month/month', 'standard', 6),
-('M', 'Month', 'standard', 7),
-('PUB_1500', 'Pub 1500', 'business', 8),
-('PUB_2000', 'Pub 2000', 'business', 9),
-('Q', 'Quarter', 'standard', 10),
-('QM', 'quarter/month', 'standard', 11),
-('SE_OS_H', 'Övriga Sverige Halvår', 'regional', 12),
-('SE_OS_M', 'Övriga Sverige Månad', 'regional', 13),
-('SE_OS_Q', 'Övriga Sverige Kvartal', 'regional', 14),
-('SE_OS_Y', 'Övriga Sverige År', 'regional', 15),
-('SE_ST_H', 'Sthlm Halvår', 'regional', 16),
-('SE_ST_M', 'Sthlm Månad', 'regional', 17),
-('SE_ST_Q', 'Sthlm Kvartal', 'regional', 18),
-('SE_ST_Y', 'Sthlm År', 'regional', 19),
-('W', 'Week', 'standard', 20),
-('Y', 'Year', 'standard', 21),
-('YM', 'Year/month', 'standard', 22);
-
--- ============================================================================
--- BRANDS - Norwegian & Swedish Media Companies
--- ============================================================================
+-- STEP 3: INSERT BRANDS
 INSERT INTO brands (code, name, country) VALUES ('AP', 'Aftenposten', 'NO');
 INSERT INTO brands (code, name, country) VALUES ('AB', 'Aftonbladet', 'SE');
 INSERT INTO brands (code, name, country) VALUES ('BT', 'Bergens Tidende', 'NO');
@@ -55,9 +26,7 @@ INSERT INTO brands (code, name, country) VALUES ('VEK', 'VektKlubb', 'NO');
 INSERT INTO brands (code, name, country) VALUES ('VG', 'Verdens Gang', 'NO');
 INSERT INTO brands (code, name, country) VALUES ('W', 'Wellobe', 'NO');
 
--- ============================================================================
--- PRODUCTS - Products WITHOUT brand prefixes
--- ============================================================================
+-- STEP 4: INSERT PRODUCTS
 INSERT INTO products (brand_id, name, type, shortcode) VALUES ((SELECT id FROM brands WHERE code = 'AP'), 'A-magasinet', 'digital', 'AMAG');
 INSERT INTO products (brand_id, name, type, shortcode) VALUES ((SELECT id FROM brands WHERE code = 'AP'), 'Aftenposten mandag til lørdag', 'print', 'D16');
 INSERT INTO products (brand_id, name, type, shortcode) VALUES ((SELECT id FROM brands WHERE code = 'AP'), 'Aftenposten torsdag til lørdag', 'print', 'D46');
@@ -146,9 +115,7 @@ INSERT INTO products (brand_id, name, type, shortcode) VALUES ((SELECT id FROM b
 INSERT INTO products (brand_id, name, type, shortcode) VALUES ((SELECT id FROM brands WHERE code = 'VG'), 'VG+ Total', 'digital', 'T');
 INSERT INTO products (brand_id, name, type, shortcode) VALUES ((SELECT id FROM brands WHERE code = 'W'), 'Wellobe', 'health', 'W');
 
--- ============================================================================
--- RATE PLANS - Pricing for all products
--- ============================================================================
+-- STEP 5: INSERT RATE PLANS
 INSERT INTO rate_plans (product_id, code, name, price, category) VALUES ((SELECT p.id FROM products p JOIN brands b ON p.brand_id = b.id WHERE b.code = 'AP' AND p.name = 'A-magasinet'), 'W', 'Week', 107, 'standard');
 INSERT INTO rate_plans (product_id, code, name, price, category) VALUES ((SELECT p.id FROM products p JOIN brands b ON p.brand_id = b.id WHERE b.code = 'AP' AND p.name = 'A-magasinet'), 'M', 'Month', 499, 'standard');
 INSERT INTO rate_plans (product_id, code, name, price, category) VALUES ((SELECT p.id FROM products p JOIN brands b ON p.brand_id = b.id WHERE b.code = 'AP' AND p.name = 'A-magasinet'), 'Q', 'Quarter', 1497, 'standard');
