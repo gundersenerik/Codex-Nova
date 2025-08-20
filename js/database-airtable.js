@@ -2,12 +2,18 @@
    DATABASE SERVICE - Airtable data access layer for promocodes
    ============================================================================ */
 
-// Configuration - Replace with your actual values
+// Load config from environment or use defaults
 const AIRTABLE_CONFIG = {
-    BASE_ID: 'appRxCHj7Tts5Wa6M/tbljMCjsllcZgdJSv/viw0tJRU4c5tR0198',
-    PERSONAL_ACCESS_TOKEN: 'patKi2x7fzyR5qciZ.3d6c1e51ffa0ebe3e0535d72d499216905a20567efbcf229df118141d9d9cf12', // Starts with 'pat...'
+    BASE_ID: window.ENV?.AIRTABLE_BASE_ID || 'UPDATE_CONFIG_JS',
+    PERSONAL_ACCESS_TOKEN: window.ENV?.AIRTABLE_TOKEN || 'UPDATE_CONFIG_JS',
     BASE_URL: 'https://api.airtable.com/v0'
 };
+
+// Check if credentials are missing
+if (AIRTABLE_CONFIG.BASE_ID === 'UPDATE_CONFIG_JS') {
+    console.error('⚠️ Airtable credentials not found!');
+    console.error('Please copy config.example.js to config.js and add your credentials');
+}
 
 // Cache for better performance
 let dbCache = {
