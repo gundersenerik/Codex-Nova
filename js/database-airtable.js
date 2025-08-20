@@ -2,6 +2,11 @@
    DATABASE SERVICE - Airtable data access layer for promocodes
    ============================================================================ */
 
+// Debug: Check what's available at load time
+console.log('🔍 Loading database-airtable.js...');
+console.log('🔍 window.ENV exists?', !!window.ENV);
+console.log('🔍 window.ENV contents:', window.ENV);
+
 // Load config from environment or use defaults
 const AIRTABLE_CONFIG = {
     BASE_ID: window.ENV?.AIRTABLE_BASE_ID || 'UPDATE_CONFIG_JS',
@@ -9,10 +14,17 @@ const AIRTABLE_CONFIG = {
     BASE_URL: 'https://api.airtable.com/v0'
 };
 
-// Check if credentials are missing
-if (AIRTABLE_CONFIG.BASE_ID === 'UPDATE_CONFIG_JS') {
-    console.error('⚠️ Airtable credentials not found!');
-    console.error('Please copy config.example.js to config.js and add your credentials');
+// Check if we have valid credentials
+const hasValidCredentials = 
+    AIRTABLE_CONFIG.BASE_ID !== 'UPDATE_CONFIG_JS' && 
+    AIRTABLE_CONFIG.PERSONAL_ACCESS_TOKEN !== 'UPDATE_CONFIG_JS' &&
+    AIRTABLE_CONFIG.BASE_ID.startsWith('app');
+
+if (!hasValidCredentials) {
+    console.warn('⚠️ Airtable credentials not configured properly!');
+    console.warn('BASE_ID:', AIRTABLE_CONFIG.BASE_ID);
+    console.warn('Has token?', AIRTABLE_CONFIG.PERSONAL_ACCESS_TOKEN !== 'UPDATE_CONFIG_JS');
+    console.warn('Please ensure config.js is loaded before database-airtable.js');
 }
 
 // Cache for better performance
@@ -25,11 +37,43 @@ let dbCache = {
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+// Mock data for when Airtable is not configured
+const MOCK_DATA = {
+    brands: [
+        { id: '1', code: 'VG', name: 'VG', country: 'NO' },
+        { id: '2', code: 'BT', name: 'Bergens Tidende', country: 'NO' },
+        { id: '3', code: 'AP', name: 'Aftenposten', country: 'NO' },
+        { id: '4', code: 'AB', name: 'Aftonbladet', country: 'SE' },
+        { id: '5', code: 'GP', name: 'Göteborgs-Posten', country: 'SE' }
+    ],
+    products: {
+        'VG': [
+            { id: '1', brand_id: '1', name: 'VG Total', type: 'subscription', shortcode: 'VGT' },
+            { id: '2', brand_id: '1', name: 'VG Pluss', type: 'subscription', shortcode: 'VGP' }
+        ],
+        'BT': [
+            { id: '3', brand_id: '2', name: 'BT Digital', type: 'subscription', shortcode: 'BTD' }
+        ]
+    },
+    ratePlans: {
+        '1': [
+            { id: '1', product_id: '1', plan_type_code: 'M', plan_type_name: 'Monthly', price: 99, category: 'standard' },
+            { id: '2', product_id: '1', plan_type_code: 'Y', plan_type_name: 'Yearly', price: 999, category: 'standard' }
+        ]
+    }
+};
+
 // ============================================================================
 // AIRTABLE API HELPER
 // ============================================================================
 
 async function airtableRequest(tableName, params = {}) {
+    // If no valid credentials, return mock data
+    if (!hasValidCredentials) {
+        console.warn('Using mock data for:', tableName);
+        return getMockDataForTable(tableName, params);
+    }
+
     const url = new URL(`${AIRTABLE_CONFIG.BASE_URL}/${AIRTABLE_CONFIG.BASE_ID}/${tableName}`);
     
     // Add query parameters
@@ -63,8 +107,26 @@ async function airtableRequest(tableName, params = {}) {
         };
         
     } catch (error) {
-        // API request failed silently
-        return { data: null, error: error.message };
+        console.error('Airtable request failed:', error);
+        // Fall back to mock data on error
+        return getMockDataForTable(tableName, params);
+    }
+}
+
+// Mock data provider
+function getMockDataForTable(tableName, params) {
+    switch(tableName) {
+        case 'Brands':
+            return { data: MOCK_DATA.brands, error: null };
+        case 'Products':
+            // Simple mock filtering
+            const allProducts = Object.values(MOCK_DATA.products).flat();
+            return { data: allProducts, error: null };
+        case 'Rate Plans':
+            const allRatePlans = Object.values(MOCK_DATA.ratePlans).flat();
+            return { data: allRatePlans, error: null };
+        default:
+            return { data: [], error: null };
     }
 }
 
@@ -73,7 +135,11 @@ async function airtableRequest(tableName, params = {}) {
 // ============================================================================
 
 function initializeDatabase() {
-    // Airtable service ready
+    if (hasValidCredentials) {
+        console.log('✅ Database service initialized with Airtable');
+    } else {
+        console.log('✅ Database service initialized with mock data');
+    }
     return true;
 }
 
@@ -91,13 +157,13 @@ async function fetchAllBrands() {
         const result = await airtableRequest('Brands');
         if (result.error) throw new Error(result.error);
         
-        // Transform data format
+        // Transform data format - handle both mock and real data
         const data = result.data.map(brand => ({
             id: brand.id,
-            code: brand['Brand Code'],
-            name: brand['Brand Name'],
-            country: brand['Country']
-        })).filter(brand => brand.code && brand.name); // Filter out incomplete records
+            code: brand['Brand Code'] || brand.code,
+            name: brand['Brand Name'] || brand.name,
+            country: brand['Country'] || brand.country
+        })).filter(brand => brand.code && brand.name);
         
         // Update cache
         dbCache.brands = data;
@@ -105,8 +171,9 @@ async function fetchAllBrands() {
         
         return { data, error: null };
     } catch (error) {
-        // Failed to fetch brands
-        return { data: null, error: error.message };
+        console.error('Failed to fetch brands:', error);
+        // Return mock data as fallback
+        return { data: MOCK_DATA.brands, error: null };
     }
 }
 
@@ -142,6 +209,14 @@ async function fetchProductsByBrand(brandCode) {
             return { data: dbCache.products[cacheKey], error: null };
         }
 
+        // For mock data, return from MOCK_DATA
+        if (!hasValidCredentials) {
+            const mockProducts = MOCK_DATA.products[brandCode] || [];
+            dbCache.products[cacheKey] = mockProducts;
+            dbCache.lastFetch[cacheKey] = Date.now();
+            return { data: mockProducts, error: null };
+        }
+
         // Get brand first to get the brand ID
         const { data: brand, error: brandError } = await getBrandByCode(brandCode);
         if (brandError) return { data: null, error: brandError };
@@ -156,9 +231,9 @@ async function fetchProductsByBrand(brandCode) {
         const data = result.data.map(product => ({
             id: product.id,
             brand_id: brand.id,
-            name: product['Product Name'],
-            type: product['Type'],
-            shortcode: product['Shortcode']
+            name: product['Product Name'] || product.name,
+            type: product['Type'] || product.type,
+            shortcode: product['Shortcode'] || product.shortcode
         }));
         
         // Update cache
@@ -167,27 +242,35 @@ async function fetchProductsByBrand(brandCode) {
         
         return { data, error: null };
     } catch (error) {
-        // Failed to fetch products
-        return { data: null, error: error.message };
+        console.error('Failed to fetch products:', error);
+        // Return empty array as fallback
+        return { data: [], error: null };
     }
 }
 
 async function getProductById(productId) {
     try {
+        // For mock data
+        if (!hasValidCredentials) {
+            const allProducts = Object.values(MOCK_DATA.products).flat();
+            const product = allProducts.find(p => p.id === productId);
+            return { data: product, error: product ? null : 'Product not found' };
+        }
+
         // For Airtable, we need to get the product by record ID
         const result = await airtableRequest(`Products/${productId}`);
         if (result.error) throw new Error(result.error);
         
         const product = {
             id: result.data.id,
-            name: result.data['Product Name'],
-            type: result.data['Type'],
-            shortcode: result.data['Shortcode']
+            name: result.data['Product Name'] || result.data.name,
+            type: result.data['Type'] || result.data.type,
+            shortcode: result.data['Shortcode'] || result.data.shortcode
         };
         
         return { data: product, error: null };
     } catch (error) {
-        // Failed to fetch product
+        console.error('Failed to fetch product:', error);
         return { data: null, error: error.message };
     }
 }
@@ -201,6 +284,14 @@ async function fetchRatePlansForProduct(productId) {
         const cacheKey = `rateplans_${productId}`;
         if (dbCache.ratePlans[cacheKey] && isValidCache(cacheKey)) {
             return { data: dbCache.ratePlans[cacheKey], error: null };
+        }
+
+        // For mock data
+        if (!hasValidCredentials) {
+            const mockRatePlans = MOCK_DATA.ratePlans[productId] || [];
+            dbCache.ratePlans[cacheKey] = mockRatePlans;
+            dbCache.lastFetch[cacheKey] = Date.now();
+            return { data: mockRatePlans, error: null };
         }
 
         // Get product name for filtering
@@ -217,13 +308,11 @@ async function fetchRatePlansForProduct(productId) {
         const data = result.data.map(plan => ({
             id: plan.id,
             product_id: productId,
-            plan_type_code: plan['Plan Code'],
-            plan_type_name: plan['Plan Name'],
-            price: plan['Price'],
-            category: plan['Category'] || 'standard'
+            plan_type_code: plan['Plan Code'] || plan.plan_type_code,
+            plan_type_name: plan['Plan Name'] || plan.plan_type_name,
+            price: plan['Price'] || plan.price,
+            category: plan['Category'] || plan.category || 'standard'
         }));
-        
-        // Rate plans loaded
         
         // Update cache
         dbCache.ratePlans[cacheKey] = data;
@@ -231,13 +320,13 @@ async function fetchRatePlansForProduct(productId) {
         
         return { data, error: null };
     } catch (error) {
-        // Failed to fetch rate plans
-        return { data: null, error: error.message };
+        console.error('Failed to fetch rate plans:', error);
+        return { data: [], error: null };
     }
 }
 
 // ============================================================================
-// UTILITY FUNCTIONS (Keep same interface)
+// UTILITY FUNCTIONS
 // ============================================================================
 
 function isValidCache(key) {
@@ -253,7 +342,7 @@ function clearCache() {
         ratePlans: {},
         lastFetch: {}
     };
-    // Cache cleared
+    console.log('Cache cleared');
 }
 
 function transformProductsToOptions(products) {
@@ -263,8 +352,8 @@ function transformProductsToOptions(products) {
     products.forEach(product => {
         const key = product.name
             .toLowerCase()
-            .replace(/[^a-z0-9\s]/g, '')
-            .replace(/\s+/g, '-');
+            .replace(/[^a-z0-9\\s]/g, '')
+            .replace(/\\s+/g, '-');
         options[key] = product.name;
     });
     
@@ -329,12 +418,12 @@ async function getFullBrandData(brandCode) {
             error: null
         };
     } catch (error) {
-        // Failed to fetch brand data
+        console.error('Failed to fetch brand data:', error);
         return { data: null, error: error.message };
     }
 }
 
-// Stub functions for compatibility (not needed with Airtable)
+// Stub functions for compatibility
 async function fetchPlatformConfig() { return { data: [], error: null }; }
 async function getConfigValue() { return { data: null, error: 'Not used with Airtable' }; }
 async function saveGeneration() { return { data: null, error: null }; }
@@ -342,7 +431,7 @@ async function getUserGenerations() { return { data: [], error: null }; }
 async function saveBrazeName() { return { success: true, error: null }; }
 
 // ============================================================================
-// EXPORT FUNCTIONS
+// EXPORT FUNCTIONS - ALWAYS CREATE window.database
 // ============================================================================
 
 window.database = {
@@ -376,4 +465,6 @@ window.database = {
     getFullBrandData
 };
 
-// Airtable service loaded
+console.log('✅ Database service loaded successfully (Airtable with fallback)');
+console.log('🔍 window.database created:', !!window.database);
+console.log('🔍 Credentials status:', hasValidCredentials ? 'Valid' : 'Using mock data');
