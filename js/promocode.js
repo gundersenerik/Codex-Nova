@@ -1,152 +1,301 @@
 /* ============================================================================
-   PROMOCODE GENERATOR - Unified Norwegian logic for all brands
+   PROMOCODE MODULE - Unified promocode generation system
    ============================================================================ */
 
-// Global variables for promocode functionality
+// Module state
+let promocodePageInitialized = false;
 let currentBrandData = null;
 let currentProductData = null;
 
 // ============================================================================
-// UNIFIED PROMOCODE GENERATION LOGIC
+// INITIALIZATION
 // ============================================================================
 
-// Generate promocode using unified Norwegian logic for ALL brands
-function generateUnifiedCode(brandCode, values) {
+// Initialize promocode page
+async function initializePromocodePage() {
     try {
-        // Validate inputs
-        if (!brandCode || !values) {
-            throw new Error('Missing brand code or values');
-        }
-
-        // Start with brand code as the base
-        let brandPrefix = brandCode;
-        
-        // Special case: Omni products may have brand-specific prefixes
-        // Only for Omni (OM), use product shortcode as brand prefix if it starts with "OM"
-        if (brandCode === 'OM' && currentProductData && currentProductData.shortcode) {
-            // Omni special case: OME, OMB, OMP, etc. replace the brand prefix
-            if (currentProductData.shortcode.startsWith('OM')) {
-                brandPrefix = currentProductData.shortcode;
-                // Using Omni product-specific brand prefix
-            }
-        }
-
-        let codeParts = [brandPrefix];
-        
-        // Product part - ALWAYS use product shortcode (no fallback to product name)
-        if (currentProductData && currentProductData.shortcode) {
-            // Don't add product code if it's already used as brand prefix (Omni case)
-            if (brandCode !== 'OM' || !currentProductData.shortcode.startsWith('OM')) {
-                codeParts.push(currentProductData.shortcode);
-            }
-        } else {
-            // No fallback - shortcode is required for all products
-            throw new Error(`Product shortcode is missing for: ${values.product || 'selected product'}. Please ensure all products have shortcodes configured in the database.`);
+        // Prevent re-initialization
+        if (promocodePageInitialized) {
+            console.log('Promocode page already initialized, skipping...');
+            return;
         }
         
-        // Offer segments
-        let offerSegments = [];
+        console.log('Initializing promocode page...');
         
-        // Duration + Period + Price (Norwegian style)
-        if (values.offerDuration && values.offerPeriod) {
-            let initialOfferPart = `${values.offerDuration}${values.offerPeriod.toUpperCase()}`;
-            
-            // Add price if discount type is 'kr' 
-            if (values.discountType === 'kr' && values.offerPrice) {
-                initialOfferPart += values.offerPrice;
-            }
-            
-            offerSegments.push(initialOfferPart);
+        // Initialize database connection
+        if (!window.database.initialize()) {
+            throw new Error('Failed to initialize database connection');
         }
         
-        // Percentage discount
-        if (values.discountType === 'pros' && values.discountValue) {
-            offerSegments.push(`${values.discountValue}PROS`);
+        // Load and populate brand dropdown
+        await populateBrandDropdown();
+        
+        // Setup main brand selection handler
+        const brandSelect = document.getElementById('brand-select');
+        if (brandSelect) {
+            brandSelect.addEventListener('change', handlePromocodeBrandChange);
         }
         
-        // Custom offer text
-        if (values.customOfferText) {
-            const cleanCustomText = values.customOfferText.toUpperCase()
-                .replace(/[^A-Z0-9]/g, '')
-                .substring(0, 8); // Limit length
-            offerSegments.push(cleanCustomText);
+        // Setup copy button
+        const copyBtn = document.getElementById('copy-promocode-btn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                const codeElement = document.getElementById('generated-code');
+                if (codeElement && window.copyToClipboard) {
+                    window.copyToClipboard(codeElement.textContent);
+                }
+            });
         }
         
-        // Add offer part if we have segments
-        if (offerSegments.length > 0) {
-            codeParts.push(offerSegments.join('-'));
-        }
-        
-        // Lifecycle part
-        let lifecyclePart = '';
-        if (values.lifecycle) {
-            lifecyclePart += values.lifecycle;
-        }
-        if (values.isUnder30) {
-            lifecyclePart += 'U30';
-        }
-        if (lifecyclePart) {
-            codeParts.push(lifecyclePart);
-        }
-        
-        // Renewal rate plan
-        if (values.renewalRatePlan) {
-            codeParts.push(values.renewalRatePlan);
-        }
-        
-        // Join all parts and ensure uppercase
-        const finalCode = codeParts.filter(part => part && part.length > 0).join('-').toUpperCase();
-        
-        if (finalCode.length < 3) {
-            throw new Error('Generated code too short - please fill in more fields');
-        }
-        
-        return finalCode;
+        // Mark as initialized
+        promocodePageInitialized = true;
+        console.log('Promocode page initialized successfully');
         
     } catch (error) {
-        // Error generating promocode
-        throw error;
+        console.error('Error initializing promocode page:', error);
+        showPromocodeError('Failed to initialize promocode page: ' + error.message);
     }
 }
 
-// Reverse engineer a promocode (basic implementation)
-function reversePromocode(code) {
+// Populate brand dropdown from database
+async function populateBrandDropdown() {
+    const brandSelect = document.getElementById('brand-select');
+    if (!brandSelect) return;
+    
     try {
-        if (!code || typeof code !== 'string') {
-            return { error: 'Invalid code format' };
+        // Store current selection before clearing
+        const currentSelection = brandSelect.value;
+        
+        const { data: brandGroups, error } = await window.database.getBrandsGrouped();
+        
+        if (error) {
+            throw new Error(error);
         }
         
-        const parts = code.toUpperCase().split('-');
-        if (parts.length < 2) {
-            return { error: 'Invalid code format - too few parts' };
+        console.log('Brand groups received:', brandGroups); // Debug log
+        
+        brandSelect.innerHTML = '<option value="">Select a brand</option>';
+        
+        // Add Norwegian brands (country code is "NO")
+        if (brandGroups.NO && brandGroups.NO.length > 0) {
+            const norwegianGroup = document.createElement('optgroup');
+            norwegianGroup.label = 'Norway';
+            brandGroups.NO.forEach(brand => {
+                // Skip empty or invalid brands
+                if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
+                    console.warn('Skipping invalid Norwegian brand:', brand);
+                    return;
+                }
+                const option = document.createElement('option');
+                option.value = brand.code;
+                option.textContent = brand.name;
+                norwegianGroup.appendChild(option);
+            });
+            brandSelect.appendChild(norwegianGroup);
         }
         
-        const result = {
-            brand: `Brand: ${parts[0]}`,
-            structure: `Parts: ${parts.length}`
-        };
-        
-        if (parts.length > 1) {
-            result.product = `Product: ${parts[1]}`;
+        // Add Swedish brands (country code is "SE")
+        if (brandGroups.SE && brandGroups.SE.length > 0) {
+            const swedishGroup = document.createElement('optgroup');
+            swedishGroup.label = 'Sweden';
+            brandGroups.SE.forEach(brand => {
+                // Skip empty or invalid brands
+                if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
+                    console.warn('Skipping invalid Swedish brand:', brand);
+                    return;
+                }
+                const option = document.createElement('option');
+                option.value = brand.code;
+                option.textContent = brand.name;
+                swedishGroup.appendChild(option);
+            });
+            brandSelect.appendChild(swedishGroup);
         }
         
-        if (parts.length > 2) {
-            result.offer = `Offer: ${parts[2]}`;
+        // Add any brands with other country codes
+        Object.keys(brandGroups).forEach(country => {
+            if (country !== 'NO' && country !== 'SE' && brandGroups[country] && brandGroups[country].length > 0) {
+                const countryGroup = document.createElement('optgroup');
+                countryGroup.label = country;
+                brandGroups[country].forEach(brand => {
+                    if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
+                        console.warn(`Skipping invalid ${country} brand:`, brand);
+                        return;
+                    }
+                    const option = document.createElement('option');
+                    option.value = brand.code;
+                    option.textContent = brand.name;
+                    countryGroup.appendChild(option);
+                });
+                brandSelect.appendChild(countryGroup);
+            }
+        });
+        
+        // Restore previous selection if it exists
+        if (currentSelection) {
+            brandSelect.value = currentSelection;
+            console.log('Restored brand selection:', currentSelection);
         }
         
-        if (parts.length > 3) {
-            result.lifecycle = `Lifecycle: ${parts[3]}`;
-        }
-        
-        if (parts.length > 4) {
-            result.renewal = `Renewal: ${parts[4]}`;
-        }
-        
-        return result;
+        console.log('Brand dropdown populated with', brandSelect.options.length - 1, 'brands'); // -1 for the placeholder option
         
     } catch (error) {
-        // Error reversing promocode
-        return { error: 'Failed to reverse engineer code' };
+        console.error('Error populating brand dropdown:', error);
+        showPromocodeError('Failed to load brands: ' + error.message);
+    }
+}
+
+// ============================================================================
+// EVENT HANDLERS
+// ============================================================================
+
+// Handle brand selection change
+async function handlePromocodeBrandChange() {
+    const brandSelect = document.getElementById('brand-select');
+    if (!brandSelect) return;
+    
+    const selectedBrandCode = brandSelect.value;
+    
+    // Clear previous results
+    hideResult();
+    clearForm();
+    
+    if (!selectedBrandCode) {
+        clearForm();
+        return;
+    }
+    
+    try {
+        showLoading('Loading brand data...');
+        
+        // Fetch full brand data
+        const { data: brandData, error } = await window.database.getFullBrandData(selectedBrandCode);
+        
+        if (error) {
+            throw new Error(error);
+        }
+        
+        currentBrandData = brandData;
+        
+        // Store brand country for conditional fields
+        const formContainer = document.querySelector('#dynamic-form-container');
+        if (formContainer) {
+            formContainer.dataset.brandCountry = brandData.brand.country;
+        }
+        
+        // Generate and render form
+        const fields = createNorwegianStyleFields();
+        
+        // Update product options
+        const productField = fields.find(f => f.id === 'product');
+        if (productField && brandData.products) {
+            productField.options = window.database.transformProductsToOptions(brandData.products);
+        }
+        
+        // Update rate plan options (initially empty)
+        const ratePlanField = fields.find(f => f.id === 'renewalRatePlan');
+        if (ratePlanField && brandData.initialRatePlans) {
+            ratePlanField.options = window.database.transformRatePlansToOptions(brandData.initialRatePlans);
+        }
+        
+        renderFormFields(fields);
+        hideLoading();
+        
+    } catch (error) {
+        console.error('Error handling brand change:', error);
+        hideLoading();
+        showPromocodeError('Failed to load brand data: ' + error.message);
+    }
+}
+
+// Handle product selection change
+async function handleProductChange() {
+    const productSelect = document.getElementById('product');
+    const ratePlanSelect = document.getElementById('renewalRatePlan');
+    
+    if (!productSelect || !ratePlanSelect || !currentBrandData) return;
+    
+    const selectedProductKey = productSelect.value;
+    if (!selectedProductKey) {
+        ratePlanSelect.innerHTML = '<option value="">Select a rate plan</option>';
+        return;
+    }
+    
+    try {
+        // Find the selected product
+        const selectedProduct = currentBrandData.products.find(p => {
+            const productKey = p.name
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '-');
+            return productKey === selectedProductKey;
+        });
+        
+        if (!selectedProduct) {
+            console.warn('Selected product not found:', selectedProductKey);
+            return;
+        }
+        
+        currentProductData = selectedProduct;
+        
+        // Validate that product has a shortcode
+        if (!selectedProduct.shortcode) {
+            console.warn(`Product "${selectedProduct.name}" is missing a shortcode`);
+            showPromocodeError(`Warning: Product "${selectedProduct.name}" is missing a shortcode. Please update the product configuration.`);
+        }
+        
+        // Fetch rate plans for the selected product
+        const { data: ratePlans, error } = await window.database.fetchRatePlansForProduct(selectedProduct.id);
+        
+        if (error) {
+            console.error('Error fetching rate plans:', error);
+            ratePlanSelect.innerHTML = '<option value="">No rate plans available</option>';
+            return;
+        }
+        
+        // Update rate plan options
+        const options = window.database.transformRatePlansToOptions(ratePlans);
+        ratePlanSelect.innerHTML = '';
+        Object.entries(options).forEach(([value, text]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            ratePlanSelect.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.error('Error handling product change:', error);
+        showPromocodeError('Failed to load rate plans: ' + error.message);
+    }
+}
+
+// Handle discount type change (for conditional fields)
+function handleDiscountTypeChange() {
+    const discountType = document.getElementById('discountType');
+    const amountGroup = document.querySelector('.discount-amount-group');
+    const percentGroup = document.querySelector('.discount-percent-group');
+    
+    if (!discountType) return;
+    
+    // Show/hide conditional fields based on discount type
+    if (amountGroup) {
+        amountGroup.style.display = (discountType.value === 'amount') ? 'block' : 'none';
+    }
+    if (percentGroup) {
+        percentGroup.style.display = (discountType.value === 'percent') ? 'block' : 'none';
+    }
+}
+
+// Handle generate button click
+async function handleGenerateClick() {
+    try {
+        const values = collectFormValues();
+        validateRequiredFields(values);
+        const code = await generateUnifiedCode(values);
+        displayResult(code);
+    } catch (error) {
+        console.error('Error generating promocode:', error);
+        showPromocodeError(error.message);
     }
 }
 
@@ -206,12 +355,12 @@ function createNorwegianStyleFields() {
             row: 3
         },
         {
-            id: 'offerDuration',
-            label: 'Initial Duration',
+            id: 'offerLength',
+            label: 'Length',
             type: 'number',
-            placeholder: 'e.g., 3',
+            placeholder: '1-99',
             min: 1,
-            max: 24,
+            max: 99,
             required: false,
             size: 'small',
             row: 3
@@ -221,267 +370,87 @@ function createNorwegianStyleFields() {
             label: 'Discount Type',
             type: 'select',
             options: { 
-                '': 'No Discount', 
-                'kr': 'Kronor (kr)', 
-                'pros': 'Percent (%)' 
+                '': 'No discount',
+                'percent': 'Percentage', 
+                'amount': 'Fixed Amount' 
             },
             required: false,
             size: 'small',
             row: 3
         },
         {
-            id: 'offerPrice',
-            label: 'Offer Price',
-            type: 'number',
-            placeholder: 'e.g., 199',
-            min: 1,
-            max: 9999,
-            required: false,
-            showWhen: { field: 'discountType', value: 'kr' },
-            size: 'small',
-            row: 3
-        },
-        {
-            id: 'discountValue',
-            label: 'Discount',
+            id: 'discountAmount',
+            label: 'Amount (kr)',
             type: 'number',
             placeholder: 'e.g., 50',
-            min: 1,
+            min: 0,
+            max: 9999,
+            required: false,
+            size: 'small',
+            row: 3,
+            conditional: 'discountType:amount',
+            className: 'discount-amount-group'
+        },
+        {
+            id: 'discountPercent',
+            label: 'Percent (%)',
+            type: 'number',
+            placeholder: 'e.g., 25',
+            min: 0,
             max: 100,
             required: false,
-            showWhen: { field: 'discountType', value: 'pros' },
             size: 'small',
-            row: 3
-        },
-        {
-            id: 'customOfferText',
-            label: 'Custom Offer Text',
-            type: 'text',
-            placeholder: 'e.g., 3FOR1, SUMMER24',
-            maxLength: 8,
-            required: false,
-            size: 'large',
-            row: 4
-        },
-        {
-            id: 'isUnder30',
-            label: 'Under 30',
-            type: 'toggle',
-            required: false,
-            size: 'small',
-            row: 4,
-            showWhen: { type: 'brandCountry', value: 'NO' }
+            row: 3,
+            conditional: 'discountType:percent',
+            className: 'discount-percent-group'
         }
     ];
 }
 
-// Clean form rendering system
-function renderFormFields(fields, containerSelector = '#dynamic-form-container') {
-    try {
-        const container = document.querySelector(containerSelector);
-        if (!container) {
-            // Form container not found
-            return;
-        }
-        
-        container.innerHTML = '';
-        
-        // Create main form element
-        const form = document.createElement('form');
-        form.className = 'promocode-form';
-        form.setAttribute('novalidate', 'true'); // We handle validation ourselves
-        
-        // Row 1: Brand field (full width)
-        const brandRow = document.createElement('div');
-        brandRow.className = 'form-row';
-        
-        const brandGroup = document.createElement('div');
-        brandGroup.className = 'form-group';
-        
-        const brandLabel = document.createElement('label');
-        brandLabel.setAttribute('for', 'brand-display');
-        brandLabel.className = 'form-label';
-        brandLabel.innerHTML = 'Brand <span class="required">*</span>';
-        
-        const brandInput = document.createElement('input');
-        brandInput.type = 'text';
-        brandInput.id = 'brand-display';
-        brandInput.className = 'form-control';
-        
-        // Verify brand data structure
-        if (!currentBrandData || !currentBrandData.brand) {
-            // Invalid brand data
-            brandInput.value = 'Error: Invalid brand data';
-        } else {
-            brandInput.value = currentBrandData.brand.name;
-        }
-        
-        brandInput.readOnly = true;
-        brandInput.style.backgroundColor = '#f5f5f5';
+// Render form fields in the container
+function renderFormFields(fields) {
+    const container = document.getElementById('dynamic-form-container');
+    if (!container) return;
     
-    brandGroup.appendChild(brandLabel);
-    brandGroup.appendChild(brandInput);
-    brandRow.appendChild(brandGroup);
-    form.appendChild(brandRow);
+    container.innerHTML = '';
     
     // Group fields by row
-    const fieldsByRow = {};
+    const rowGroups = {};
     fields.forEach(field => {
         const row = field.row || 1;
-        if (!fieldsByRow[row]) fieldsByRow[row] = [];
-        fieldsByRow[row].push(field);
+        if (!rowGroups[row]) rowGroups[row] = [];
+        rowGroups[row].push(field);
     });
     
-    // Create sections and rows
-    Object.keys(fieldsByRow).sort().forEach(rowNum => {
-        const rowDiv = document.createElement('div');
-        const fieldsInRow = fieldsByRow[rowNum];
+    // Render each row
+    Object.keys(rowGroups).sort().forEach(rowNum => {
+        const row = document.createElement('div');
+        row.className = 'form-row';
         
-        // Use fixed column count for specific rows to handle conditional fields
-        let columnCount;
-        if (rowNum === '3') {
-            // Row 3 always uses 4 columns to accommodate dynamic discount fields
-            columnCount = 4;
-        } else if (rowNum === '4') {
-            // Row 4 always uses 3 columns
-            columnCount = 3;
-        } else {
-            // Other rows calculate based on visible fields
-            const visibleFields = fieldsInRow.filter(f => !f.showWhen || f.showWhen.type === 'brandCountry');
-            columnCount = visibleFields.length;
-        }
+        rowGroups[rowNum].forEach(field => {
+            const fieldElement = createFormField(field);
+            row.appendChild(fieldElement);
+        });
         
-        rowDiv.className = `form-row form-row-${columnCount}`;
-        
-        // Special handling for row 3 to group conditional fields
-        if (rowNum === '3') {
-            let conditionalFieldsWrapper = null;
-            
-            fieldsInRow.forEach(field => {
-                // Check if this is one of the conditional price fields
-                if (field.id === 'offerPrice' || field.id === 'discountValue') {
-                    // Create wrapper if it doesn't exist
-                    if (!conditionalFieldsWrapper) {
-                        conditionalFieldsWrapper = document.createElement('div');
-                        conditionalFieldsWrapper.className = 'conditional-fields-wrapper';
-                        conditionalFieldsWrapper.style.position = 'relative';
-                        rowDiv.appendChild(conditionalFieldsWrapper);
-                    }
-                    // Add field to wrapper
-                    const fieldElement = createSimpleFormField(field);
-                    conditionalFieldsWrapper.appendChild(fieldElement);
-                } else {
-                    // Regular field
-                    const fieldElement = createSimpleFormField(field);
-                    rowDiv.appendChild(fieldElement);
-                }
-            });
-        } else {
-            // Normal row processing
-            fieldsInRow.forEach(field => {
-                const fieldElement = createSimpleFormField(field);
-                rowDiv.appendChild(fieldElement);
-            });
-        }
-        
-        form.appendChild(rowDiv);
+        container.appendChild(row);
     });
     
-    // Add generate button
-    const buttonDiv = document.createElement('div');
-    buttonDiv.innerHTML = `
-        <button type="button" id="generate-promocode-btn" class="generate-btn">
-            <span>🚀</span>
-            <span>Generate Promocode</span>
-        </button>
-    `;
-    
-    form.appendChild(buttonDiv);
-    container.appendChild(form);
-    
-    // Setup event listeners
     setupFormEventListeners();
     
-    // Initialize conditional field visibility
+    // Initially hide conditional fields
     handleDiscountTypeChange();
-    handleBrandCountryVisibility();
-    
-    } catch (error) {
-        // Error rendering form fields
-        showPromocodeError('Failed to render form: ' + error.message);
-    }
 }
 
-// Create simple form field with clean structure
-function createSimpleFormField(field) {
+// Create individual form field
+function createFormField(field) {
     const group = document.createElement('div');
-    group.className = 'form-group';
-    
-    // Handle conditional visibility
-    if (field.showWhen) {
-        group.dataset.showWhen = JSON.stringify(field.showWhen);
-        
-        // For row 3 discount fields, use visibility instead of display to maintain grid layout
-        if (field.row === 3 && (field.id === 'offerPrice' || field.id === 'discountValue')) {
-            group.style.visibility = 'hidden';
-            group.style.opacity = '0';
-            group.style.transform = 'scale(0.95)';
-            group.style.transition = 'visibility 0.2s, opacity 0.2s, transform 0.2s';
-        } else {
-            group.style.display = 'none';
-        }
+    group.className = `form-group ${field.className || ''} size-${field.size || 'medium'}`;
+    if (field.conditional) {
+        group.dataset.conditional = field.conditional;
     }
     
-    // Special handling for checkbox
-    if (field.type === 'checkbox') {
-        group.className = 'checkbox-group';
-        
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.id = field.id;
-        checkbox.name = field.id;
-        checkbox.className = 'form-checkbox';
-        
-        const label = document.createElement('label');
-        label.setAttribute('for', field.id);
-        label.className = 'form-label';
-        label.textContent = field.label;
-        
-        group.appendChild(checkbox);
-        group.appendChild(label);
-        return group;
-    }
-    
-    // Special handling for toggle switch
-    if (field.type === 'toggle') {
-        group.className = 'toggle-container';
-        
-        const toggleSwitch = document.createElement('label');
-        toggleSwitch.className = 'toggle-switch';
-        
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.id = field.id;
-        input.name = field.id;
-        
-        const slider = document.createElement('span');
-        slider.className = 'toggle-slider';
-        
-        toggleSwitch.appendChild(input);
-        toggleSwitch.appendChild(slider);
-        
-        const label = document.createElement('span');
-        label.className = 'toggle-label';
-        label.textContent = field.label;
-        
-        group.appendChild(toggleSwitch);
-        group.appendChild(label);
-        return group;
-    }
-    
-    // Regular fields (select, number, text)
     const label = document.createElement('label');
-    label.setAttribute('for', field.id);
+    label.htmlFor = field.id;
     label.className = 'form-label';
     label.innerHTML = field.label + (field.required ? ' <span class="required">*</span>' : '');
     
@@ -545,235 +514,96 @@ function setupFormEventListeners() {
 }
 
 // ============================================================================
-// EVENT HANDLERS
+// PROMOCODE GENERATION
 // ============================================================================
 
-// Handle brand selection change
-async function handlePromocodeBrandChange() {
-    const brandSelect = document.getElementById('brand-select');
-    if (!brandSelect) return;
-    
-    const selectedBrandCode = brandSelect.value;
-    
-    // Clear previous results
-    hideResult();
-    clearForm();
-    
-    if (!selectedBrandCode) {
-        clearForm();
-        return;
-    }
-    
+// Generate unified promocode
+async function generateUnifiedCode(values) {
     try {
-        showLoading('Loading brand data...');
-        
-        // Fetch full brand data
-        const { data: brandData, error } = await window.database.getFullBrandData(selectedBrandCode);
-        
-        if (error) {
-            throw new Error(error);
+        if (!currentBrandData || !currentProductData) {
+            throw new Error('Please select a brand and product first');
         }
         
-        currentBrandData = brandData;
+        // Start with brand code
+        let code = currentBrandData.brand.code;
         
-        // Store brand country for conditional fields
-        const formContainer = document.querySelector('#dynamic-form-container');
-        if (formContainer) {
-            formContainer.dataset.brandCountry = brandData.brand.country;
+        // Add product shortcode
+        if (currentProductData.shortcode) {
+            code += `-${currentProductData.shortcode}`;
+        } else {
+            console.warn('Product missing shortcode, using first 3 letters of name');
+            const fallback = currentProductData.name.substring(0, 3).toUpperCase();
+            code += `-${fallback}`;
         }
         
-        // Generate and render form
-        const fields = createNorwegianStyleFields();
-        
-        // Update product options
-        const productField = fields.find(f => f.id === 'product');
-        if (productField && brandData.products) {
-            productField.options = window.database.transformProductsToOptions(brandData.products);
-        }
-        
-        // Update rate plan options (initially empty)
-        const ratePlanField = fields.find(f => f.id === 'renewalRatePlan');
-        if (ratePlanField && brandData.initialRatePlans) {
-            ratePlanField.options = window.database.transformRatePlansToOptions(brandData.initialRatePlans);
-        }
-        
-        renderFormFields(fields);
-        hideLoading();
-        
-    } catch (error) {
-        // Error handling brand change
-        hideLoading();
-        showPromocodeError('Failed to load brand data: ' + error.message);
-    }
-}
-
-// Handle product selection change
-async function handleProductChange() {
-    const productSelect = document.getElementById('product');
-    const ratePlanSelect = document.getElementById('renewalRatePlan');
-    
-    if (!productSelect || !ratePlanSelect || !currentBrandData) return;
-    
-    const selectedProductKey = productSelect.value;
-    if (!selectedProductKey) {
-        ratePlanSelect.innerHTML = '<option value="">Select a rate plan</option>';
-        return;
-    }
-    
-    try {
-        // Find the selected product
-        const selectedProduct = currentBrandData.products.find(p => {
-            const productKey = p.name
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '')
-                .replace(/\s+/g, '-');
-            return productKey === selectedProductKey;
-        });
-        
-        if (!selectedProduct) {
-            // Selected product not found
-            return;
-        }
-        
-        currentProductData = selectedProduct;
-        
-        // Validate that product has a shortcode
-        if (!selectedProduct.shortcode) {
-            // Product missing shortcode
-            showPromocodeError(`Warning: Product "${selectedProduct.name}" is missing a shortcode. You will not be able to generate a promocode until this is fixed in the database.`);
-        }
-        
-        // Update brand display based on product selection
-        const brandInput = document.getElementById('brand-display');
-        if (brandInput && currentBrandData) {
-            // For Omni brand with custom shortcode, show it in parentheses
-            if (currentBrandData.brand.code === 'OM' && selectedProduct.shortcode) {
-                brandInput.value = `${currentBrandData.brand.name} (${selectedProduct.shortcode})`;
-            } else if (selectedProduct.shortcode) {
-                // For other brands with shortcode, show brand name and product shortcode
-                brandInput.value = `${currentBrandData.brand.name} (Product: ${selectedProduct.shortcode})`;
-            } else {
-                // No shortcode - show warning
-                brandInput.value = `${currentBrandData.brand.name} (⚠️ Missing shortcode)`;
-            }
-        }
-        
-        // Fetch rate plans for this product
-        const { data: ratePlans, error } = await window.database.fetchRatePlansForProduct(selectedProduct.id);
-        
-        if (error) {
-            throw new Error(error);
-        }
-        
-        // Update rate plan select options
-        const ratePlanOptions = window.database.transformRatePlansToOptions(ratePlans);
-        
-        ratePlanSelect.innerHTML = '';
-        Object.entries(ratePlanOptions).forEach(([value, text]) => {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = text;
-            ratePlanSelect.appendChild(option);
-        });
-        
-    } catch (error) {
-        // Error handling product change
-        showPromocodeError('Failed to load rate plans: ' + error.message);
-    }
-}
-
-// Handle discount type change (show/hide conditional fields)
-function handleDiscountTypeChange() {
-    const discountType = document.getElementById('discountType')?.value;
-    
-    // Handle conditional field visibility
-    const allFields = document.querySelectorAll('[data-show-when]');
-    allFields.forEach(field => {
-        const showWhen = JSON.parse(field.dataset.showWhen);
-        
-        if (showWhen.field === 'discountType') {
-            // Check if this field is in row 3 (discount-related fields)
-            const isRow3Field = field.querySelector('#offerPrice') || field.querySelector('#discountValue');
+        // Add offer details if present
+        if (values.offerPeriod && values.offerLength) {
+            code += `-${values.offerLength}${values.offerPeriod}`;
             
-            if (showWhen.value === discountType) {
-                if (isRow3Field) {
-                    // For row 3 fields, use visibility to maintain grid layout
-                    field.style.visibility = 'visible';
-                    field.style.opacity = '1';
-                    field.style.transform = 'scale(1)';
-                } else {
-                    field.style.display = 'block';
-                }
-                field.classList.add('fade-in');
-                // Remove animation class after animation completes
-                setTimeout(() => field.classList.remove('fade-in'), 300);
-            } else {
-                if (isRow3Field) {
-                    // For row 3 fields, hide with visibility to maintain grid layout
-                    field.style.visibility = 'hidden';
-                    field.style.opacity = '0';
-                    field.style.transform = 'scale(0.95)';
-                } else {
-                    field.style.display = 'none';
-                }
-                // Clear hidden field values
-                const input = field.querySelector('input, select');
-                if (input) input.value = '';
+            // Add discount if present
+            if (values.discountType === 'percent' && values.discountPercent) {
+                code += `${values.discountPercent}p`;
+            } else if (values.discountType === 'amount' && values.discountAmount) {
+                code += `${values.discountAmount}kr`;
             }
         }
-    });
-}
-
-// Handle brand country visibility (show/hide fields based on brand country)
-function handleBrandCountryVisibility() {
-    const formContainer = document.querySelector('#dynamic-form-container');
-    const brandCountry = formContainer?.dataset.brandCountry;
-    
-    // Handle conditional field visibility based on brand country
-    const allFields = document.querySelectorAll('[data-show-when]');
-    allFields.forEach(field => {
-        const showWhen = JSON.parse(field.dataset.showWhen);
         
-        if (showWhen.type === 'brandCountry') {
-            if (showWhen.value === brandCountry) {
-                field.style.display = field.classList.contains('toggle-container') ? 'flex' : 'block';
-            } else {
-                field.style.display = 'none';
-                // Clear hidden field values
-                const input = field.querySelector('input');
-                if (input && (input.type === 'checkbox' || field.classList.contains('toggle-container'))) {
-                    input.checked = false;
-                }
-            }
-        }
-    });
-}
-
-// Handle generate button click
-function handleGenerateClick() {
-    try {
-        if (!currentBrandData) {
-            throw new Error('Please select a brand first');
+        // Add lifecycle if present
+        if (values.lifecycle) {
+            code += `-${values.lifecycle}`;
         }
         
-        // Collect form values
-        const values = collectFormValues();
+        // Add renewal rate plan
+        if (values.renewalRatePlan) {
+            code += `-${values.renewalRatePlan}`;
+        }
         
-        // Validate required fields
-        validateRequiredFields(values);
-        
-        // Generate the promocode
-        const promocode = generateUnifiedCode(currentBrandData.brand.code, values);
-        
-        // Display result
-        showResult(promocode);
-        
-        // Save to history (if user is logged in)
-        saveToHistory(promocode, values);
+        return code.toUpperCase();
         
     } catch (error) {
-        // Error generating promocode
-        showPromocodeError(error.message);
+        console.error('Error generating promocode:', error);
+        throw error;
+    }
+}
+
+// Reverse engineer a promocode
+function reversePromocode(code) {
+    try {
+        if (!code) {
+            return { error: 'No code provided' };
+        }
+        
+        const parts = code.toUpperCase().split('-');
+        if (parts.length < 2) {
+            return { error: 'Invalid code format - too few parts' };
+        }
+        
+        const result = {
+            brand: `Brand: ${parts[0]}`,
+            structure: `Parts: ${parts.length}`
+        };
+        
+        if (parts.length > 1) {
+            result.product = `Product: ${parts[1]}`;
+        }
+        
+        if (parts.length > 2) {
+            result.offer = `Offer: ${parts[2]}`;
+        }
+        
+        if (parts.length > 3) {
+            result.lifecycle = `Lifecycle: ${parts[3]}`;
+        }
+        
+        if (parts.length > 4) {
+            result.renewal = `Renewal: ${parts[4]}`;
+        }
+        
+        return result;
+        
+    } catch (error) {
+        console.error('Error reversing promocode:', error);
+        return { error: 'Failed to reverse engineer code' };
     }
 }
 
@@ -781,19 +611,14 @@ function handleGenerateClick() {
 // UTILITY FUNCTIONS
 // ============================================================================
 
-// Collect all form values
+// Collect form values
 function collectFormValues() {
     const values = {};
+    const inputs = document.querySelectorAll('#dynamic-form-container input, #dynamic-form-container select');
     
-    const fields = createNorwegianStyleFields();
-    fields.forEach(field => {
-        const element = document.getElementById(field.id);
-        if (element) {
-            if (field.type === 'checkbox' || field.type === 'toggle') {
-                values[field.id] = element.checked;
-            } else {
-                values[field.id] = element.value;
-            }
+    inputs.forEach(input => {
+        if (input.value) {
+            values[input.id] = input.value;
         }
     });
     
@@ -802,17 +627,19 @@ function collectFormValues() {
 
 // Validate required fields
 function validateRequiredFields(values) {
-    const fields = createNorwegianStyleFields();
-    const requiredFields = fields.filter(f => f.required);
+    const requiredFields = [
+        { id: 'product', label: 'Product' },
+        { id: 'renewalRatePlan', label: 'Renewal Rate Plan' }
+    ];
     
     for (const field of requiredFields) {
-        if (!values[field.id] || values[field.id] === '') {
+        if (!values[field.id]) {
             throw new Error(`${field.label} is required`);
         }
     }
 }
 
-// Validate form in real-time
+// Validate form (for enabling/disabling generate button)
 function validateForm() {
     const generateBtn = document.getElementById('generate-promocode-btn');
     if (!generateBtn) return;
@@ -820,11 +647,6 @@ function validateForm() {
     try {
         const values = collectFormValues();
         validateRequiredFields(values);
-        
-        // Additional validation: ensure product has shortcode
-        if (currentProductData && !currentProductData.shortcode) {
-            throw new Error('Selected product is missing shortcode');
-        }
         
         generateBtn.disabled = false;
         generateBtn.style.opacity = '1';
@@ -839,53 +661,26 @@ function validateForm() {
 
 // Clear form
 function clearForm() {
-    const container = document.querySelector('#dynamic-form-container');
+    const container = document.getElementById('dynamic-form-container');
     if (container) {
-        container.innerHTML = `
-            <div class="placeholder">
-                <div class="placeholder-icon">🎟️</div>
-                <h3>Ready to Generate</h3>
-                <p>Select a brand above to start configuring your promocode</p>
-                <p style="font-size: 0.75rem; color: var(--gray-400); margin-top: var(--space-sm);">
-                    All brands use the same Norwegian-style logic with database-driven data
-                </p>
-            </div>
-        `;
+        container.innerHTML = '';
     }
     currentBrandData = null;
     currentProductData = null;
 }
 
-// Show result
-function showResult(promocode) {
-    const resultContainer = document.getElementById('result-container');
-    const generatedCodeElement = document.getElementById('generated-code');
-    
-    if (resultContainer && generatedCodeElement) {
-        generatedCodeElement.textContent = promocode;
-        resultContainer.style.display = 'block';
-        
-        // Scroll to result
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-}
-
-// Hide result
-function hideResult() {
-    const resultContainer = document.getElementById('result-container');
-    if (resultContainer) {
-        resultContainer.style.display = 'none';
-    }
-}
+// ============================================================================
+// UI FEEDBACK FUNCTIONS
+// ============================================================================
 
 // Show loading state
 function showLoading(message = 'Loading...') {
-    const container = document.querySelector('#dynamic-form-container');
+    const container = document.getElementById('dynamic-form-container');
     if (container) {
         container.innerHTML = `
-            <div class="placeholder">
-                <div class="loading-spinner" style="margin: 0 auto var(--space-md) auto;"></div>
-                <div style="color: var(--gray-600);">${message}</div>
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>${message}</p>
             </div>
         `;
     }
@@ -893,170 +688,62 @@ function showLoading(message = 'Loading...') {
 
 // Hide loading state
 function hideLoading() {
-    // Loading will be replaced by renderFormFields
+    // Loading state will be replaced by form fields
 }
 
 // Show error message
 function showPromocodeError(message) {
-    if (window.showNotification) {
-        window.showNotification(message, 'error');
-    } else {
-        alert('Error: ' + message);
+    const alertContainer = document.getElementById('promocode-alerts');
+    if (!alertContainer) {
+        console.error('Promocode error:', message);
+        return;
     }
-}
-
-// Save to history
-async function saveToHistory(promocode, values) {
-    if (!currentBrandData) return;
     
-    try {
-        const parameters = {
-            brand: currentBrandData.brand.code,
-            brand_name: currentBrandData.brand.name,
-            ...values
-        };
-        
-        // Save to database (for backend compatibility)
-        await window.database.saveGeneration('promocodes', promocode, parameters);
-        
-        // Also save to central history
-        const historyItem = {
-            type: 'promocode',
-            name: promocode,
-            timestamp: new Date().toISOString(),
-            brand: currentBrandData.brand.code,
-            brandName: currentBrandData.brand.name,
-            product: values.product,
-            offer: values.offer_type,
-            lifecycle: values.lifecycle_stage,
-            renewal: values.renewal_rate
-        };
-        
-        if (window.historyManager && window.historyManager.addItem) {
-            window.historyManager.addItem(historyItem);
-        }
-        
-    } catch (error) {
-        // Failed to save to history
-        // Don't show error to user for history saving failures
-    }
+    alertContainer.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
 }
 
-// ============================================================================
-// INITIALIZATION
-// ============================================================================
-
-// Track if page has been initialized
-let promocodePageInitialized = false;
-
-// Initialize promocode page
-async function initializePromocodePage() {
-    try {
-        // Prevent re-initialization
-        if (promocodePageInitialized) {
-            // Promocode page already initialized
-            return;
-        }
-        
-        // Initializing promocode page
-        
-        // Initialize database connection
-        if (!window.database.initialize()) {
-            throw new Error('Failed to initialize database connection');
-        }
-        
-        // Load and populate brand dropdown
-        await populateBrandDropdown();
-        
-        // Setup main brand selection handler
-        const brandSelect = document.getElementById('brand-select');
-        if (brandSelect) {
-            brandSelect.addEventListener('change', handlePromocodeBrandChange);
-        }
-        
-        // Setup copy button
-        const copyBtn = document.getElementById('copy-promocode-btn');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                const codeElement = document.getElementById('generated-code');
-                if (codeElement && window.copyToClipboard) {
-                    window.copyToClipboard(codeElement.textContent);
-                }
-            });
-        }
-        
-        // Mark as initialized
-        promocodePageInitialized = true;
-        // Promocode page initialized
-        
-    } catch (error) {
-        // Error initializing promocode page
-        showPromocodeError('Failed to initialize promocode page: ' + error.message);
-    }
-}
-
-// Populate brand dropdown from database
-async function populateBrandDropdown() {
-    const brandSelect = document.getElementById('brand-select');
-    if (!brandSelect) return;
+// Display generated promocode result
+function displayResult(code) {
+    const resultContainer = document.getElementById('promocode-result');
+    if (!resultContainer) return;
     
-    try {
-        // Store current selection before clearing
-        const currentSelection = brandSelect.value;
-        
-        const { data: brandGroups, error } = await window.database.getBrandsGrouped();
-        
-        if (error) {
-            throw new Error(error);
-        }
-        
-        brandSelect.innerHTML = '<option value="">Select a brand</option>';
-        
-        // Add Norwegian brands
-        if (brandGroups.norwegian && brandGroups.norwegian.length > 0) {
-            const norwegianGroup = document.createElement('optgroup');
-            norwegianGroup.label = 'Norway';
-            brandGroups.norwegian.forEach(brand => {
-                // Skip empty or invalid brands
-                if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
-                    // Skipping invalid Norwegian brand
-                    return;
-                }
-                const option = document.createElement('option');
-                option.value = brand.code;
-                option.textContent = brand.name;
-                norwegianGroup.appendChild(option);
-            });
-            brandSelect.appendChild(norwegianGroup);
-        }
-        
-        // Add Swedish brands
-        if (brandGroups.swedish && brandGroups.swedish.length > 0) {
-            const swedishGroup = document.createElement('optgroup');
-            swedishGroup.label = 'Sweden';
-            brandGroups.swedish.forEach(brand => {
-                // Skip empty or invalid brands
-                if (!brand || !brand.code || !brand.name || brand.name.trim() === '') {
-                    // Skipping invalid Swedish brand
-                    return;
-                }
-                const option = document.createElement('option');
-                option.value = brand.code;
-                option.textContent = brand.name;
-                swedishGroup.appendChild(option);
-            });
-            brandSelect.appendChild(swedishGroup);
-        }
-        
-        // Restore previous selection if it exists
-        if (currentSelection) {
-            brandSelect.value = currentSelection;
-            // Restored brand selection
-        }
-        
-    } catch (error) {
-        // Error populating brand dropdown
-        showPromocodeError('Failed to load brands: ' + error.message);
+    resultContainer.innerHTML = `
+        <div class="result-card">
+            <h3>Generated Promocode</h3>
+            <div class="code-display">
+                <code id="generated-code">${code}</code>
+                <button class="btn btn-secondary" id="copy-promocode-btn">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+    `;
+    
+    resultContainer.style.display = 'block';
+    
+    // Re-attach copy handler
+    const copyBtn = document.getElementById('copy-promocode-btn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            const codeElement = document.getElementById('generated-code');
+            if (codeElement && window.copyToClipboard) {
+                window.copyToClipboard(codeElement.textContent);
+            }
+        });
+    }
+}
+
+// Hide result
+function hideResult() {
+    const resultContainer = document.getElementById('promocode-result');
+    if (resultContainer) {
+        resultContainer.style.display = 'none';
+        resultContainer.innerHTML = '';
     }
 }
 
@@ -1073,4 +760,4 @@ window.promocode = {
     collectFormValues
 };
 
-// Promocode logic loaded
+console.log('Promocode module loaded');

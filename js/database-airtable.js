@@ -14,6 +14,37 @@ const AIRTABLE_CONFIG = {
     BASE_URL: 'https://api.airtable.com/v0'
 };
 
+// Field mappings for Airtable tables - Easy to update if field names change
+const FIELD_MAPPINGS = {
+    BRANDS: {
+        CODE: 'Brand Code',
+        NAME: 'Brand Name',
+        COUNTRY: 'Country'
+    },
+    PRODUCTS: {
+        NAME: 'Product Name',
+        TYPE: 'Product Type',
+        CODE: 'Product Code',
+        BRAND: 'Brand',  // This is likely a linked record field
+        PROMOCODE_ID: 'Promocode ID'
+    },
+    RATE_PLANS: {
+        CODE: 'Plan Code',
+        NAME: 'Plan Name',
+        PRICE: 'Price',
+        CATEGORY: 'Category',
+        PRODUCT: 'Product',  // This is likely a linked record field
+        PLAN_ID: 'Plan ID'
+    }
+};
+
+// Table names in Airtable
+const TABLE_NAMES = {
+    BRANDS: 'Brands',
+    PRODUCTS: 'Products',
+    RATE_PLANS: 'Rate Plans'
+};
+
 // Check if we have valid credentials
 const hasValidCredentials = 
     AIRTABLE_CONFIG.BASE_ID !== 'UPDATE_CONFIG_JS' && 
@@ -74,7 +105,7 @@ async function airtableRequest(tableName, params = {}) {
         return getMockDataForTable(tableName, params);
     }
 
-    const url = new URL(`${AIRTABLE_CONFIG.BASE_URL}/${AIRTABLE_CONFIG.BASE_ID}/${tableName}`);
+    const url = new URL(`${AIRTABLE_CONFIG.BASE_URL}/${AIRTABLE_CONFIG.BASE_ID}/${encodeURIComponent(tableName)}`);
     
     // Add query parameters
     Object.keys(params).forEach(key => {
@@ -82,6 +113,9 @@ async function airtableRequest(tableName, params = {}) {
             url.searchParams.append(key, params[key]);
         }
     });
+    
+    console.log('🔍 Airtable request:', url.toString());
+    console.log('🔍 With params:', params);
     
     try {
         const response = await fetch(url.toString(), {
@@ -92,10 +126,14 @@ async function airtableRequest(tableName, params = {}) {
         });
         
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Airtable API error:', response.status, errorText);
             throw new Error(`Airtable API error: ${response.status} ${response.statusText}`);
         }
         
         const data = await response.json();
+        
+        console.log(`✅ Received ${data.records.length} records from ${tableName}`);
         
         // Transform Airtable records to simple objects
         return {
@@ -107,7 +145,7 @@ async function airtableRequest(tableName, params = {}) {
         };
         
     } catch (error) {
-        console.error('Airtable request failed:', error);
+        console.error('❌ Airtable request failed:', error);
         // Fall back to mock data on error
         return getMockDataForTable(tableName, params);
     }
@@ -115,14 +153,15 @@ async function airtableRequest(tableName, params = {}) {
 
 // Mock data provider
 function getMockDataForTable(tableName, params) {
+    console.log('📦 Using mock data for table:', tableName);
     switch(tableName) {
-        case 'Brands':
+        case TABLE_NAMES.BRANDS:
             return { data: MOCK_DATA.brands, error: null };
-        case 'Products':
+        case TABLE_NAMES.PRODUCTS:
             // Simple mock filtering
             const allProducts = Object.values(MOCK_DATA.products).flat();
             return { data: allProducts, error: null };
-        case 'Rate Plans':
+        case TABLE_NAMES.RATE_PLANS:
             const allRatePlans = Object.values(MOCK_DATA.ratePlans).flat();
             return { data: allRatePlans, error: null };
         default:
@@ -136,11 +175,14 @@ function getMockDataForTable(tableName, params) {
 
 function initializeDatabase() {
     if (hasValidCredentials) {
-        console.log('✅ Database service initialized with Airtable');
+        console.log('✅ Airtable database initialized');
+        console.log('📊 Base ID:', AIRTABLE_CONFIG.BASE_ID);
+        console.log('📋 Field mappings configured for:', Object.keys(TABLE_NAMES).join(', '));
     } else {
-        console.log('✅ Database service initialized with mock data');
+        console.warn('⚠️ Using mock data - Airtable not configured');
+        console.warn('To use real data, update js/config.js with your Airtable credentials');
     }
-    return true;
+    return { success: true };
 }
 
 // ============================================================================
@@ -149,52 +191,59 @@ function initializeDatabase() {
 
 async function fetchAllBrands() {
     try {
-        // Check cache first
+        // Check cache
         if (dbCache.brands && isValidCache('brands')) {
+            console.log('📦 Using cached brands');
             return { data: dbCache.brands, error: null };
         }
-
-        const result = await airtableRequest('Brands');
+        
+        const result = await airtableRequest(TABLE_NAMES.BRANDS);
+        
         if (result.error) throw new Error(result.error);
         
-        // Transform data format - handle both mock and real data
+        // Transform data using field mappings
         const data = result.data.map(brand => ({
             id: brand.id,
-            code: brand['Brand Code'] || brand.code,
-            name: brand['Brand Name'] || brand.name,
-            country: brand['Country'] || brand.country
-        })).filter(brand => brand.code && brand.name);
+            code: brand[FIELD_MAPPINGS.BRANDS.CODE] || brand.code,
+            name: brand[FIELD_MAPPINGS.BRANDS.NAME] || brand.name,
+            country: brand[FIELD_MAPPINGS.BRANDS.COUNTRY] || brand.country
+        }));
         
         // Update cache
         dbCache.brands = data;
         dbCache.lastFetch.brands = Date.now();
         
+        console.log(`✅ Fetched ${data.length} brands from Airtable`);
         return { data, error: null };
+        
     } catch (error) {
         console.error('Failed to fetch brands:', error);
-        // Return mock data as fallback
-        return { data: MOCK_DATA.brands, error: null };
+        return { data: [], error: error.message };
     }
 }
 
 async function getBrandsGrouped() {
-    const { data: brands, error } = await fetchAllBrands();
-    if (error) return { data: null, error };
+    const result = await fetchAllBrands();
     
-    const grouped = {
-        norwegian: brands.filter(b => b.country === 'NO'),
-        swedish: brands.filter(b => b.country === 'SE')
-    };
+    if (result.error) return result;
+    
+    const grouped = {};
+    result.data.forEach(brand => {
+        const country = brand.country || 'Other';
+        if (!grouped[country]) grouped[country] = [];
+        grouped[country].push(brand);
+    });
     
     return { data: grouped, error: null };
 }
 
 async function getBrandByCode(brandCode) {
-    const { data: brands, error } = await fetchAllBrands();
-    if (error) return { data: null, error };
+    const result = await fetchAllBrands();
     
-    const brand = brands.find(b => b.code === brandCode);
-    return { data: brand, error: brand ? null : 'Brand not found' };
+    if (result.error) return { data: null, error: result.error };
+    
+    const brand = result.data.find(b => b.code === brandCode);
+    return { data: brand || null, error: brand ? null : 'Brand not found' };
 }
 
 // ============================================================================
@@ -203,74 +252,148 @@ async function getBrandByCode(brandCode) {
 
 async function fetchProductsByBrand(brandCode) {
     try {
-        // Check cache first
         const cacheKey = `products_${brandCode}`;
+        
+        // Check cache
         if (dbCache.products[cacheKey] && isValidCache(cacheKey)) {
+            console.log('📦 Using cached products for brand:', brandCode);
             return { data: dbCache.products[cacheKey], error: null };
         }
-
-        // For mock data, return from MOCK_DATA
-        if (!hasValidCredentials) {
-            const mockProducts = MOCK_DATA.products[brandCode] || [];
-            dbCache.products[cacheKey] = mockProducts;
-            dbCache.lastFetch[cacheKey] = Date.now();
-            return { data: mockProducts, error: null };
-        }
-
-        // Get brand first to get the brand ID
-        const { data: brand, error: brandError } = await getBrandByCode(brandCode);
-        if (brandError) return { data: null, error: brandError };
         
-        const result = await airtableRequest('Products', {
-            filterByFormula: `{Brand} = "${brand.name}"`
+        // Get the brand first
+        const brandResult = await getBrandByCode(brandCode);
+        if (brandResult.error) throw new Error(brandResult.error);
+        
+        console.log('🔍 Looking for products with brand:', brandResult.data.name);
+        
+        // Try multiple filter approaches for linked records and text fields
+        let result;
+        
+        // First try: Assume Brand field contains the brand name as text
+        let filterFormula = `{${FIELD_MAPPINGS.PRODUCTS.BRAND}} = "${brandResult.data.name}"`;
+        console.log('🔍 Trying filter formula:', filterFormula);
+        
+        result = await airtableRequest(TABLE_NAMES.PRODUCTS, {
+            filterByFormula: filterFormula
         });
+        
+        // If no results, try with brand code
+        if (!result.data || result.data.length === 0) {
+            filterFormula = `{${FIELD_MAPPINGS.PRODUCTS.BRAND}} = "${brandCode}"`;
+            console.log('🔍 No results, trying with brand code:', filterFormula);
+            
+            result = await airtableRequest(TABLE_NAMES.PRODUCTS, {
+                filterByFormula: filterFormula
+            });
+        }
+        
+        // If still no results, try searching in linked records
+        if (!result.data || result.data.length === 0) {
+            filterFormula = `SEARCH("${brandResult.data.name}", {${FIELD_MAPPINGS.PRODUCTS.BRAND}})`;
+            console.log('🔍 No results, trying SEARCH formula:', filterFormula);
+            
+            result = await airtableRequest(TABLE_NAMES.PRODUCTS, {
+                filterByFormula: filterFormula
+            });
+        }
+        
+        // If still no results, fetch all products and filter client-side
+        if (!result.data || result.data.length === 0) {
+            console.log('🔍 No filtered results, fetching all products and filtering client-side');
+            result = await airtableRequest(TABLE_NAMES.PRODUCTS);
+            
+            if (result.data) {
+                // Filter products that have the brand name in any form
+                result.data = result.data.filter(product => {
+                    const brandField = product[FIELD_MAPPINGS.PRODUCTS.BRAND];
+                    if (!brandField) return false;
+                    
+                    // Check if it's an array (linked record)
+                    if (Array.isArray(brandField)) {
+                        return brandField.includes(brandResult.data.id) || 
+                               brandField.some(b => b === brandResult.data.name);
+                    }
+                    
+                    // Check if it's a string
+                    if (typeof brandField === 'string') {
+                        return brandField === brandResult.data.name || 
+                               brandField === brandCode ||
+                               brandField.includes(brandResult.data.name);
+                    }
+                    
+                    return false;
+                });
+                
+                console.log(`✅ Filtered ${result.data.length} products client-side for brand ${brandCode}`);
+            }
+        }
         
         if (result.error) throw new Error(result.error);
         
-        // Transform data format
+        // Transform data using field mappings
         const data = result.data.map(product => ({
             id: product.id,
-            brand_id: brand.id,
-            name: product['Product Name'] || product.name,
-            type: product['Type'] || product.type,
-            shortcode: product['Shortcode'] || product.shortcode
+            brand_id: brandResult.data.id,
+            name: product[FIELD_MAPPINGS.PRODUCTS.NAME] || product.name,
+            type: product[FIELD_MAPPINGS.PRODUCTS.TYPE] || product.type || 'subscription',
+            shortcode: product[FIELD_MAPPINGS.PRODUCTS.CODE] || product.shortcode || '',
+            promocode_id: product[FIELD_MAPPINGS.PRODUCTS.PROMOCODE_ID] || ''
         }));
         
         // Update cache
         dbCache.products[cacheKey] = data;
         dbCache.lastFetch[cacheKey] = Date.now();
         
+        console.log(`✅ Fetched ${data.length} products for brand ${brandCode}`);
         return { data, error: null };
+        
     } catch (error) {
-        console.error('Failed to fetch products:', error);
-        // Return empty array as fallback
-        return { data: [], error: null };
+        console.error('❌ Failed to fetch products:', error);
+        // Return mock data on error
+        const mockProducts = MOCK_DATA.products[brandCode] || [];
+        return { data: mockProducts, error: null };
     }
 }
 
 async function getProductById(productId) {
     try {
-        // For mock data
-        if (!hasValidCredentials) {
-            const allProducts = Object.values(MOCK_DATA.products).flat();
-            const product = allProducts.find(p => p.id === productId);
-            return { data: product, error: product ? null : 'Product not found' };
+        // First, try to fetch the product directly by ID
+        const url = new URL(`${AIRTABLE_CONFIG.BASE_URL}/${AIRTABLE_CONFIG.BASE_ID}/${encodeURIComponent(TABLE_NAMES.PRODUCTS)}/${productId}`);
+        
+        const response = await fetch(url.toString(), {
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_CONFIG.PERSONAL_ACCESS_TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const product = {
+                id: data.id,
+                ...data.fields,
+                name: data.fields[FIELD_MAPPINGS.PRODUCTS.NAME] || data.fields.name,
+                type: data.fields[FIELD_MAPPINGS.PRODUCTS.TYPE] || data.fields.type || 'subscription',
+                shortcode: data.fields[FIELD_MAPPINGS.PRODUCTS.CODE] || data.fields.shortcode || ''
+            };
+            return { data: product, error: null };
         }
-
-        // For Airtable, we need to get the product by record ID
-        const result = await airtableRequest(`Products/${productId}`);
-        if (result.error) throw new Error(result.error);
         
-        const product = {
-            id: result.data.id,
-            name: result.data['Product Name'] || result.data.name,
-            type: result.data['Type'] || result.data.type,
-            shortcode: result.data['Shortcode'] || result.data.shortcode
-        };
+        // If direct fetch fails, search through cached products
+        const brandsResult = await fetchAllBrands();
+        if (brandsResult.error) throw new Error(brandsResult.error);
         
-        return { data: product, error: null };
+        for (const brand of brandsResult.data) {
+            const productsResult = await fetchProductsByBrand(brand.code);
+            if (!productsResult.error) {
+                const product = productsResult.data.find(p => p.id === productId);
+                if (product) return { data: product, error: null };
+            }
+        }
+        
+        return { data: null, error: 'Product not found' };
     } catch (error) {
-        console.error('Failed to fetch product:', error);
+        console.error('Failed to get product:', error);
         return { data: null, error: error.message };
     }
 }
@@ -282,45 +405,91 @@ async function getProductById(productId) {
 async function fetchRatePlansForProduct(productId) {
     try {
         const cacheKey = `rateplans_${productId}`;
+        
+        // Check cache
         if (dbCache.ratePlans[cacheKey] && isValidCache(cacheKey)) {
+            console.log('📦 Using cached rate plans for product:', productId);
             return { data: dbCache.ratePlans[cacheKey], error: null };
         }
-
-        // For mock data
-        if (!hasValidCredentials) {
-            const mockRatePlans = MOCK_DATA.ratePlans[productId] || [];
-            dbCache.ratePlans[cacheKey] = mockRatePlans;
-            dbCache.lastFetch[cacheKey] = Date.now();
-            return { data: mockRatePlans, error: null };
-        }
-
-        // Get product name for filtering
-        const { data: product, error: productError } = await getProductById(productId);
-        if (productError) return { data: null, error: productError };
         
-        const result = await airtableRequest('Rate Plans', {
-            filterByFormula: `{Product} = "${product.name}"`
+        // Get product to find its name
+        const product = await getProductById(productId);
+        if (product.error) throw new Error(product.error);
+        
+        console.log('🔍 Looking for rate plans for product:', product.data.name);
+        
+        // Try multiple filter approaches
+        let result;
+        
+        // First try: Assume Product field contains the product name as text
+        let filterFormula = `{${FIELD_MAPPINGS.RATE_PLANS.PRODUCT}} = "${product.data.name}"`;
+        console.log('🔍 Trying filter formula:', filterFormula);
+        
+        result = await airtableRequest(TABLE_NAMES.RATE_PLANS, {
+            filterByFormula: filterFormula
         });
+        
+        // If no results, try searching in linked records
+        if (!result.data || result.data.length === 0) {
+            filterFormula = `SEARCH("${product.data.name}", {${FIELD_MAPPINGS.RATE_PLANS.PRODUCT}})`;
+            console.log('🔍 No results, trying SEARCH formula:', filterFormula);
+            
+            result = await airtableRequest(TABLE_NAMES.RATE_PLANS, {
+                filterByFormula: filterFormula
+            });
+        }
+        
+        // If still no results, fetch all rate plans and filter client-side
+        if (!result.data || result.data.length === 0) {
+            console.log('🔍 No filtered results, fetching all rate plans and filtering client-side');
+            result = await airtableRequest(TABLE_NAMES.RATE_PLANS);
+            
+            if (result.data) {
+                // Filter rate plans that have the product name in any form
+                result.data = result.data.filter(plan => {
+                    const productField = plan[FIELD_MAPPINGS.RATE_PLANS.PRODUCT];
+                    if (!productField) return false;
+                    
+                    // Check if it's an array (linked record)
+                    if (Array.isArray(productField)) {
+                        return productField.includes(productId) || 
+                               productField.some(p => p === product.data.name);
+                    }
+                    
+                    // Check if it's a string
+                    if (typeof productField === 'string') {
+                        return productField === product.data.name ||
+                               productField.includes(product.data.name);
+                    }
+                    
+                    return false;
+                });
+                
+                console.log(`✅ Filtered ${result.data.length} rate plans client-side for product ${product.data.name}`);
+            }
+        }
         
         if (result.error) throw new Error(result.error);
         
-        // Transform data format
+        // Transform data using field mappings
         const data = result.data.map(plan => ({
             id: plan.id,
             product_id: productId,
-            plan_type_code: plan['Plan Code'] || plan.plan_type_code,
-            plan_type_name: plan['Plan Name'] || plan.plan_type_name,
-            price: plan['Price'] || plan.price,
-            category: plan['Category'] || plan.category || 'standard'
+            plan_type_code: plan[FIELD_MAPPINGS.RATE_PLANS.CODE] || plan.plan_type_code || '',
+            plan_type_name: plan[FIELD_MAPPINGS.RATE_PLANS.NAME] || plan.plan_type_name || '',
+            price: plan[FIELD_MAPPINGS.RATE_PLANS.PRICE] || plan.price || 0,
+            category: plan[FIELD_MAPPINGS.RATE_PLANS.CATEGORY] || plan.category || 'standard',
+            plan_id: plan[FIELD_MAPPINGS.RATE_PLANS.PLAN_ID] || ''
         }));
         
         // Update cache
         dbCache.ratePlans[cacheKey] = data;
         dbCache.lastFetch[cacheKey] = Date.now();
         
+        console.log(`✅ Fetched ${data.length} rate plans for product ${productId}`);
         return { data, error: null };
     } catch (error) {
-        console.error('Failed to fetch rate plans:', error);
+        console.error('❌ Failed to fetch rate plans:', error);
         return { data: [], error: null };
     }
 }
@@ -352,8 +521,8 @@ function transformProductsToOptions(products) {
     products.forEach(product => {
         const key = product.name
             .toLowerCase()
-            .replace(/[^a-z0-9\\s]/g, '')
-            .replace(/\\s+/g, '-');
+            .replace(/[^a-z0-9\s]/g, '')
+            .replace(/\s+/g, '-');
         options[key] = product.name;
     });
     
@@ -372,7 +541,7 @@ function transformRatePlansToOptions(ratePlans) {
         const name = plan.plan_type_name || plan.name || plan.plan_type_code;
         const price = Number(plan.price);
         
-        if (code && !isNaN(price)) {
+        if (code) {
             const friendlyNames = {
                 'W': 'Weekly',
                 'M': 'Monthly', 
@@ -382,8 +551,13 @@ function transformRatePlansToOptions(ratePlans) {
                 'Y/M': 'Yearly (per month)'
             };
             
-            const displayName = friendlyNames[code] || name;
-            options[code] = `${displayName} (${price} kr)`;
+            const displayName = friendlyNames[code] || name || code;
+            
+            if (!isNaN(price) && price > 0) {
+                options[code] = `${displayName} (${price} kr)`;
+            } else {
+                options[code] = displayName;
+            }
         }
     });
     
@@ -465,6 +639,9 @@ window.database = {
     getFullBrandData
 };
 
+// Log field mappings for debugging
+console.log('📋 Field Mappings Configuration:', FIELD_MAPPINGS);
+console.log('📊 Table Names:', TABLE_NAMES);
 console.log('✅ Database service loaded successfully (Airtable with fallback)');
 console.log('🔍 window.database created:', !!window.database);
 console.log('🔍 Credentials status:', hasValidCredentials ? 'Valid' : 'Using mock data');
