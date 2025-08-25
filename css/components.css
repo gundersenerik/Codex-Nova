@@ -1,5 +1,6 @@
 /* ============================================================================
    COMPONENT STYLES - UI Components and Interactive Elements
+   Complete version with multicolumn form fixes properly integrated
    ============================================================================ */
 
 /* ============================================================================
@@ -290,6 +291,57 @@
     color: var(--gray-700);
 }
 
+.placeholder h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-sm);
+    color: var(--gray-700);
+}
+
+.placeholder p {
+    color: var(--gray-600);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* ============================================================================
+   BUTTONS
+   ============================================================================ */
+
+.btn {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-200);
+}
+
+.btn-secondary:hover {
+    background: var(--gray-200);
+    color: var(--gray-900);
+}
+
 /* ============================================================================
    AUTHENTICATION COMPONENTS
    ============================================================================ */
@@ -351,11 +403,11 @@
     opacity: 0;
     transition: all var(--transition-fast);
     z-index: 1001;
-    display: none; /* CRITICAL: Remove from DOM when hidden */
+    display: none;
 }
 
 .auth-modal.show {
-    display: block; /* CRITICAL: Show in DOM */
+    display: block;
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
 }
@@ -374,20 +426,30 @@
     gap: var(--space-lg);
 }
 
+/* ============================================================================
+   FORM ELEMENTS - Base Styles
+   ============================================================================ */
+
 .form-group {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
     width: 100%;
     position: relative;
-    z-index: 1; /* Ensure form groups don't overlap */
-    isolation: isolate; /* Create new stacking context to prevent overlap */
+    z-index: 1;
+    isolation: isolate;
 }
 
 .form-label {
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--gray-700);
+}
+
+.form-label .required {
+    color: var(--danger);
+    font-weight: 400;
+    margin-left: 2px;
 }
 
 .form-input {
@@ -405,19 +467,6 @@
     pointer-events: auto !important;
 }
 
-/* Ensure all select elements are properly styled and fully clickable */
-select.form-input {
-    cursor: pointer !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    display: block !important;
-    position: relative !important;
-    z-index: 10 !important; /* Higher z-index to ensure clickability */
-    pointer-events: auto !important;
-    -webkit-tap-highlight-color: transparent;
-    isolation: isolate; /* Prevent overlap issues */
-}
-
 .form-input:hover {
     border-color: var(--gray-300);
     background-color: var(--gray-50);
@@ -430,29 +479,303 @@ select.form-input {
     background-color: var(--white);
 }
 
-/* Form grid layout for desktop optimization */
+/* Ensure all select elements are properly styled and fully clickable */
+select.form-input {
+    cursor: pointer !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 10 !important;
+    pointer-events: auto !important;
+}
+
+/* ============================================================================
+   PROMOCODE FORM - Multicolumn Layout Implementation
+   ============================================================================ */
+
+.promocode-form {
+    max-width: 100%;
+}
+
+/* Form sections for logical grouping */
+.form-section {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Form rows with fixed columns */
+.form-row {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Fixed column layouts */
+.form-row-1 {
+    grid-template-columns: 1fr;
+}
+
+.form-row-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.form-row-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-row-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Ensure form groups fill their grid cells */
+.form-row .form-group {
+    min-width: 0;
+    width: 100%;
+    position: relative;
+}
+
+/* Form controls in promocode form */
+.promocode-form .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: var(--white);
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: var(--gray-900);
+}
+
+/* Select specific styling */
+.promocode-form .form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    padding-right: 40px;
+}
+
+/* Arrow using ::after pseudo-element on parent */
+.promocode-form .form-group:has(.form-select)::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    bottom: 13px;
+    width: 10px;
+    height: 6px;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+    transition: transform 0.15s ease;
+}
+
+/* Rotate arrow on focus */
+.promocode-form .form-group:has(.form-select:focus)::after {
+    transform: rotate(180deg);
+}
+
+/* Number inputs can be narrower */
+.promocode-form .form-control[type="number"] {
+    max-width: 140px;
+}
+
+/* Text inputs for codes */
+.promocode-form .form-control[name="customOfferText"] {
+    max-width: 320px;
+    font-family: var(--font-mono);
+}
+
+/* Hover/focus states for promocode form controls */
+.promocode-form .form-control:hover:not(:focus) {
+    border-color: var(--gray-300);
+    background-color: #FAFBFC;
+}
+
+.promocode-form .form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(91, 76, 253, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.04);
+    background-color: var(--white);
+}
+
+/* Disabled state */
+.promocode-form .form-control:disabled {
+    background-color: var(--gray-50);
+    color: var(--gray-400);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Conditional fields wrapper for maintaining grid position */
+.conditional-fields-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 80px;
+}
+
+/* Stack conditional fields */
+.conditional-fields-wrapper .form-group {
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+/* When using absolute positioning for overlapping fields */
+.conditional-fields-wrapper .form-group[style*="position: absolute"] {
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+/* Smooth transitions for conditional fields */
+.form-group[data-conditional] {
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+/* Generate button */
+.generate-btn {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(91, 76, 253, 0.25);
+}
+
+.generate-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(91, 76, 253, 0.3);
+}
+
+.generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--gray-200);
+    color: var(--gray-500);
+    box-shadow: none;
+    transform: none;
+}
+
+/* ============================================================================
+   RESPONSIVE PROMOCODE FORM
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+    /* Tablet: Reduce columns */
+    .form-row-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .form-row-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile: Single column for all */
+    .form-row-2,
+    .form-row-3,
+    .form-row-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Stack conditional fields normally on mobile */
+    .conditional-fields-wrapper .form-group {
+        position: relative !important;
+    }
+    
+    /* Hide completely on mobile when not active */
+    .form-group[data-conditional][style*="visibility: hidden"] {
+        display: none;
+    }
+    
+    .promocode-form .form-control[type="number"],
+    .promocode-form .form-control[name="customOfferText"] {
+        max-width: 100%;
+    }
+    
+    .generate-btn {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Touch-friendly sizing on mobile */
+    .form-control {
+        min-height: 44px;
+        font-size: 16px;
+    }
+}
+
+/* ============================================================================
+   LEGACY FORM GRID (for backward compatibility)
+   ============================================================================ */
+
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Default single column */
+    grid-template-columns: 1fr;
     gap: var(--space-lg);
     margin-bottom: var(--space-xl);
     position: relative;
-    isolation: isolate; /* Prevent grid items from overlapping */
+    isolation: isolate;
 }
 
-/* Ensure grid items fill their cells properly */
 .form-grid > * {
-    min-width: 0; /* Prevent grid blowout */
+    min-width: 0;
     width: 100%;
-    max-width: 100%; /* Ensure content doesn't overflow */
+    max-width: 100%;
     position: relative;
-    isolation: isolate; /* Create stacking context for each grid item */
+    isolation: isolate;
 }
 
-/* Fix for grid column sizing issues */
 @media (min-width: 768px) {
     .form-grid {
-        grid-template-columns: repeat(2, 1fr); /* Equal columns without minmax */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    position: relative;
+    isolation: isolate;
+}
+
+.form-grid-3 > * {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    isolation: isolate;
+}
+
+@media (min-width: 768px) {
+    .form-grid-3 {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -469,15 +792,15 @@ select.form-input {
     padding-left: var(--space-md) !important;
     cursor: pointer !important;
     width: 100% !important;
-    max-width: 100% !important; /* Prevent overflow */
+    max-width: 100% !important;
     display: block !important;
     box-sizing: border-box !important;
     position: relative !important;
-    z-index: 10 !important; /* Higher z-index for select elements */
+    z-index: 10 !important;
     pointer-events: auto !important;
-    min-height: 44px; /* Ensure good touch target */
+    min-height: 44px;
     -webkit-tap-highlight-color: transparent;
-    isolation: isolate; /* Prevent interference from other elements */
+    isolation: isolate;
 }
 
 .form-select:hover {
@@ -488,53 +811,13 @@ select.form-input {
     background-color: var(--white);
 }
 
-/* Ensure select options are properly styled */
 .form-select option {
     padding: var(--space-sm);
 }
 
-/* Three column layout for specific field groups */
-.form-grid-3 {
-    display: grid;
-    grid-template-columns: 1fr; /* Default single column */
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
-    position: relative;
-    isolation: isolate; /* Prevent grid items from overlapping */
-}
-
-/* Ensure grid items fill their cells properly */
-.form-grid-3 > * {
-    min-width: 0;
-    width: 100%;
-    max-width: 100%; /* Ensure content doesn't overflow */
-    position: relative;
-    isolation: isolate; /* Create stacking context for each grid item */
-}
-
-@media (min-width: 768px) {
-    .form-grid-3 {
-        grid-template-columns: repeat(3, 1fr); /* Equal columns without minmax */
-    }
-}
-
-/* Responsive adjustments for form grid */
-@media (min-width: 1400px) {
-    .form-grid {
-        grid-template-columns: repeat(2, 1fr); /* Equal columns */
-    }
-    
-    .form-grid-3 {
-        grid-template-columns: repeat(3, 1fr); /* Equal columns */
-    }
-}
-
-@media (max-width: 768px) {
-    .form-grid,
-    .form-grid-3 {
-        grid-template-columns: 1fr;
-    }
-}
+/* ============================================================================
+   ERROR MESSAGES AND ALERTS
+   ============================================================================ */
 
 .error-message {
     color: var(--danger);
@@ -580,6 +863,17 @@ select.form-input {
     animation: fadeIn 0.3s ease-in-out;
 }
 
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* ============================================================================
    USER MENU
    ============================================================================ */
@@ -589,107 +883,86 @@ select.form-input {
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
+    font-size: 0.875rem;
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
 .user-avatar:hover {
     transform: scale(1.05);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .user-dropdown {
     position: absolute;
-    top: 100%;
+    top: calc(100% + var(--space-sm));
     right: 0;
-    margin-top: var(--space-sm);
     background: var(--white);
     border-radius: 8px;
     box-shadow: var(--shadow-xl);
-    border: 1px solid var(--gray-100);
+    border: 1px solid var(--gray-200);
     min-width: 200px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all var(--transition-fast);
-    z-index: 100;
+    display: none;
+    z-index: 1000;
 }
 
 .user-dropdown.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    display: block;
 }
 
 .user-dropdown-item {
-    padding: var(--space-md);
-    font-size: 0.875rem;
+    padding: var(--space-sm) var(--space-md);
     cursor: pointer;
-    transition: background-color var(--transition-fast);
-}
-
-.user-dropdown-item:first-child {
-    color: var(--gray-600);
-    cursor: default;
+    transition: all var(--transition-fast);
     border-bottom: 1px solid var(--gray-100);
 }
 
 .user-dropdown-item:last-child {
-    color: var(--gray-700);
+    border-bottom: none;
 }
 
-.user-dropdown-item:last-child:hover {
-    background: var(--gray-50);
-    color: var(--gray-900);
+.user-dropdown-item:hover {
+    background-color: var(--gray-50);
 }
 
 /* ============================================================================
-   BANNERS
+   LOADING STATES
    ============================================================================ */
 
-.demo-user-banner {
-    background: linear-gradient(135deg, var(--warning), #ffa726);
-    color: white;
-    padding: 8px 24px;
-    text-align: center;
-    font-size: 0.875rem;
-    font-weight: 500;
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl);
+    color: var(--gray-600);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* ============================================================================
    COMMAND PALETTE
    ============================================================================ */
-
-.command-palette {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 90%;
-    max-width: 640px;
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: var(--shadow-2xl);
-    display: none;
-    opacity: 0;
-    transition: all var(--transition-fast);
-    z-index: 1000;
-}
-
-.command-palette.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
 
 .command-palette-overlay {
     position: fixed;
@@ -726,349 +999,48 @@ select.form-input {
 }
 
 /* ============================================================================
-   PROMOCODE FORM - Clean Implementation (Replacing old system)
+   RESULT DISPLAY
    ============================================================================ */
 
-/* Form container */
-.promocode-form {
-    max-width: 100%;
-}
-
-/* Form sections for logical grouping */
-.form-section {
-    margin-bottom: 36px;
-    padding-bottom: 36px;
-    border-bottom: 1px solid var(--gray-100);
-}
-
-.form-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-/* Form rows with fixed columns */
-.form-row {
-    display: grid;
-    gap: 20px;
-    margin-bottom: 28px;
-}
-
-.form-row:last-child {
-    margin-bottom: 0;
-}
-
-/* Row layouts */
-.form-row-2 { grid-template-columns: repeat(2, 1fr); }
-.form-row-3 { grid-template-columns: repeat(3, 1fr); }
-.form-row-4 { grid-template-columns: repeat(4, 1fr); }
-
-/* Form groups - simple structure */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: relative; /* For select arrow positioning */
-}
-
-/* Labels */
-.form-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--gray-700);
-    letter-spacing: 0.01em;
-}
-
-.form-label .required {
-    color: var(--danger);
-    font-weight: 400;
-    margin-left: 2px;
-}
-
-/* All form controls share base styles */
-.form-control {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1.5px solid var(--gray-200);
+.result-card {
+    background: var(--gray-50);
+    border: 2px dashed var(--gray-300);
     border-radius: 8px;
-    font-size: 15px;
-    background-color: var(--white);
-    transition: all 0.15s ease;
-    box-sizing: border-box;
-    font-family: inherit;
-    color: var(--gray-900);
+    padding: var(--space-xl);
+    margin-top: var(--space-xl);
 }
 
-/* Select specific (no background image!) */
-.form-select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    cursor: pointer;
-    padding-right: 40px;
-}
-
-/* Arrow using ::after pseudo-element on parent */
-.form-group:has(.form-select)::after {
-    content: '';
-    position: absolute;
-    right: 16px;
-    bottom: 13px; /* Positioned relative to input */
-    width: 10px;
-    height: 6px;
-    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-size: contain;
-    pointer-events: none;
-    transition: transform 0.15s ease;
-}
-
-/* Rotate arrow on focus */
-.form-group:has(.form-select:focus)::after {
-    transform: rotate(180deg);
-}
-
-/* Number inputs can be narrower */
-.form-control[type="number"] {
-    max-width: 140px;
-}
-
-/* Text inputs for codes */
-.form-control[name="customOfferText"] {
-    max-width: 320px;
-    font-family: var(--font-mono);
-}
-
-/* Hover/focus states */
-.form-control:hover:not(:focus) {
-    border-color: var(--gray-300);
-    background-color: #FAFBFC;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(91, 76, 253, 0.12),
-                0 1px 2px rgba(0, 0, 0, 0.04);
-    background-color: var(--white);
-}
-
-/* Disabled state */
-.form-control:disabled {
-    background-color: var(--gray-50);
-    color: var(--gray-400);
-    cursor: not-allowed;
-}
-
-/* Checkbox group */
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-top: 26px; /* Align with other fields */
-}
-
-.form-checkbox {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: var(--primary);
-    margin: 0;
-}
-
-.checkbox-group .form-label {
-    margin: 0;
-    cursor: pointer;
-    user-select: none;
-}
-
-/* Toggle switch */
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-top: 26px; /* Align with other fields */
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .3s;
-    border-radius: 24px;
-}
-
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .3s;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-switch input:checked + .toggle-slider {
-    background-color: var(--primary);
-}
-
-.toggle-switch input:focus + .toggle-slider {
-    box-shadow: 0 0 0 3px rgba(91, 76, 253, 0.12);
-}
-
-.toggle-switch input:checked + .toggle-slider:before {
-    transform: translateX(26px);
-}
-
-.toggle-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--gray-700);
-    cursor: pointer;
-    user-select: none;
-}
-
-/* Generate button */
-.generate-btn {
-    margin-top: 32px;
-    padding: 14px 32px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
+.result-card h3 {
+    font-size: 1rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(91, 76, 253, 0.25);
-    width: 100%;
-    max-width: 320px;
+    color: var(--gray-700);
+    margin-bottom: var(--space-md);
+}
+
+.code-display {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: var(--space-md);
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: var(--space-md);
 }
 
-.generate-btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(91, 76, 253, 0.35);
-}
-
-.generate-btn:active {
-    transform: translateY(0);
-}
-
-.generate-btn:disabled {
-    background: var(--gray-200);
-    color: var(--gray-500);
-    box-shadow: none;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Conditional field animations */
-.form-group[data-show-when] {
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.form-group[data-show-when].hiding {
-    opacity: 0;
-    transform: translateY(-10px);
-    pointer-events: none;
-}
-
-/* Ensure row 3 conditional fields maintain grid position */
-.form-row-4 .form-group[data-show-when] {
-    min-width: 0;
-    overflow: hidden;
-}
-
-/* When fields are hidden with visibility, ensure they don't affect layout */
-.form-group[style*="visibility: hidden"] {
-    pointer-events: none;
-}
-
-/* Wrapper for conditional fields that share the same grid position */
-.conditional-fields-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-/* Stack conditional fields on top of each other */
-.conditional-fields-wrapper .form-group {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-}
-
-/* First child should be relative to establish height */
-.conditional-fields-wrapper .form-group:first-child {
-    position: relative;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .form-row-2,
-    .form-row-3,
-    .form-row-4 {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-control[type="number"],
-    .form-control[name="customOfferText"] {
-        max-width: 100%;
-    }
-    
-    .generate-btn {
-        max-width: 100%;
-    }
-    
-    /* Touch-friendly sizing on mobile */
-    .form-control {
-        min-height: 44px;
-        font-size: 16px; /* Prevents zoom on iOS */
-    }
-}
-
-/* Tablet adjustments */
-@media (min-width: 769px) and (max-width: 1024px) {
-    /* Keep 4 columns for row 3 to accommodate all fields including dynamic ones */
-    .form-row-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    
-    /* Row 4 can use 3 columns on tablets */
-    .form-row-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
+.code-display code {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 
 /* ============================================================================
    BRAZE NAMING COMPONENTS
    ============================================================================ */
 
-/* Braze forms */
 .braze-form {
     max-width: 100%;
 }
@@ -1085,115 +1057,14 @@ select.form-input {
     display: flex;
     gap: var(--space-md);
     margin-top: var(--space-xl);
-    border-top: 1px solid var(--gray-100);
-    padding-top: var(--space-xl);
 }
 
-/* Checkbox labels */
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    cursor: pointer;
-    font-size: 0.875rem;
-    color: var(--gray-700);
-    user-select: none;
+.form-actions .btn {
+    flex: 1;
 }
 
-.checkbox-label input[type="checkbox"] {
-    margin: 0;
-    cursor: pointer;
-}
-
-.checkbox-label:hover {
-    color: var(--gray-900);
-}
-
-/* Form helper text */
-.form-text {
-    font-size: 0.75rem;
-    color: var(--gray-600);
-    margin-top: var(--space-xs);
-    display: block;
-}
-
-/* Flags container */
-.flags-container {
-    display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
-}
-
-/* Buttons */
-.btn {
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border: none;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xs);
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-    background: var(--gray-100);
-    color: var(--gray-700);
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: var(--gray-200);
-    transform: translateY(-1px);
-}
-
-.btn-sm {
-    padding: var(--space-xs) var(--space-md);
-    font-size: 0.75rem;
-}
-
-/* Result display */
-.result-display {
-    background: var(--gray-50);
-    border-radius: 8px;
-    padding: var(--space-lg);
-    border: 2px dashed var(--gray-300);
-}
-
-.result-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--gray-700);
-    margin-bottom: var(--space-sm);
-}
-
-.result-value {
-    background: var(--white);
-    border: 1px solid var(--gray-200);
-    border-radius: 6px;
-    padding: var(--space-md);
-}
-
-.result-value pre {
-    margin: 0;
+/* Preview sections */
+.naming-result {
     font-family: var(--font-mono);
     font-size: 1.125rem;
     font-weight: 600;
@@ -1224,84 +1095,4 @@ select.form-input {
     .form-actions .btn {
         width: 100%;
     }
-}
-
-/* ============================================================================
-   BRAZE NAMING V2
-   ============================================================================ */
-
-.naming-preview {
-    transition: all 0.2s ease;
-}
-
-.naming-preview.has-preview {
-    border-color: var(--success) !important;
-}
-
-.naming-preview .preview-text {
-    color: var(--gray-900);
-    font-weight: 500;
-}
-
-.history-item {
-    padding: var(--space-md);
-    border-bottom: 1px solid var(--gray-200);
-    transition: background-color 0.2s ease;
-}
-
-.history-item:last-child {
-    border-bottom: none;
-}
-
-.history-item:hover {
-    background-color: var(--gray-50);
-}
-
-.history-name {
-    font-family: monospace;
-    font-size: 1rem;
-    color: var(--gray-900);
-    margin-bottom: 0.25rem;
-}
-
-.history-meta {
-    font-size: 0.875rem;
-    color: var(--gray-600);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.history-meta .btn-small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    border-radius: 4px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.history-meta .btn-small:hover {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-}
-
-.no-history {
-    padding: 2rem;
-    margin: 0;
-}
-
-.warning-message {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.form-hint {
-    display: block;
-    font-size: 0.875rem;
-    color: var(--gray-600);
-    margin-top: 0.25rem;
 }

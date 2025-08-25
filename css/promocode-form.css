@@ -1,0 +1,636 @@
+/* ============================================================================
+   PROMOCODE FORM STYLES - Complete Updated Version
+   ============================================================================ */
+
+/* Form container */
+.promocode-form {
+    max-width: 100%;
+}
+
+.promocode-form-wrapper {
+    padding: 0;
+}
+
+/* ============================================================================
+   FORM SECTION HEADERS (NEW)
+   ============================================================================ */
+.form-section-header {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--gray-100);
+}
+
+.form-section-header:first-child {
+    margin-top: 0;
+}
+
+.form-section-header h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   FORM ROWS WITH SECTION COLORS (ENHANCED)
+   ============================================================================ */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Section-specific styling with left border accent */
+.form-row.product-section {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.04) 0%, rgba(59, 130, 246, 0.01) 100%);
+    border-left: 4px solid rgba(59, 130, 246, 0.3);
+}
+
+.form-row.offer-section {
+    background: linear-gradient(90deg, rgba(34, 197, 94, 0.04) 0%, rgba(34, 197, 94, 0.01) 100%);
+    border-left: 4px solid rgba(34, 197, 94, 0.3);
+}
+
+.form-row.discount-section {
+    background: linear-gradient(90deg, rgba(251, 146, 60, 0.04) 0%, rgba(251, 146, 60, 0.01) 100%);
+    border-left: 4px solid rgba(251, 146, 60, 0.3);
+}
+
+.form-row.renewal-section {
+    background: linear-gradient(90deg, rgba(168, 85, 247, 0.04) 0%, rgba(168, 85, 247, 0.01) 100%);
+    border-left: 4px solid rgba(168, 85, 247, 0.3);
+}
+
+.form-row.classification-section {
+    background: linear-gradient(90deg, rgba(236, 72, 153, 0.04) 0%, rgba(236, 72, 153, 0.01) 100%);
+    border-left: 4px solid rgba(236, 72, 153, 0.3);
+}
+
+.form-row.options-section {
+    background: linear-gradient(90deg, rgba(156, 163, 175, 0.04) 0%, rgba(156, 163, 175, 0.01) 100%);
+    border-left: 4px solid rgba(156, 163, 175, 0.3);
+}
+
+/* Hover effect for form rows */
+.form-row:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
+}
+
+/* ============================================================================
+   FORM GROUPS WITH SIZE MODIFIERS
+   ============================================================================ */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Size modifiers for form groups */
+.form-group.size-small {
+    flex: 0 1 160px;
+    max-width: 160px;
+}
+
+.form-group.size-medium {
+    flex: 1 1 280px;
+    max-width: 400px;
+}
+
+.form-group.size-large {
+    flex: 2 1 400px;
+}
+
+/* Conditional field groups */
+.form-group[data-conditional] {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.form-group[data-conditional][style*="display: none"] {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* ============================================================================
+   LABELS AND HELPER TEXT
+   ============================================================================ */
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+}
+
+.form-label .required {
+    color: #EF4444;
+    font-weight: 400;
+    margin-left: 2px;
+    font-size: 14px;
+}
+
+/* Helper text (NEW) */
+.form-helper-text {
+    display: block;
+    margin-top: 6px;
+    color: var(--gray-500);
+    font-size: 12px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+/* ============================================================================
+   FORM CONTROLS
+   ============================================================================ */
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: var(--white);
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: var(--gray-900);
+}
+
+/* Select specific styles */
+.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    padding-right: 40px;
+}
+
+/* Arrow for select using ::after on parent */
+.form-group:has(.form-select)::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    bottom: 13px;
+    width: 10px;
+    height: 6px;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+    transition: transform 0.15s ease;
+}
+
+/* Adjust arrow position when helper text is present */
+.form-group:has(.form-helper-text):has(.form-select)::after {
+    bottom: auto;
+    top: 50px;
+}
+
+/* Rotate arrow on focus */
+.form-group:has(.form-select:focus)::after {
+    transform: rotate(180deg);
+}
+
+/* Number inputs */
+.form-control[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.form-control[type="number"]::-webkit-outer-spin-button,
+.form-control[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hover/focus states */
+.form-control:hover:not(:focus) {
+    border-color: var(--gray-300);
+    background-color: #FAFBFC;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(91, 76, 253, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.04);
+    background-color: var(--white);
+}
+
+/* Disabled state */
+.form-control:disabled {
+    background-color: var(--gray-50);
+    color: var(--gray-400);
+    cursor: not-allowed;
+}
+
+/* ============================================================================
+   BUTTON ROW (ENHANCED)
+   ============================================================================ */
+.button-row {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--gray-100);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============================================================================
+   GENERATE BUTTON (ENHANCED)
+   ============================================================================ */
+#generate-promocode-btn,
+.generate-btn {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #5B4CFD 0%, #4A3BC8 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 240px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 14px rgba(91, 76, 253, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+#generate-promocode-btn::before,
+.generate-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+#generate-promocode-btn:hover:not(:disabled)::before,
+.generate-btn:hover:not(:disabled)::before {
+    transform: translateX(100%);
+}
+
+#generate-promocode-btn:hover:not(:disabled),
+.generate-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6B5CFD 0%, #5A4BD8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(91, 76, 253, 0.35);
+}
+
+#generate-promocode-btn:active:not(:disabled),
+.generate-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(91, 76, 253, 0.25);
+}
+
+#generate-promocode-btn:disabled,
+.generate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
+    box-shadow: none;
+}
+
+/* Rocket animation */
+#generate-promocode-btn span:first-child,
+.generate-btn span:first-child {
+    font-size: 1.2em;
+    animation: rocket 2s ease-in-out infinite;
+}
+
+@keyframes rocket {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-2px) rotate(-5deg); }
+    75% { transform: translateY(2px) rotate(5deg); }
+}
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.loading-container p {
+    margin-top: 20px;
+    color: var(--gray-600);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--gray-200);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   PLACEHOLDER STATE
+   ============================================================================ */
+.placeholder {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--gray-500);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.placeholder-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.placeholder h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: var(--gray-700);
+    font-weight: 600;
+}
+
+.placeholder p {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   RESULT CONTAINER (KEPT YOUR NICE GRADIENT)
+   ============================================================================ */
+#result-container {
+    margin-top: 32px;
+    animation: slideInUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.result-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 32px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.result-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    opacity: 0.95;
+}
+
+.code-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+#generated-code {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 16px 24px;
+    border-radius: 8px;
+    letter-spacing: 2px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    user-select: all;
+}
+
+#copy-promocode-btn {
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#copy-promocode-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#copy-promocode-btn.success {
+    background: rgba(34, 197, 94, 0.9) !important;
+    border-color: rgba(34, 197, 94, 1) !important;
+}
+
+/* Animation for result */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================================================
+   ALERTS
+   ============================================================================ */
+#promocode-alerts {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-danger {
+    background-color: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+}
+
+.alert-dismissible {
+    position: relative;
+    padding-right: 40px;
+}
+
+.btn-close {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.5;
+    line-height: 1;
+    padding: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.btn-close:hover {
+    opacity: 0.8;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        padding: 16px;
+    }
+    
+    .form-group.size-small,
+    .form-group.size-medium,
+    .form-group.size-large {
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
+    
+    .form-section-header h4 {
+        font-size: 13px;
+    }
+    
+    #generated-code {
+        font-size: 20px;
+        padding: 12px 16px;
+        letter-spacing: 1px;
+        word-break: break-all;
+    }
+    
+    .code-display {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    #copy-promocode-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .result-card {
+        padding: 24px 16px;
+    }
+    
+    #generate-promocode-btn,
+    .generate-btn {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .form-row {
+        flex-wrap: wrap;
+    }
+    
+    .form-group.size-small {
+        flex: 0 1 calc(33% - 14px);
+    }
+    
+    .form-group.size-medium {
+        flex: 0 1 calc(50% - 10px);
+    }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+@media print {
+    .form-section-header,
+    .button-row,
+    #copy-promocode-btn,
+    .btn-close,
+    .form-helper-text {
+        display: none !important;
+    }
+    
+    #generated-code {
+        font-size: 24px;
+        padding: 20px;
+        border: 2px solid #000;
+        color: #000;
+        background: white;
+    }
+    
+    .result-card {
+        background: white;
+        color: #000;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
