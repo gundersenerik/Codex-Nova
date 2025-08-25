@@ -4,21 +4,20 @@
    Description: Generates complex promotional codes with Norwegian/Swedish logic
    
    FORMAT STRUCTURE:
-   Brand-Product-InitialOffer-[DiscountAmount]-RenewalType-[Freetext]-[CodeType]-RenewalPlan
+   Brand-Product-InitialOffer-RenewalType-[Freetext]-[CodeType]-RenewalPlan
    
    SEGMENTS EXPLAINED:
    1. Brand: Brand code (e.g., "AP", "VG", "DN")
    2. Product: Product shortcode (e.g., "PLUS", "DIGI", "PREM")
    3. InitialOffer: Combined term+price+type (e.g., "3M199K" = 3 months 199kr, "6M99P" = 6 months 99% off)
-   4. DiscountAmount: Optional percentage/amount if using discount (e.g., "50" for 50% off)
-   5. RenewalType: "T" (Termed) or "E" (Evergreen)
-   6. Freetext: Optional campaign text (e.g., "SUMMER", "XMAS")
-   7. CodeType: Optional type (e.g., "WB", "HB", "CMP", "FREE", "EMP", "KS")
-   8. RenewalPlan: Combined term+price (e.g., "M249" = Monthly 249kr, "Q399" = Quarterly 399kr)
+   4. RenewalType: "T" (Termed) or "E" (Evergreen)
+   5. Freetext: Optional campaign text (e.g., "SUMMER", "XMAS")
+   6. CodeType: Optional type (e.g., "WB", "HB", "CMP", "FREE", "EMP", "KS")
+   7. RenewalPlan: Combined term+price (e.g., "M249" = Monthly 249kr, "Q399" = Quarterly 399kr)
    
    EXAMPLES:
    - AP-PLUS-3M199K-T-WB-M249 (3 months at 199kr, Termed, Winback, then Monthly 249kr)
-   - VG-DIGI-6M99P-50-E-SUMMER-CMP-Q399 (6 months at 99kr with 50% off, Evergreen, Summer Campaign, Quarterly 399kr)
+   - VG-DIGI-6M99P-E-SUMMER-CMP-Q399 (6 months at 99% off, Evergreen, Summer Campaign, Quarterly 399kr)
    - DN-SOLO-1M0K-T-FREE-M199 (1 month free, Termed, Free offer, then Monthly 199kr)
    ============================================================================ */
 
@@ -335,7 +334,7 @@ async function handleProductChange() {
 
 function createNorwegianStyleFields() {
     return [
-        // ========== ROW 2: PRODUCT & RATE PLAN ==========
+        // ========== ROW 1: PRODUCT & RATE PLAN ==========
         {
             id: 'product',
             label: 'Product',
@@ -343,95 +342,81 @@ function createNorwegianStyleFields() {
             options: { '': 'Select a product' },
             required: true,
             size: 'medium',
-            row: 2
+            row: 1
         },
         {
             id: 'renewalRatePlan',
-            label: 'Renewal Rate Plan',
+            label: 'Rate Plan',
             type: 'select',
             options: { '': 'Select a rate plan' },
             required: true,
             size: 'medium',
-            row: 2
+            row: 1
         },
         
-        // ========== ROW 3: INITIAL OFFER CONFIGURATION ==========
+        // ========== ROW 2: LENGTH - PERIOD - PRICE - DISCOUNT TYPE ==========
         {
             id: 'initialLength',
-            label: 'Initial Length',
+            label: 'Length',
             type: 'number',
             placeholder: 'e.g., 3',
             min: 1,
             max: 24,
             required: true,
             size: 'small',
-            row: 3
+            row: 2
         },
         {
             id: 'initialPeriod',
-            label: 'Initial Period',
+            label: 'Period',
             type: 'select',
             options: {
-                '': 'Select period',
-                'M': 'Måneder (Months)',
-                'U': 'Uker (Weeks)',
-                'Q': 'Kvartal (Quarter)',
-                'Y': 'År (Year)'
+                '': 'Select',
+                'M': 'Months',
+                'U': 'Weeks',
+                'Q': 'Quarter',
+                'Y': 'Year'
             },
             required: true,
             size: 'medium',
-            row: 3
+            row: 2
         },
         {
-            id: 'initialPrice',
-            label: 'Initial Price',
+            id: 'discountAmount',
+            label: 'Discount',
             type: 'number',
             placeholder: 'e.g., 199',
             min: 0,
             max: 9999,
             required: true,
             size: 'small',
-            row: 3
+            row: 2
         },
-        
-        // ========== ROW 4: DISCOUNT CONFIGURATION ==========
         {
             id: 'discountType',
             label: 'Discount Type',
             type: 'select',
             options: {
-                'K': 'Kroner (Fixed Amount)',
-                'P': 'Percentage'
+                'K': 'Kroner (Kr)',
+                'P': 'Percentage (%)'
             },
             required: true,
             size: 'medium',
-            row: 4
-        },
-        {
-            id: 'discountAmount',
-            label: 'Discount Amount',
-            type: 'number',
-            placeholder: 'Amount or percentage',
-            min: 0,
-            max: 9999,
-            required: false,
-            size: 'small',
-            row: 4,
-            helperText: 'Leave empty if initial price is the full discount'
+            row: 2
         },
         
-        // ========== ROW 5: RENEWAL CONFIGURATION ==========
+        // ========== ROW 3: RENEWAL CONFIGURATION ==========
         {
             id: 'renewalType',
             label: 'Renewal Type',
             type: 'select',
             options: {
-                'T': 'Termed (Fixed period)',
-                'E': 'Evergreen (Continuous)'
+                'T': 'Termed',
+                'E': 'Evergreen'
             },
             required: true,
             size: 'medium',
-            row: 5
+            row: 3
         },
         {
             id: 'renewalTerm',
@@ -445,10 +430,10 @@ function createNorwegianStyleFields() {
             },
             required: true,
             size: 'medium',
-            row: 5
+            row: 3
         },
         
-        // ========== ROW 6: CODE TYPE & FREETEXT ==========
+        // ========== ROW 4: CODE TYPE & CAMPAIGN TEXT ==========
         {
             id: 'codeType',
             label: 'Code Type',
@@ -464,41 +449,41 @@ function createNorwegianStyleFields() {
             },
             required: false,
             size: 'medium',
-            row: 6
+            row: 4
         },
         {
             id: 'freetext',
-            label: 'Freetext (Optional)',
+            label: 'Campaign Text',
             type: 'text',
             placeholder: 'e.g., SUMMER, BLACK, XMAS',
             maxLength: 15,
             required: false,
             size: 'medium',
-            row: 6,
-            helperText: 'Custom campaign identifier'
+            row: 4,
+            helperText: 'Optional campaign identifier'
         },
         
-        // ========== ROW 7: ADDITIONAL OPTIONS ==========
+        // ========== ROW 5: ADDITIONAL OPTIONS ==========
         {
             id: 'ratePlanPrice',
-            label: 'Override Rate Plan Price',
+            label: 'Override Price',
             type: 'number',
             placeholder: 'Leave empty to use selected rate plan',
             min: 0,
             max: 9999,
             required: false,
             size: 'medium',
-            row: 7,
+            row: 5,
             helperText: 'Only fill if different from selected rate plan'
         },
         {
             id: 'notes',
-            label: 'Internal Notes',
+            label: 'Notes',
             type: 'text',
-            placeholder: 'Notes (not included in code)',
+            placeholder: 'Internal notes (not included in code)',
             required: false,
             size: 'medium',
-            row: 7
+            row: 5
         }
     ];
 }
@@ -519,12 +504,11 @@ function renderFormFields(fields) {
     
     // Add section headers and group fields
     const sections = {
-        2: { title: '📦 Product Configuration', className: 'product-section' },
-        3: { title: '🎯 Initial Offer', className: 'offer-section' },
-        4: { title: '💰 Discount Details', className: 'discount-section' },
-        5: { title: '🔄 Renewal Settings', className: 'renewal-section' },
-        6: { title: '🏷️ Code Classification', className: 'classification-section' },
-        7: { title: '📝 Additional Options', className: 'options-section' }
+        1: { title: '📦 Product Selection', className: 'product-section' },
+        2: { title: '🎯 Initial Offer', className: 'offer-section' },
+        3: { title: '🔄 Renewal', className: 'renewal-section' },
+        4: { title: '🏷️ Campaign', className: 'classification-section' },
+        5: { title: '📝 Options', className: 'options-section' }
     };
     
     // Group fields by row
@@ -704,24 +688,22 @@ async function generateUnifiedCode(values) {
         segments.push(currentBrandData.brand.code);
         
         // SEGMENT 2: Product Code
+        // Use shortcode if available, otherwise use first 4 letters of product name
         const productCode = currentProductData.shortcode || 
+                          currentProductData.Shortcode ||
+                          currentProductData.product_code ||
                           currentProductData.name.substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, '');
         segments.push(productCode);
         
         // SEGMENT 3: Initial Offer (Combined: term + price + discount type)
         // Format: "3M199K" or "6M99P"
-        const initialOffer = `${values.initialLength}${values.initialPeriod}${values.initialPrice}${values.discountType}`;
+        const initialOffer = `${values.initialLength}${values.initialPeriod}${values.discountAmount}${values.discountType}`;
         segments.push(initialOffer);
         
-        // SEGMENT 4: Discount Amount (optional, only if specified)
-        if (values.discountAmount) {
-            segments.push(values.discountAmount);
-        }
-        
-        // SEGMENT 5: Renewal Type (T or E)
+        // SEGMENT 4: Renewal Type (T or E)
         segments.push(values.renewalType);
         
-        // SEGMENT 6: Freetext (optional)
+        // SEGMENT 5: Freetext (optional)
         if (values.freetext) {
             const cleanFreetext = values.freetext.toUpperCase().replace(/[^A-Z0-9]/g, '');
             if (cleanFreetext) {
@@ -729,12 +711,12 @@ async function generateUnifiedCode(values) {
             }
         }
         
-        // SEGMENT 7: Code Type (optional)
+        // SEGMENT 6: Code Type (optional)
         if (values.codeType) {
             segments.push(values.codeType);
         }
         
-        // SEGMENT 8: Renewal (Combined: term + price)
+        // SEGMENT 7: Renewal (Combined: term + price)
         // Format: "M249" or "Q399"
         let ratePlanPrice = values.ratePlanPrice;
         let renewalTermCode = values.renewalTerm;
@@ -810,19 +792,13 @@ function reversePromocode(code) {
                 'Y': 'Years'
             };
             result['Initial Term'] = `${offerMatch[1]} ${periodMap[offerMatch[2]] || offerMatch[2]}`;
-            result['Initial Price'] = `${offerMatch[3]} kr`;
-            result['Discount Type'] = offerMatch[4] === 'K' ? 'Kroner' : 'Percentage';
+            result['Price'] = `${offerMatch[3]} kr`;
+            result['Price Type'] = offerMatch[4] === 'K' ? 'Kroner' : 'Percentage';
         } else {
             result['Initial Offer'] = initialOffer;
         }
         
-        // Check if next part is a number (discount amount)
-        if (parts[index] && !isNaN(parts[index])) {
-            result['Discount Amount'] = parts[index];
-            index++;
-        }
-        
-        // Renewal Type (T or E)
+        // Part 4: Renewal Type (T or E)
         if (parts[index] && (parts[index] === 'T' || parts[index] === 'E')) {
             result['Renewal Type'] = parts[index] === 'T' ? 'Termed' : 'Evergreen';
             index++;

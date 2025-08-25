@@ -44,7 +44,7 @@
     display: flex;
     gap: 20px;
     margin-bottom: 16px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Default behavior for most rows */
     align-items: flex-start;
     padding: 20px;
     border-radius: 12px;
@@ -56,10 +56,37 @@
     margin-bottom: 0;
 }
 
+/* CRITICAL FIX: Force rows with 3-4 fields to stay on one line */
+.form-row.offer-section,
+.form-row.discount-section,
+.form-row.renewal-section,
+.form-row.classification-section {
+    flex-wrap: nowrap !important; /* Prevent wrapping */
+    overflow-x: auto; /* Allow horizontal scroll on very small screens if needed */
+}
+
 /* Section-specific styling with left border accent */
 .form-row.product-section {
     background: linear-gradient(90deg, rgba(59, 130, 246, 0.04) 0%, rgba(59, 130, 246, 0.01) 100%);
     border-left: 4px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Product section - LEFT ALIGNED 2 equal fields */
+@media (min-width: 1024px) {
+    .form-row.product-section {
+        display: flex !important;
+        gap: 32px;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start; /* LEFT ALIGN */
+        padding: 20px 24px !important;
+    }
+    
+    .form-row.product-section .form-group {
+        flex: 0 0 340px;
+        max-width: 340px;
+        width: 340px;
+        margin: 0;
+    }
 }
 
 .form-row.offer-section {
@@ -94,7 +121,7 @@
 }
 
 /* ============================================================================
-   FORM GROUPS WITH SIZE MODIFIERS
+   FORM GROUPS WITH SIZE MODIFIERS - PROFESSIONAL GROUPED LAYOUT
    ============================================================================ */
 .form-group {
     display: flex;
@@ -105,7 +132,203 @@
     min-width: 0;
 }
 
-/* Size modifiers for form groups */
+/* PROFESSIONAL GROUPED LAYOUT SYSTEM */
+/* For desktop: Use smart flex grouping with LEFT ALIGNMENT for professional look */
+@media (min-width: 1024px) {
+    /* OFFER SECTION (Row 3) - Two visual groups, LEFT ALIGNED */
+    .form-row.offer-section {
+        display: flex !important;
+        gap: 0;
+        flex-wrap: nowrap !important;
+        align-items: stretch;
+        justify-content: flex-start; /* LEFT ALIGN */
+        padding: 20px 24px !important;
+    }
+    
+    /* Create two visual groups using pseudo-elements */
+    .form-row.offer-section::before {
+        content: '';
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        top: 50%;
+        height: 1px;
+        background: transparent;
+        pointer-events: none;
+    }
+    
+    /* Group 1: Time-related fields (Length + Period) */
+    .form-row.offer-section .form-group:nth-child(1),
+    .form-row.offer-section .form-group:nth-child(2) {
+        margin: 0;
+    }
+    
+    .form-row.offer-section .form-group:nth-child(1) {
+        flex: 0 0 130px; /* Length - compact */
+        margin-right: 16px; /* Tight spacing within group */
+    }
+    
+    .form-row.offer-section .form-group:nth-child(2) {
+        flex: 0 0 220px; /* Period - wider for dropdown */
+        margin-right: 60px; /* Large gap between groups */
+    }
+    
+    /* Group 2: Value-related fields (Price + any additional) */
+    .form-row.offer-section .form-group:nth-child(3) {
+        flex: 0 0 150px; /* Price - medium */
+        margin-right: 16px; /* Small gap if 4th field exists */
+    }
+    
+    /* If there's a 4th field (dynamic) */
+    .form-row.offer-section .form-group:nth-child(4) {
+        flex: 0 0 220px; /* For dropdown fields */
+        margin-right: 0;
+    }
+    
+    /* When only 3 fields, maintain left alignment */
+    .form-row.offer-section:not(:has(.form-group:nth-child(4))) {
+        justify-content: flex-start; /* Keep LEFT ALIGNED */
+    }
+    
+    .form-row.offer-section:not(:has(.form-group:nth-child(4))) .form-group:nth-child(2) {
+        margin-right: 80px; /* Larger visual gap between groups */
+    }
+    
+    .form-row.offer-section:not(:has(.form-group:nth-child(4))) .form-group:nth-child(3) {
+        margin-right: 0;
+    }
+    
+    /* DISCOUNT SECTION (Row 4) - LEFT ALIGNED pair */
+    .form-row.discount-section {
+        display: flex !important;
+        gap: 32px;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start; /* LEFT ALIGN */
+        padding: 20px 24px !important;
+    }
+    
+    .form-row.discount-section .form-group {
+        flex: 0 0 260px;
+        max-width: 260px;
+        margin: 0;
+    }
+    
+    /* RENEWAL SECTION (Row 5) - LEFT ALIGNED pair */
+    .form-row.renewal-section {
+        display: flex !important;
+        gap: 32px;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start; /* LEFT ALIGN */
+        padding: 20px 24px !important;
+    }
+    
+    .form-row.renewal-section .form-group {
+        flex: 0 0 280px;
+        max-width: 280px;
+        margin: 0;
+    }
+    
+    /* CLASSIFICATION SECTION (Row 6) - LEFT ALIGNED pair */
+    .form-row.classification-section {
+        display: flex !important;
+        gap: 32px;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start; /* LEFT ALIGN */
+        padding: 20px 24px !important;
+    }
+    
+    .form-row.classification-section .form-group {
+        flex: 0 0 280px;
+        max-width: 280px;
+        margin: 0;
+    }
+    
+    /* OPTIONS SECTION (Row 7) - LEFT ALIGNED wider pair */
+    .form-row.options-section {
+        display: flex !important;
+        gap: 32px;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start; /* LEFT ALIGN */
+        padding: 20px 24px !important;
+    }
+    
+    .form-row.options-section .form-group {
+        flex: 0 0 340px;
+        max-width: 340px;
+        margin: 0;
+    }
+    
+    /* All inputs use full width of their container */
+    .form-row input[type="number"],
+    .form-row input[type="text"],
+    .form-row select {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+/* Extra large screens: More generous spacing with LEFT ALIGNMENT */
+@media (min-width: 1440px) {
+    /* Increase field widths proportionally */
+    .form-row.offer-section .form-group:nth-child(1) {
+        flex: 0 0 150px; /* Length */
+    }
+    
+    .form-row.offer-section .form-group:nth-child(2) {
+        flex: 0 0 260px; /* Period */
+        margin-right: 80px; /* Larger gap between groups */
+    }
+    
+    .form-row.offer-section .form-group:nth-child(3) {
+        flex: 0 0 170px; /* Price */
+    }
+    
+    .form-row.offer-section .form-group:nth-child(4) {
+        flex: 0 0 260px; /* Discount type if present */
+    }
+    
+    .form-row.product-section .form-group {
+        flex: 0 0 380px;
+        max-width: 380px;
+    }
+    
+    .form-row.discount-section .form-group {
+        flex: 0 0 300px;
+        max-width: 300px;
+    }
+    
+    .form-row.renewal-section .form-group,
+    .form-row.classification-section .form-group {
+        flex: 0 0 320px;
+        max-width: 320px;
+    }
+    
+    .form-row.options-section .form-group {
+        flex: 0 0 380px;
+        max-width: 380px;
+    }
+    
+    /* Increase gaps for better visual breathing */
+    .form-row.discount-section,
+    .form-row.renewal-section,
+    .form-row.classification-section,
+    .form-row.options-section,
+    .form-row.product-section {
+        gap: 40px;
+    }
+    
+    /* All sections maintain LEFT ALIGNMENT */
+    .form-row.offer-section,
+    .form-row.discount-section,
+    .form-row.renewal-section,
+    .form-row.classification-section,
+    .form-row.options-section,
+    .form-row.product-section {
+        justify-content: flex-start !important; /* Ensure LEFT ALIGN on large screens */
+    }
+}
+
+/* Default size modifiers for mobile/tablet */
 .form-group.size-small {
     flex: 0 1 160px;
     max-width: 160px;
@@ -130,6 +353,23 @@
     visibility: hidden;
 }
 
+/* Handle dynamic fields smoothly */
+@media (min-width: 1024px) {
+    /* When fields appear/disappear, maintain smooth layout */
+    .form-row {
+        transition: all 0.3s ease;
+    }
+    
+    /* If offer section gets a 4th field dynamically, maintain LEFT ALIGNMENT */
+    .form-row.offer-section:has(.form-group:nth-child(4)) {
+        justify-content: flex-start; /* Keep LEFT ALIGNED with 4 fields */
+    }
+    
+    .form-row.offer-section:has(.form-group:nth-child(4)) .form-group:nth-child(2) {
+        margin-right: 40px; /* Reduce gap when 4 fields present */
+    }
+}
+
 /* ============================================================================
    LABELS AND HELPER TEXT
    ============================================================================ */
@@ -139,6 +379,9 @@
     color: var(--gray-700);
     letter-spacing: 0.01em;
     text-transform: uppercase;
+    white-space: nowrap; /* Prevent label wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .form-label .required {
@@ -545,12 +788,45 @@
 }
 
 /* ============================================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - PROFESSIONAL LAYOUT SYSTEM
    ============================================================================ */
+
+/* Tablet view - 2 column layout, LEFT ALIGNED */
+@media (max-width: 1023px) and (min-width: 769px) {
+    .form-row.offer-section,
+    .form-row.discount-section,
+    .form-row.renewal-section,
+    .form-row.classification-section,
+    .form-row.options-section,
+    .form-row.product-section {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 20px;
+        justify-content: flex-start; /* LEFT ALIGN on tablet too */
+    }
+    
+    /* All fields take half width on tablet */
+    .form-row .form-group {
+        flex: 0 0 calc(50% - 10px);
+        max-width: calc(50% - 10px);
+        margin: 0 !important;
+    }
+}
+
+/* Mobile view - single column */
 @media (max-width: 768px) {
     .form-row {
         flex-direction: column;
         padding: 16px;
+        flex-wrap: wrap !important; /* Re-enable wrapping on mobile */
+    }
+    
+    .form-row.offer-section,
+    .form-row.discount-section,
+    .form-row.renewal-section,
+    .form-row.classification-section {
+        flex-wrap: wrap !important;
+        overflow-x: visible;
     }
     
     .form-group.size-small,
@@ -590,20 +866,27 @@
         width: 100%;
         min-width: unset;
     }
+    
+    /* Restore label wrapping on mobile */
+    .form-label {
+        white-space: normal;
+    }
 }
 
-/* Tablet adjustments */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* Small mobile adjustments */
+@media (max-width: 480px) {
     .form-row {
-        flex-wrap: wrap;
+        padding: 12px;
+        gap: 12px;
     }
     
-    .form-group.size-small {
-        flex: 0 1 calc(33% - 14px);
+    .form-section-header {
+        margin-top: 24px;
+        margin-bottom: 12px;
     }
     
-    .form-group.size-medium {
-        flex: 0 1 calc(50% - 10px);
+    .form-section-header h4 {
+        font-size: 12px;
     }
 }
 
